@@ -88,13 +88,16 @@ export const saveProfile = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => profileSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const payload = {
-      ...data,
+    const payload: Record<string, unknown> = {
       date_of_birth: data.date_of_birth ? data.date_of_birth : null,
     };
+    for (const [key, value] of Object.entries(data)) {
+      if (key === "date_of_birth") continue;
+      if (value !== undefined) payload[key] = value;
+    }
     const { error } = await supabase
       .from("profiles")
-      .update(payload)
+      .update(payload as never)
       .eq("auth_user_id", userId);
     if (error) throw new Error(error.message);
     return { ok: true };

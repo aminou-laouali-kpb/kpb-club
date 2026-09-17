@@ -66,8 +66,8 @@ export function Markdown({ source }: { source: string }) {
     if (heading) {
       flushParagraph();
       flushList();
-      const level = heading[1].length;
-      const text = heading[2];
+      const level = (heading[1] ?? "#").length;
+      const text = heading[2] ?? "";
       const cls =
         level <= 2
           ? "font-display text-2xl font-semibold text-foreground mt-8"
@@ -84,7 +84,7 @@ export function Markdown({ source }: { source: string }) {
     if (ordered || bullet) {
       flushParagraph();
       const isOrdered = Boolean(ordered);
-      const item = (ordered ?? bullet)![1];
+      const item = (ordered ?? bullet)?.[1] ?? "";
       if (!list || list.ordered !== isOrdered) {
         flushList();
         list = { ordered: isOrdered, items: [] };
