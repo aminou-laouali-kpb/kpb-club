@@ -10,33 +10,178 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as VerificateurRouteImport } from './routes/verificateur'
+import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedGuideRouteImport } from './routes/_authenticated/guide'
+import { Route as AuthenticatedOffreRouteImport } from './routes/_authenticated/offre'
+import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
+import { Route as AuthenticatedGuideIndexRouteImport } from './routes/_authenticated/guide.index'
+import { Route as AuthenticatedGuideChapterRouteImport } from './routes/_authenticated/guide.$chapter'
+import { Route as AuthenticatedTemplatesIndexRouteImport } from './routes/_authenticated/templates.index'
+import { Route as AuthenticatedTemplatesSlugRouteImport } from './routes/_authenticated/templates.$slug'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VerificateurRoute = VerificateurRouteImport.update({
+  id: '/verificateur',
+  path: '/verificateur',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
+  id: '/compte',
+  path: '/compte',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGuideRoute = AuthenticatedGuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedOffreRoute = AuthenticatedOffreRouteImport.update({
+  id: '/offre',
+  path: '/offre',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedTemplatesRoute = AuthenticatedTemplatesRouteImport.update({
+  id: '/templates',
+  path: '/templates',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedGuideIndexRoute = AuthenticatedGuideIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => AuthenticatedGuideRoute,
+} as any)
+const AuthenticatedGuideChapterRoute =
+  AuthenticatedGuideChapterRouteImport.update({
+    id: '/$chapter',
+    path: '/$chapter',
+    getParentRoute: () => AuthenticatedGuideRoute,
+  } as any)
+const AuthenticatedTemplatesIndexRoute =
+  AuthenticatedTemplatesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedTemplatesRoute,
+  } as any)
+const AuthenticatedTemplatesSlugRoute =
+  AuthenticatedTemplatesSlugRouteImport.update({
+    id: '/$slug',
+    path: '/$slug',
+    getParentRoute: () => AuthenticatedTemplatesRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/verificateur': typeof VerificateurRoute
+  '/compte': typeof AuthenticatedCompteRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/guide': typeof AuthenticatedGuideRouteWithChildren
+  '/offre': typeof AuthenticatedOffreRoute
+  '/templates': typeof AuthenticatedTemplatesRouteWithChildren
+  '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/guide/': typeof AuthenticatedGuideIndexRoute
+  '/templates/': typeof AuthenticatedTemplatesIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/verificateur': typeof VerificateurRoute
+  '/compte': typeof AuthenticatedCompteRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
+  '/offre': typeof AuthenticatedOffreRoute
+  '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/guide': typeof AuthenticatedGuideIndexRoute
+  '/templates': typeof AuthenticatedTemplatesIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/verificateur': typeof VerificateurRoute
+  '/_authenticated/compte': typeof AuthenticatedCompteRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/guide': typeof AuthenticatedGuideRouteWithChildren
+  '/_authenticated/offre': typeof AuthenticatedOffreRoute
+  '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
+  '/_authenticated/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/_authenticated/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
+  '/_authenticated/templates/': typeof AuthenticatedTemplatesIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/verificateur'
+    | '/compte'
+    | '/dashboard'
+    | '/guide'
+    | '/offre'
+    | '/templates'
+    | '/guide/$chapter'
+    | '/templates/$slug'
+    | '/guide/'
+    | '/templates/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/verificateur'
+    | '/compte'
+    | '/dashboard'
+    | '/offre'
+    | '/guide/$chapter'
+    | '/templates/$slug'
+    | '/guide'
+    | '/templates'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/verificateur'
+    | '/_authenticated/compte'
+    | '/_authenticated/dashboard'
+    | '/_authenticated/guide'
+    | '/_authenticated/offre'
+    | '/_authenticated/templates'
+    | '/_authenticated/guide/$chapter'
+    | '/_authenticated/templates/$slug'
+    | '/_authenticated/guide/'
+    | '/_authenticated/templates/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  VerificateurRoute: typeof VerificateurRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -48,11 +193,146 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/verificateur': {
+      id: '/verificateur'
+      path: '/verificateur'
+      fullPath: '/verificateur'
+      preLoaderRoute: typeof VerificateurRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/compte': {
+      id: '/_authenticated/compte'
+      path: '/compte'
+      fullPath: '/compte'
+      preLoaderRoute: typeof AuthenticatedCompteRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/guide': {
+      id: '/_authenticated/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof AuthenticatedGuideRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/offre': {
+      id: '/_authenticated/offre'
+      path: '/offre'
+      fullPath: '/offre'
+      preLoaderRoute: typeof AuthenticatedOffreRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/templates': {
+      id: '/_authenticated/templates'
+      path: '/templates'
+      fullPath: '/templates'
+      preLoaderRoute: typeof AuthenticatedTemplatesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/guide/': {
+      id: '/_authenticated/guide/'
+      path: '/'
+      fullPath: '/guide/'
+      preLoaderRoute: typeof AuthenticatedGuideIndexRouteImport
+      parentRoute: typeof AuthenticatedGuideRoute
+    }
+    '/_authenticated/guide/$chapter': {
+      id: '/_authenticated/guide/$chapter'
+      path: '/$chapter'
+      fullPath: '/guide/$chapter'
+      preLoaderRoute: typeof AuthenticatedGuideChapterRouteImport
+      parentRoute: typeof AuthenticatedGuideRoute
+    }
+    '/_authenticated/templates/': {
+      id: '/_authenticated/templates/'
+      path: '/'
+      fullPath: '/templates/'
+      preLoaderRoute: typeof AuthenticatedTemplatesIndexRouteImport
+      parentRoute: typeof AuthenticatedTemplatesRoute
+    }
+    '/_authenticated/templates/$slug': {
+      id: '/_authenticated/templates/$slug'
+      path: '/$slug'
+      fullPath: '/templates/$slug'
+      preLoaderRoute: typeof AuthenticatedTemplatesSlugRouteImport
+      parentRoute: typeof AuthenticatedTemplatesRoute
+    }
   }
 }
 
+interface AuthenticatedGuideRouteChildren {
+  AuthenticatedGuideChapterRoute: typeof AuthenticatedGuideChapterRoute
+  AuthenticatedGuideIndexRoute: typeof AuthenticatedGuideIndexRoute
+}
+
+const AuthenticatedGuideRouteChildren: AuthenticatedGuideRouteChildren = {
+  AuthenticatedGuideChapterRoute: AuthenticatedGuideChapterRoute,
+  AuthenticatedGuideIndexRoute: AuthenticatedGuideIndexRoute,
+}
+
+const AuthenticatedGuideRouteWithChildren =
+  AuthenticatedGuideRoute._addFileChildren(AuthenticatedGuideRouteChildren)
+
+interface AuthenticatedTemplatesRouteChildren {
+  AuthenticatedTemplatesSlugRoute: typeof AuthenticatedTemplatesSlugRoute
+  AuthenticatedTemplatesIndexRoute: typeof AuthenticatedTemplatesIndexRoute
+}
+
+const AuthenticatedTemplatesRouteChildren: AuthenticatedTemplatesRouteChildren =
+  {
+    AuthenticatedTemplatesSlugRoute: AuthenticatedTemplatesSlugRoute,
+    AuthenticatedTemplatesIndexRoute: AuthenticatedTemplatesIndexRoute,
+  }
+
+const AuthenticatedTemplatesRouteWithChildren =
+  AuthenticatedTemplatesRoute._addFileChildren(
+    AuthenticatedTemplatesRouteChildren,
+  )
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
+  AuthenticatedOffreRoute: typeof AuthenticatedOffreRoute
+  AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRouteWithChildren
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedCompteRoute: AuthenticatedCompteRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
+  AuthenticatedOffreRoute: AuthenticatedOffreRoute,
+  AuthenticatedTemplatesRoute: AuthenticatedTemplatesRouteWithChildren,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  VerificateurRoute: VerificateurRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
