@@ -57,7 +57,7 @@ function TemplatePage() {
       </Link>
       <h1 className="mt-3 mb-4 font-display text-3xl font-semibold">{template.title}</h1>
       <WatermarkedContent watermark={watermarkFor(data.profile)}>
-        <Markdown content={template.body} />
+        <Markdown source={template.body} />
       </WatermarkedContent>
     </div>
   );

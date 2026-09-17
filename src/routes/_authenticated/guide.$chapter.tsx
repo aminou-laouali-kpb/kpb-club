@@ -59,7 +59,7 @@ function ChapterPage() {
       </Link>
       <h1 className="mt-3 mb-4 font-display text-3xl font-semibold">{chapter.title}</h1>
       <WatermarkedContent watermark={watermarkFor(data.profile)}>
-        <Markdown content={chapter.body} />
+        <Markdown source={chapter.body} />
       </WatermarkedContent>
       {next && (
         <Link
