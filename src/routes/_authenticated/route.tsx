@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { MemberNav } from "@/components/MemberNav";
+import { useSessionGuard } from "@/hooks/useSessionGuard";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
