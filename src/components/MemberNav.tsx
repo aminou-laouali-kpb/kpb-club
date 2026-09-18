@@ -14,6 +14,7 @@ const items = [
 export function MemberNav() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { data } = useMemberOverview();
 
   async function signOut() {
     await queryClient.cancelQueries();
