@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as VerificateurRouteImport } from './routes/verificateur'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGuideRouteImport } from './routes/_authenticated/guide'
@@ -43,6 +44,11 @@ const VerificateurRoute = VerificateurRouteImport.update({
   id: '/verificateur',
   path: '/verificateur',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
@@ -108,6 +114,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/guide': typeof AuthenticatedGuideRouteWithChildren
@@ -124,6 +131,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/offre': typeof AuthenticatedOffreRoute
@@ -140,6 +148,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/guide': typeof AuthenticatedGuideRouteWithChildren
@@ -158,6 +167,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/verificateur'
+    | '/admin'
     | '/compte'
     | '/dashboard'
     | '/guide'
@@ -174,6 +184,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/verificateur'
+    | '/admin'
     | '/compte'
     | '/dashboard'
     | '/offre'
@@ -189,6 +200,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/verificateur'
+    | '/_authenticated/admin'
     | '/_authenticated/compte'
     | '/_authenticated/dashboard'
     | '/_authenticated/guide'
@@ -240,6 +252,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/verificateur'
       preLoaderRoute: typeof VerificateurRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/compte': {
       id: '/_authenticated/compte'
@@ -351,6 +370,7 @@ const AuthenticatedTemplatesRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
@@ -359,6 +379,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
