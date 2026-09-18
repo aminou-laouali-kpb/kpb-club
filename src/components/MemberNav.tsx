@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { BookOpen, FileText, LayoutDashboard, LogOut, User } from "lucide-react";
+import { BookOpen, FileText, LayoutDashboard, LogOut, Shield, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useMemberOverview } from "@/hooks/useMemberOverview";
 
 const items = [
   { to: "/dashboard", label: "Accueil", icon: LayoutDashboard },
@@ -13,6 +14,7 @@ const items = [
 export function MemberNav() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const { data } = useMemberOverview();
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -35,6 +37,15 @@ export function MemberNav() {
               {item.label}
             </Link>
           ))}
+          {data?.isAdmin && (
+            <Link
+              to="/admin"
+              activeProps={{ className: "bg-secondary text-foreground" }}
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-foreground/70 transition-colors hover:bg-secondary"
+            >
+              <Shield className="size-4" /> Administration
+            </Link>
+          )}
           <button
             onClick={signOut}
             className="ml-auto inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-foreground/70 transition-colors hover:bg-secondary"

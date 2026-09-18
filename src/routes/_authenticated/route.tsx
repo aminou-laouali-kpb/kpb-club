@@ -1,6 +1,7 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { MemberNav } from "@/components/MemberNav";
+import { useSessionGuard } from "@/hooks/useSessionGuard";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -13,6 +14,7 @@ export const Route = createFileRoute("/_authenticated")({
 });
 
 function MemberLayout() {
+  useSessionGuard();
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <MemberNav />

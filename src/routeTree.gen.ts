@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as VerificateurRouteImport } from './routes/verificateur'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGuideRouteImport } from './routes/_authenticated/guide'
@@ -22,6 +23,8 @@ import { Route as AuthenticatedGuideIndexRouteImport } from './routes/_authentic
 import { Route as AuthenticatedGuideChapterRouteImport } from './routes/_authenticated/guide.$chapter'
 import { Route as AuthenticatedTemplatesIndexRouteImport } from './routes/_authenticated/templates.index'
 import { Route as AuthenticatedTemplatesSlugRouteImport } from './routes/_authenticated/templates.$slug'
+import { Route as ApiPublicHooksBourseAlertsRouteImport } from './routes/api/public/hooks/bourse-alerts'
+import { Route as ApiPublicHooksRemindersRouteImport } from './routes/api/public/hooks/reminders'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -41,6 +44,11 @@ const VerificateurRoute = VerificateurRouteImport.update({
   id: '/verificateur',
   path: '/verificateur',
   getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
@@ -90,11 +98,23 @@ const AuthenticatedTemplatesSlugRoute =
     path: '/$slug',
     getParentRoute: () => AuthenticatedTemplatesRoute,
   } as any)
+const ApiPublicHooksBourseAlertsRoute =
+  ApiPublicHooksBourseAlertsRouteImport.update({
+    id: '/api/public/hooks/bourse-alerts',
+    path: '/api/public/hooks/bourse-alerts',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const ApiPublicHooksRemindersRoute = ApiPublicHooksRemindersRouteImport.update({
+  id: '/api/public/hooks/reminders',
+  path: '/api/public/hooks/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/guide': typeof AuthenticatedGuideRouteWithChildren
@@ -104,11 +124,14 @@ export interface FileRoutesByFullPath {
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
   '/guide/': typeof AuthenticatedGuideIndexRoute
   '/templates/': typeof AuthenticatedTemplatesIndexRoute
+  '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/offre': typeof AuthenticatedOffreRoute
@@ -116,6 +139,8 @@ export interface FileRoutesByTo {
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
   '/guide': typeof AuthenticatedGuideIndexRoute
   '/templates': typeof AuthenticatedTemplatesIndexRoute
+  '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -123,6 +148,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/guide': typeof AuthenticatedGuideRouteWithChildren
@@ -132,6 +158,8 @@ export interface FileRoutesById {
   '/_authenticated/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
   '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
   '/_authenticated/templates/': typeof AuthenticatedTemplatesIndexRoute
+  '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -139,6 +167,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/verificateur'
+    | '/admin'
     | '/compte'
     | '/dashboard'
     | '/guide'
@@ -148,11 +177,14 @@ export interface FileRouteTypes {
     | '/templates/$slug'
     | '/guide/'
     | '/templates/'
+    | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
     | '/verificateur'
+    | '/admin'
     | '/compte'
     | '/dashboard'
     | '/offre'
@@ -160,12 +192,15 @@ export interface FileRouteTypes {
     | '/templates/$slug'
     | '/guide'
     | '/templates'
+    | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/reminders'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
     | '/verificateur'
+    | '/_authenticated/admin'
     | '/_authenticated/compte'
     | '/_authenticated/dashboard'
     | '/_authenticated/guide'
@@ -175,6 +210,8 @@ export interface FileRouteTypes {
     | '/_authenticated/templates/$slug'
     | '/_authenticated/guide/'
     | '/_authenticated/templates/'
+    | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/reminders'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -182,6 +219,8 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   VerificateurRoute: typeof VerificateurRoute
+  ApiPublicHooksBourseAlertsRoute: typeof ApiPublicHooksBourseAlertsRoute
+  ApiPublicHooksRemindersRoute: typeof ApiPublicHooksRemindersRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -213,6 +252,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/verificateur'
       preLoaderRoute: typeof VerificateurRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/compte': {
       id: '/_authenticated/compte'
@@ -277,6 +323,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTemplatesSlugRouteImport
       parentRoute: typeof AuthenticatedTemplatesRoute
     }
+    '/api/public/hooks/bourse-alerts': {
+      id: '/api/public/hooks/bourse-alerts'
+      path: '/api/public/hooks/bourse-alerts'
+      fullPath: '/api/public/hooks/bourse-alerts'
+      preLoaderRoute: typeof ApiPublicHooksBourseAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/reminders': {
+      id: '/api/public/hooks/reminders'
+      path: '/api/public/hooks/reminders'
+      fullPath: '/api/public/hooks/reminders'
+      preLoaderRoute: typeof ApiPublicHooksRemindersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -310,6 +370,7 @@ const AuthenticatedTemplatesRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
@@ -318,6 +379,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
@@ -333,6 +395,8 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   VerificateurRoute: VerificateurRoute,
+  ApiPublicHooksBourseAlertsRoute: ApiPublicHooksBourseAlertsRoute,
+  ApiPublicHooksRemindersRoute: ApiPublicHooksRemindersRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

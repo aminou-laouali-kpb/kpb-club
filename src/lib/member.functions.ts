@@ -73,7 +73,13 @@ export const getMemberOverview = createServerFn({ method: "GET" })
     const { state, daysLeft } = computeState(latest);
     const matched = matchBourses(profile, (bourses ?? []) as unknown as Bourse[]);
 
+    const { data: isAdmin } = await supabase.rpc("has_role", {
+      _user_id: userId,
+      _role: "admin",
+    });
+
     return {
+      isAdmin: Boolean(isAdmin),
       profile,
       subscription: latest,
       subscriptionState: state,
