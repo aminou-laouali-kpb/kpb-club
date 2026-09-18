@@ -163,6 +163,97 @@ export type Database = {
           },
         ]
       }
+      member_sessions: {
+        Row: {
+          created_at: string
+          id: string
+          last_seen_at: string
+          profile_id: string
+          revoked: boolean
+          session_token: string
+          user_agent: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          profile_id: string
+          revoked?: boolean
+          session_token: string
+          user_agent?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_seen_at?: string
+          profile_id?: string
+          revoked?: boolean
+          session_token?: string
+          user_agent?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "member_sessions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string
+          channel: string
+          created_at: string
+          dedupe_key: string
+          error: string | null
+          id: string
+          kind: string
+          profile_id: string
+          recipient: string | null
+          sent_at: string | null
+          status: string
+          subject: string
+        }
+        Insert: {
+          body: string
+          channel?: string
+          created_at?: string
+          dedupe_key: string
+          error?: string | null
+          id?: string
+          kind: string
+          profile_id: string
+          recipient?: string | null
+          sent_at?: string | null
+          status?: string
+          subject: string
+        }
+        Update: {
+          body?: string
+          channel?: string
+          created_at?: string
+          dedupe_key?: string
+          error?: string | null
+          id?: string
+          kind?: string
+          profile_id?: string
+          recipient?: string | null
+          sent_at?: string | null
+          status?: string
+          subject?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       payments: {
         Row: {
           amount: number
@@ -335,14 +426,42 @@ export type Database = {
           },
         ]
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "moderator" | "user"
       engagement_status:
         | "pending_payment"
         | "active"
@@ -487,6 +606,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "moderator", "user"],
       engagement_status: [
         "pending_payment",
         "active",
