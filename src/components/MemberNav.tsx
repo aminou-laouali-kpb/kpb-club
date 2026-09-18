@@ -1,7 +1,8 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { BookOpen, FileText, LayoutDashboard, LogOut, User } from "lucide-react";
+import { BookOpen, FileText, LayoutDashboard, LogOut, Shield, User } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
+import { useMemberOverview } from "@/hooks/useMemberOverview";
 
 const items = [
   { to: "/dashboard", label: "Accueil", icon: LayoutDashboard },
