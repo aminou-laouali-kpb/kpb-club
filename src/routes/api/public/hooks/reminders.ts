@@ -1,5 +1,4 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
 import { formatFcfa } from "@/lib/pricing";
 
 const DAY = 86_400_000;
@@ -37,7 +36,8 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const denied = await authenticateCronRequest(request);
+        const { guardCronRequest } = await import("@/lib/cron-guard.server");
+        const denied = await guardCronRequest(request);
         if (denied) return denied;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");

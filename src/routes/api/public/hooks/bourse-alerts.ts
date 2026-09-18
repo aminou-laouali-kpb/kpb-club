@@ -1,12 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { authenticateCronRequest } from "@/integrations/supabase/cron-auth";
 import { matchBourses, formatDateFr, type Bourse } from "@/lib/matching";
 
 export const Route = createFileRoute("/api/public/hooks/bourse-alerts")({
   server: {
     handlers: {
       POST: async ({ request }) => {
-        const denied = await authenticateCronRequest(request);
+        const { guardCronRequest } = await import("@/lib/cron-guard.server");
+        const denied = await guardCronRequest(request);
         if (denied) return denied;
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
