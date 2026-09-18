@@ -37,6 +37,15 @@ export function MemberNav() {
               {item.label}
             </Link>
           ))}
+          {data?.isAdmin && (
+            <Link
+              to="/admin"
+              activeProps={{ className: "bg-secondary text-foreground" }}
+              className="inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-foreground/70 transition-colors hover:bg-secondary"
+            >
+              <Shield className="size-4" /> Administration
+            </Link>
+          )}
           <button
             onClick={signOut}
             className="ml-auto inline-flex items-center gap-1.5 rounded-md px-3 py-2 text-foreground/70 transition-colors hover:bg-secondary"
