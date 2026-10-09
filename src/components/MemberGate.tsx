@@ -1,5 +1,6 @@
 import { Link } from "@tanstack/react-router";
 import { Lock } from "lucide-react";
+import { AccessCodeForm } from "./AccessCodeForm";
 
 export function MemberGate() {
   return (
@@ -15,6 +16,9 @@ export function MemberGate() {
       >
         Voir les tarifs
       </Link>
+      <div className="mt-4 flex justify-center">
+        <AccessCodeForm />
+      </div>
     </div>
   );
 }

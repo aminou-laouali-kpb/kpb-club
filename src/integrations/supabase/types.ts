@@ -14,6 +14,105 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_code_attempts: {
+        Row: {
+          attempted_at: string
+          id: number
+          profile_id: string
+          success: boolean
+        }
+        Insert: {
+          attempted_at?: string
+          id?: number
+          profile_id: string
+          success: boolean
+        }
+        Update: {
+          attempted_at?: string
+          id?: number
+          profile_id?: string
+          success?: boolean
+        }
+        Relationships: []
+      }
+      access_code_redemptions: {
+        Row: {
+          code_id: string
+          id: string
+          profile_id: string
+          redeemed_at: string
+          subscription_id: string | null
+        }
+        Insert: {
+          code_id: string
+          id?: string
+          profile_id: string
+          redeemed_at?: string
+          subscription_id?: string | null
+        }
+        Update: {
+          code_id?: string
+          id?: string
+          profile_id?: string
+          redeemed_at?: string
+          subscription_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_code_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "access_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "access_code_redemptions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      access_codes: {
+        Row: {
+          active: boolean
+          batch_label: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          duration_days: number
+          expires_at: string | null
+          id: string
+          max_uses: number
+          uses_count: number
+        }
+        Insert: {
+          active?: boolean
+          batch_label?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          duration_days: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number
+          uses_count?: number
+        }
+        Update: {
+          active?: boolean
+          batch_label?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          duration_days?: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number
+          uses_count?: number
+        }
+        Relationships: []
+      }
       alerts_log: {
         Row: {
           bourse_id: string
@@ -256,6 +355,8 @@ export type Database = {
       }
       payments: {
         Row: {
+          checkout_url: string | null
+          external_id: string | null
           amount: number
           created_at: string
           id: string
@@ -269,6 +370,8 @@ export type Database = {
           transaction_ref: string | null
         }
         Insert: {
+          checkout_url?: string | null
+          external_id?: string | null
           amount: number
           created_at?: string
           id?: string
@@ -282,6 +385,8 @@ export type Database = {
           transaction_ref?: string | null
         }
         Update: {
+          checkout_url?: string | null
+          external_id?: string | null
           amount?: number
           created_at?: string
           id?: string
@@ -372,6 +477,8 @@ export type Database = {
       }
       subscriptions: {
         Row: {
+          payment_id: string | null
+          source: string
           amount: number
           created_at: string
           ends_at: string
@@ -387,6 +494,8 @@ export type Database = {
           status: Database["public"]["Enums"]["subscription_status"]
         }
         Insert: {
+          payment_id?: string | null
+          source?: string
           amount: number
           created_at?: string
           ends_at: string
@@ -402,6 +511,8 @@ export type Database = {
           status?: Database["public"]["Enums"]["subscription_status"]
         }
         Update: {
+          payment_id?: string | null
+          source?: string
           amount?: number
           created_at?: string
           ends_at?: string
@@ -452,6 +563,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      redeem_access_code: {
+        Args: { _code: string; _profile_id: string }
+        Returns: { duration_days: number; redemption_id: string }[]
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -477,6 +592,8 @@ export type Database = {
         | "mtn_momo"
         | "moov_money"
         | "manual"
+        | "maketou"
+        | "promo"
       payment_status: "pending" | "success" | "failed" | "refunded"
       subscription_plan: "monthly" | "quarterly"
       subscription_status: "active" | "grace" | "expired" | "cancelled"
@@ -623,6 +740,8 @@ export const Constants = {
         "mtn_momo",
         "moov_money",
         "manual",
+        "maketou",
+        "promo",
       ],
       payment_status: ["pending", "success", "failed", "refunded"],
       subscription_plan: ["monthly", "quarterly"],

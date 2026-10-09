@@ -29,6 +29,20 @@
       "when": 1789767161774,
       "tag": "0003_cron_token_verification",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791561600000,
+      "tag": "0004_maketou_payments",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791561660000,
+      "tag": "0005_access_codes",
+      "breakpoints": true
     }
   ]
 }

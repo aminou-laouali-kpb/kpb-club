@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import { PRICING, type ClubPlan } from "./pricing";
 import { matchBourses, type Bourse } from "./matching";
 
 const profileSchema = z.object({
@@ -107,35 +106,4 @@ export const saveProfile = createServerFn({ method: "POST" })
       .eq("auth_user_id", userId);
     if (error) throw new Error(error.message);
     return { ok: true };
-  });
-
-const orderSchema = z.object({
-  plan: z.enum(["monthly", "quarterly"]),
-  provider: z.enum(["wave", "orange_money", "mtn_momo", "moov_money"]),
-});
-
-/** Enregistre une intention de paiement. L'activation est manuelle en attendant MoneyFusion. */
-export const requestSubscription = createServerFn({ method: "POST" })
-  .middleware([requireSupabaseAuth])
-  .inputValidator((input: unknown) => orderSchema.parse(input))
-  .handler(async ({ data, context }) => {
-    const { supabase, userId } = context;
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("id")
-      .eq("auth_user_id", userId)
-      .maybeSingle();
-    if (!profile) throw new Error("Profil introuvable");
-
-    const plan = data.plan as ClubPlan;
-    const { error } = await supabase.from("payments").insert({
-      profile_id: profile.id,
-      payable_type: "subscription",
-      amount: PRICING.club[plan].amount,
-      provider: data.provider,
-      status: "pending",
-      metadata: { plan, source: "web" },
-    });
-    if (error) throw new Error(error.message);
-    return { ok: true, amount: PRICING.club[plan].amount };
   });

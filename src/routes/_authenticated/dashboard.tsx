@@ -3,14 +3,21 @@ import { ArrowRight, BookOpen, FileText } from "lucide-react";
 import { useMemberOverview, hasAccess } from "@/hooks/useMemberOverview";
 import { formatDateFr } from "@/lib/matching";
 import { formatFcfa } from "@/lib/pricing";
+import { AccessCodeForm } from "@/components/AccessCodeForm";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
     meta: [
       { title: "Mon espace — KPB Education" },
-      { name: "description", content: "Vos bourses compatibles et votre abonnement Club Boursier." },
+      {
+        name: "description",
+        content: "Vos bourses compatibles et votre abonnement Club Boursier.",
+      },
       { property: "og:title", content: "Mon espace — KPB Education" },
-      { property: "og:description", content: "Suivez vos bourses compatibles et votre abonnement." },
+      {
+        property: "og:description",
+        content: "Suivez vos bourses compatibles et votre abonnement.",
+      },
     ],
   }),
   component: Dashboard,
@@ -21,7 +28,9 @@ function Dashboard() {
 
   if (isPending) return <p className="py-10 text-sm text-muted-foreground">Chargement…</p>;
   if (isError || !data)
-    return <p className="py-10 text-sm text-muted-foreground">Impossible de charger votre espace.</p>;
+    return (
+      <p className="py-10 text-sm text-muted-foreground">Impossible de charger votre espace.</p>
+    );
 
   const { profile, subscriptionState, daysLeft, matches } = data;
   const access = hasAccess(subscriptionState);
@@ -65,6 +74,7 @@ function Dashboard() {
         >
           {access ? "Renouveler" : "Voir les tarifs"} <ArrowRight className="size-4" />
         </Link>
+        {!access && <AccessCodeForm className="mt-4" />}
       </div>
 
       <section>

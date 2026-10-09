@@ -21,9 +21,11 @@ import { Route as AuthenticatedOffreRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
 import { Route as AuthenticatedGuideIndexRouteImport } from './routes/_authenticated/guide.index'
 import { Route as AuthenticatedGuideChapterRouteImport } from './routes/_authenticated/guide.$chapter'
+import { Route as AuthenticatedPaiementRetourRouteImport } from './routes/_authenticated/paiement.retour'
 import { Route as AuthenticatedTemplatesIndexRouteImport } from './routes/_authenticated/templates.index'
 import { Route as AuthenticatedTemplatesSlugRouteImport } from './routes/_authenticated/templates.$slug'
 import { Route as ApiPublicHooksBourseAlertsRouteImport } from './routes/api/public/hooks/bourse-alerts'
+import { Route as ApiPublicHooksMaketouRouteImport } from './routes/api/public/hooks/maketou'
 import { Route as ApiPublicHooksRemindersRouteImport } from './routes/api/public/hooks/reminders'
 
 const IndexRoute = IndexRouteImport.update({
@@ -86,6 +88,12 @@ const AuthenticatedGuideChapterRoute =
     path: '/$chapter',
     getParentRoute: () => AuthenticatedGuideRoute,
   } as any)
+const AuthenticatedPaiementRetourRoute =
+  AuthenticatedPaiementRetourRouteImport.update({
+    id: '/paiement/retour',
+    path: '/paiement/retour',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedTemplatesIndexRoute =
   AuthenticatedTemplatesIndexRouteImport.update({
     id: '/',
@@ -104,6 +112,11 @@ const ApiPublicHooksBourseAlertsRoute =
     path: '/api/public/hooks/bourse-alerts',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksMaketouRoute = ApiPublicHooksMaketouRouteImport.update({
+  id: '/api/public/hooks/maketou',
+  path: '/api/public/hooks/maketou',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRemindersRoute = ApiPublicHooksRemindersRouteImport.update({
   id: '/api/public/hooks/reminders',
   path: '/api/public/hooks/reminders',
@@ -121,10 +134,12 @@ export interface FileRoutesByFullPath {
   '/offre': typeof AuthenticatedOffreRoute
   '/templates': typeof AuthenticatedTemplatesRouteWithChildren
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
   '/guide/': typeof AuthenticatedGuideIndexRoute
   '/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRoutesByTo {
@@ -136,10 +151,12 @@ export interface FileRoutesByTo {
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/offre': typeof AuthenticatedOffreRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
   '/guide': typeof AuthenticatedGuideIndexRoute
   '/templates': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRoutesById {
@@ -155,10 +172,12 @@ export interface FileRoutesById {
   '/_authenticated/offre': typeof AuthenticatedOffreRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
   '/_authenticated/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/_authenticated/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/_authenticated/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
   '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
   '/_authenticated/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
 export interface FileRouteTypes {
@@ -174,10 +193,12 @@ export interface FileRouteTypes {
     | '/offre'
     | '/templates'
     | '/guide/$chapter'
+    | '/paiement/retour'
     | '/templates/$slug'
     | '/guide/'
     | '/templates/'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -189,10 +210,12 @@ export interface FileRouteTypes {
     | '/dashboard'
     | '/offre'
     | '/guide/$chapter'
+    | '/paiement/retour'
     | '/templates/$slug'
     | '/guide'
     | '/templates'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
   id:
     | '__root__'
@@ -207,10 +230,12 @@ export interface FileRouteTypes {
     | '/_authenticated/offre'
     | '/_authenticated/templates'
     | '/_authenticated/guide/$chapter'
+    | '/_authenticated/paiement/retour'
     | '/_authenticated/templates/$slug'
     | '/_authenticated/guide/'
     | '/_authenticated/templates/'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
   fileRoutesById: FileRoutesById
 }
@@ -220,6 +245,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   VerificateurRoute: typeof VerificateurRoute
   ApiPublicHooksBourseAlertsRoute: typeof ApiPublicHooksBourseAlertsRoute
+  ApiPublicHooksMaketouRoute: typeof ApiPublicHooksMaketouRoute
   ApiPublicHooksRemindersRoute: typeof ApiPublicHooksRemindersRoute
 }
 
@@ -309,6 +335,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGuideChapterRouteImport
       parentRoute: typeof AuthenticatedGuideRoute
     }
+    '/_authenticated/paiement/retour': {
+      id: '/_authenticated/paiement/retour'
+      path: '/paiement/retour'
+      fullPath: '/paiement/retour'
+      preLoaderRoute: typeof AuthenticatedPaiementRetourRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/templates/': {
       id: '/_authenticated/templates/'
       path: '/'
@@ -328,6 +361,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/hooks/bourse-alerts'
       fullPath: '/api/public/hooks/bourse-alerts'
       preLoaderRoute: typeof ApiPublicHooksBourseAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/maketou': {
+      id: '/api/public/hooks/maketou'
+      path: '/api/public/hooks/maketou'
+      fullPath: '/api/public/hooks/maketou'
+      preLoaderRoute: typeof ApiPublicHooksMaketouRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/reminders': {
@@ -376,6 +416,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
   AuthenticatedOffreRoute: typeof AuthenticatedOffreRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRouteWithChildren
+  AuthenticatedPaiementRetourRoute: typeof AuthenticatedPaiementRetourRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
@@ -385,6 +426,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
   AuthenticatedOffreRoute: AuthenticatedOffreRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRouteWithChildren,
+  AuthenticatedPaiementRetourRoute: AuthenticatedPaiementRetourRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -396,6 +438,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   VerificateurRoute: VerificateurRoute,
   ApiPublicHooksBourseAlertsRoute: ApiPublicHooksBourseAlertsRoute,
+  ApiPublicHooksMaketouRoute: ApiPublicHooksMaketouRoute,
   ApiPublicHooksRemindersRoute: ApiPublicHooksRemindersRoute,
 }
 export const routeTree = rootRouteImport

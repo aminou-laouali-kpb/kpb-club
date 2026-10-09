@@ -3,7 +3,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { Check, X } from "lucide-react";
-import { getAdminData, activatePayment, rejectPayment, grantSubscription } from "@/lib/admin.functions";
+import {
+  getAdminData,
+  activatePayment,
+  rejectPayment,
+  grantSubscription,
+  recheckPayment,
+} from "@/lib/admin.functions";
+import { AccessCodesPanel } from "@/components/admin/AccessCodesPanel";
 import { formatFcfa, PROVIDERS } from "@/lib/pricing";
 import { formatDateFr } from "@/lib/matching";
 
@@ -11,7 +18,10 @@ export const Route = createFileRoute("/_authenticated/admin")({
   head: () => ({
     meta: [
       { title: "Administration — KPB Education" },
-      { name: "description", content: "Gestion des paiements et des abonnements du Club Boursier." },
+      {
+        name: "description",
+        content: "Gestion des paiements et des abonnements du Club Boursier.",
+      },
       { name: "robots", content: "noindex" },
       { property: "og:title", content: "Administration — KPB Education" },
       { property: "og:description", content: "Gestion des paiements et abonnements." },
@@ -21,6 +31,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
 });
 
 function providerLabel(id: string) {
+  if (id === "maketou") return "Maketou";
   return PROVIDERS.find((p) => p.id === id)?.label ?? id;
 }
 
@@ -29,6 +40,7 @@ function Admin() {
   const activate = useServerFn(activatePayment);
   const reject = useServerFn(rejectPayment);
   const grant = useServerFn(grantSubscription);
+  const recheck = useServerFn(recheckPayment);
   const queryClient = useQueryClient();
 
   const { data, isPending, isError } = useQuery({
@@ -57,8 +69,24 @@ function Admin() {
     onError: () => toast.error("Action impossible"),
   });
 
+  const recheckMutation = useMutation({
+    mutationFn: (paymentId: string) => recheck({ data: { paymentId } }),
+    onSuccess: (result) => {
+      const labels: Record<string, string> = {
+        success: "Paiement confirmé par Maketou",
+        failed: "Paiement non abouti chez Maketou",
+        pending: "Toujours en attente chez Maketou",
+        not_found: "Paiement introuvable",
+      };
+      toast.info(labels[result.status] ?? result.status);
+      void refresh();
+    },
+    onError: () => toast.error("Vérification impossible"),
+  });
+
   const grantMutation = useMutation({
-    mutationFn: (vars: { profileId: string; plan: "monthly" | "quarterly" }) => grant({ data: vars }),
+    mutationFn: (vars: { profileId: string; plan: "monthly" | "quarterly" }) =>
+      grant({ data: vars }),
     onSuccess: () => {
       toast.success("Accès accordé");
       void refresh();
@@ -69,15 +97,11 @@ function Admin() {
   if (isPending) return <p className="py-10 text-sm text-muted-foreground">Chargement…</p>;
   if (isError || !data)
     return (
-      <p className="py-10 text-sm text-muted-foreground">
-        Cette page est réservée à l'équipe KPB.
-      </p>
+      <p className="py-10 text-sm text-muted-foreground">Cette page est réservée à l'équipe KPB.</p>
     );
 
   const pending = data.payments.filter((p) => p.status === "pending");
-  const activeSubs = data.subscriptions.filter(
-    (s) => new Date(s.ends_at).getTime() > Date.now(),
-  );
+  const activeSubs = data.subscriptions.filter((s) => new Date(s.ends_at).getTime() > Date.now());
 
   return (
     <div className="space-y-10">
@@ -120,7 +144,16 @@ function Admin() {
                       {profile?.email} {profile?.phone ? `· ${profile.phone}` : ""}
                     </p>
                   </div>
-                  <div className="flex gap-2">
+                  <div className="flex flex-wrap gap-2">
+                    {p.provider === "maketou" && (
+                      <button
+                        onClick={() => recheckMutation.mutate(p.id)}
+                        disabled={recheckMutation.isPending}
+                        className="rounded-md border border-border px-4 py-2 text-sm disabled:opacity-60"
+                      >
+                        Vérifier chez Maketou
+                      </button>
+                    )}
                     <button
                       onClick={() => activateMutation.mutate(p.id)}
                       disabled={activateMutation.isPending}
@@ -161,8 +194,14 @@ function Admin() {
                     <span className="text-muted-foreground">({profile?.member_code})</span>
                   </span>
                   <span className="text-muted-foreground">
-                    {s.plan === "quarterly" ? "Trimestriel" : "Mensuel"} · jusqu'au{" "}
-                    {formatDateFr(s.ends_at)}
+                    {s.source === "promo"
+                      ? "Code d'accès"
+                      : s.source === "grant"
+                        ? "Offert"
+                        : s.plan === "quarterly"
+                          ? "Trimestriel"
+                          : "Mensuel"}{" "}
+                    · jusqu'au {formatDateFr(s.ends_at)}
                   </span>
                 </li>
               );
@@ -170,6 +209,8 @@ function Admin() {
           </ul>
         )}
       </section>
+
+      <AccessCodesPanel />
 
       <section>
         <h2 className="font-display text-xl font-semibold">Membres inscrits</h2>

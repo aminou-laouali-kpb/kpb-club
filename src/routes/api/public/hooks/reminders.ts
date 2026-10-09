@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { formatFcfa } from "@/lib/pricing";
+import { PRICING, formatFcfa } from "@/lib/pricing";
 
 const DAY = 86_400_000;
 
@@ -55,7 +55,15 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
         const queue = [];
         const flagUpdates: Array<{ id: string; patch: Record<string, boolean | string> }> = [];
 
+        // Un membre qui renouvelle a plusieurs lignes : seule la plus lointaine compte pour les relances
+        const latestEnd = new Map<string, number>();
         for (const sub of subs ?? []) {
+          const end = new Date(sub.ends_at).getTime();
+          latestEnd.set(sub.profile_id, Math.max(latestEnd.get(sub.profile_id) ?? 0, end));
+        }
+
+        for (const sub of subs ?? []) {
+          const superseded = new Date(sub.ends_at).getTime() < (latestEnd.get(sub.profile_id) ?? 0);
           const profile = sub.profiles as unknown as {
             id: string;
             email: string | null;
@@ -90,20 +98,19 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
           }
 
           // Statut tenu à jour
-          const nextStatus =
-            now <= ends ? "active" : now <= grace ? "grace" : ("expired" as const);
+          const nextStatus = now <= ends ? "active" : now <= grace ? "grace" : ("expired" as const);
           if (sub.status !== nextStatus) {
             flagUpdates.push({ id: sub.id, patch: { status: nextStatus } });
           }
 
-          if (!kind) continue;
+          if (!kind || superseded) continue;
           const message = MESSAGES[kind];
           queue.push({
             profile_id: profile.id,
             recipient: profile.email,
             kind: `subscription_${kind}`,
             subject: message.subject,
-            body: `Bonjour ${profile.full_name || "cher membre"},\n\n${message.line}\n\nRenouvellement : ${formatFcfa(sub.amount)} (formule ${sub.plan === "quarterly" ? "trimestrielle" : "mensuelle"}).\n\nL'équipe KPB Education`,
+            body: `Bonjour ${profile.full_name || "cher membre"},\n\n${message.line}\n\nRenouvellement : ${formatFcfa(PRICING.club[sub.plan].amount)} (formule ${sub.plan === "quarterly" ? "trimestrielle" : "mensuelle"}).\n\nL'équipe KPB Education`,
             dedupe_key: `sub:${sub.id}:${kind}`,
           });
           if (flag) flagUpdates.push({ id: sub.id, patch: { [flag]: true } });
@@ -116,9 +123,25 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
             .update(update.patch as never)
             .eq("id", update.id);
         }
+        // Filet de sécurité : paiements Maketou récents dont le webhook n'est pas arrivé
+        const { reconcilePayment } = await import("@/lib/payments.server");
+        const { data: stale } = await supabaseAdmin
+          .from("payments")
+          .select("id")
+          .eq("provider", "maketou")
+          .eq("status", "pending")
+          .not("external_id", "is", null)
+          .gte("created_at", new Date(now - 2 * DAY).toISOString())
+          .limit(50);
+        let reconciled = 0;
+        for (const p of stale ?? []) {
+          const result = await reconcilePayment(p.id).catch(() => null);
+          if (result?.status === "success") reconciled += 1;
+        }
+
         const dispatch = await dispatchPending();
 
-        return Response.json({ ok: true, queued, ...dispatch });
+        return Response.json({ ok: true, queued, reconciled, ...dispatch });
       },
     },
   },
