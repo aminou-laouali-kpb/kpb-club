@@ -1,11 +1,20 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { BookOpen, FileText, LayoutDashboard, LogOut, Shield, User } from "lucide-react";
+import {
+  BookOpen,
+  ClipboardList,
+  FileText,
+  LayoutDashboard,
+  LogOut,
+  Shield,
+  User,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemberOverview } from "@/hooks/useMemberOverview";
 
 const items = [
   { to: "/dashboard", label: "Accueil", icon: LayoutDashboard },
+  { to: "/candidatures", label: "Candidatures", icon: ClipboardList },
   { to: "/guide", label: "Guide", icon: BookOpen },
   { to: "/templates", label: "Modèles", icon: FileText },
   { to: "/compte", label: "Compte", icon: User },
@@ -56,7 +65,7 @@ export function MemberNav() {
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur md:hidden">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {items.map((item) => (
             <Link
               key={item.to}

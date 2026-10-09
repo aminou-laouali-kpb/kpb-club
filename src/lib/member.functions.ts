@@ -25,7 +25,10 @@ export type ProfileInput = z.infer<typeof profileSchema>;
 
 export type SubscriptionState = "active" | "grace" | "none";
 
-function computeState(sub: { ends_at: string; grace_ends_at: string | null } | null) {
+/** État d'accès Club d'après l'abonnement le plus lointain. */
+export function subscriptionStateFor(
+  sub: { ends_at: string; grace_ends_at: string | null } | null,
+) {
   if (!sub) return { state: "none" as SubscriptionState, daysLeft: 0 };
   const now = Date.now();
   const ends = new Date(sub.ends_at).getTime();
@@ -52,24 +55,32 @@ export const getMemberOverview = createServerFn({ method: "GET" })
     if (error) throw new Error(error.message);
     if (!profile) throw new Error("Profil introuvable");
 
-    const [{ data: subs }, { data: payments }, { data: bourses }] = await Promise.all([
-      supabase
-        .from("subscriptions")
-        .select("*")
-        .eq("profile_id", profile.id)
-        .order("ends_at", { ascending: false })
-        .limit(5),
-      supabase
-        .from("payments")
-        .select("*")
-        .eq("profile_id", profile.id)
-        .order("created_at", { ascending: false })
-        .limit(20),
-      supabase.from("bourses").select("*").eq("window_confirmed", true),
-    ]);
+    const [{ data: subs }, { data: payments }, { data: bourses }, { data: applications }] =
+      await Promise.all([
+        supabase
+          .from("subscriptions")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("ends_at", { ascending: false })
+          .limit(5),
+        supabase
+          .from("payments")
+          .select("*")
+          .eq("profile_id", profile.id)
+          .order("created_at", { ascending: false })
+          .limit(20),
+        supabase.from("bourses").select("*").eq("window_confirmed", true),
+        supabase
+          .from("applications")
+          .select(
+            "id, bourse_id, status, deadline, readiness, next_action, next_item_id, bourses ( university_name, country )",
+          )
+          .eq("profile_id", profile.id)
+          .order("deadline", { ascending: true, nullsFirst: false }),
+      ]);
 
     const latest = subs?.[0] ?? null;
-    const { state, daysLeft } = computeState(latest);
+    const { state, daysLeft } = subscriptionStateFor(latest);
     const matched = matchBourses(profile, (bourses ?? []) as unknown as Bourse[]);
 
     const { data: isAdmin } = await supabase.rpc("has_role", {
@@ -85,6 +96,8 @@ export const getMemberOverview = createServerFn({ method: "GET" })
       daysLeft,
       payments: payments ?? [],
       matches: matched,
+      applications: applications ?? [],
+      onboardingCompleted: Boolean(profile.onboarding_completed),
     };
   });
 

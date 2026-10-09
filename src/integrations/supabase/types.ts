@@ -113,6 +113,135 @@ export type Database = {
         }
         Relationships: []
       }
+      application_items: {
+        Row: {
+          application_id: string
+          completed_at: string | null
+          description: string | null
+          due_date: string | null
+          essay_draft: string | null
+          essay_draft_saved_at: string | null
+          essay_max_words: number | null
+          essay_prompt: string | null
+          id: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          requirement_id: string | null
+          sort_order: number | null
+          status: Database["public"]["Enums"]["item_status"]
+        }
+        Insert: {
+          application_id: string
+          completed_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          essay_draft?: string | null
+          essay_draft_saved_at?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          requirement_id?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Update: {
+          application_id?: string
+          completed_at?: string | null
+          description?: string | null
+          due_date?: string | null
+          essay_draft?: string | null
+          essay_draft_saved_at?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["requirement_kind"]
+          label?: string
+          requirement_id?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_items_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_items_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "bourse_requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applications: {
+        Row: {
+          bourse_id: string
+          created_at: string
+          deadline: string | null
+          id: string
+          last_activity_at: string
+          next_action: string | null
+          next_item_id: string | null
+          outcome_note: string | null
+          profile_id: string
+          readiness: number
+          status: Database["public"]["Enums"]["application_status"]
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          bourse_id: string
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          last_activity_at?: string
+          next_action?: string | null
+          next_item_id?: string | null
+          outcome_note?: string | null
+          profile_id: string
+          readiness?: number
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bourse_id?: string
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          last_activity_at?: string
+          next_action?: string | null
+          next_item_id?: string | null
+          outcome_note?: string | null
+          profile_id?: string
+          readiness?: number
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_bourse_id_fkey"
+            columns: ["bourse_id"]
+            isOneToOne: false
+            referencedRelation: "bourses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alerts_log: {
         Row: {
           bourse_id: string
@@ -152,8 +281,64 @@ export type Database = {
           },
         ]
       }
+      bourse_requirements: {
+        Row: {
+          bourse_id: string
+          days_before_deadline: number | null
+          description: string | null
+          document_type: string | null
+          essay_language: string | null
+          essay_max_words: number | null
+          essay_prompt: string | null
+          id: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          recommenders_count: number | null
+          sort_order: number
+        }
+        Insert: {
+          bourse_id: string
+          days_before_deadline?: number | null
+          description?: string | null
+          document_type?: string | null
+          essay_language?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          recommenders_count?: number | null
+          sort_order: number
+        }
+        Update: {
+          bourse_id?: string
+          days_before_deadline?: number | null
+          description?: string | null
+          document_type?: string | null
+          essay_language?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["requirement_kind"]
+          label?: string
+          recommenders_count?: number | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bourse_requirements_bourse_id_fkey"
+            columns: ["bourse_id"]
+            isOneToOne: false
+            referencedRelation: "bourses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bourses: {
         Row: {
+          operations_order: Json | null
+          video_url: string | null
+          whatsapp_group_url: string | null
           academic_year: number | null
           country: string
           eligible_nationalities: string[]
@@ -172,6 +357,9 @@ export type Database = {
           window_opens: string | null
         }
         Insert: {
+          operations_order?: Json | null
+          video_url?: string | null
+          whatsapp_group_url?: string | null
           academic_year?: number | null
           country: string
           eligible_nationalities?: string[]
@@ -190,6 +378,9 @@ export type Database = {
           window_opens?: string | null
         }
         Update: {
+          operations_order?: Json | null
+          video_url?: string | null
+          whatsapp_group_url?: string | null
           academic_year?: number | null
           country?: string
           eligible_nationalities?: string[]
@@ -411,6 +602,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          onboarding_completed: boolean
           auth_user_id: string
           created_at: string
           credit_balance: number
@@ -432,6 +624,7 @@ export type Database = {
           whatsapp_optin: boolean
         }
         Insert: {
+          onboarding_completed?: boolean
           auth_user_id: string
           created_at?: string
           credit_balance?: number
@@ -453,6 +646,7 @@ export type Database = {
           whatsapp_optin?: boolean
         }
         Update: {
+          onboarding_completed?: boolean
           auth_user_id?: string
           created_at?: string
           credit_balance?: number
@@ -578,6 +772,23 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "moderator" | "user"
+      application_status:
+        | "targeting"
+        | "preparing"
+        | "ready"
+        | "submitted"
+        | "interview"
+        | "accepted"
+        | "rejected"
+        | "abandoned"
+      item_status: "todo" | "in_progress" | "done" | "na"
+      requirement_kind:
+        | "document"
+        | "essay"
+        | "recommendation"
+        | "form"
+        | "test"
+        | "other"
       engagement_status:
         | "pending_payment"
         | "active"
@@ -725,6 +936,18 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "moderator", "user"],
+      application_status: [
+        "targeting",
+        "preparing",
+        "ready",
+        "submitted",
+        "interview",
+        "accepted",
+        "rejected",
+        "abandoned",
+      ],
+      item_status: ["todo", "in_progress", "done", "na"],
+      requirement_kind: ["document", "essay", "recommendation", "form", "test", "other"],
       engagement_status: [
         "pending_payment",
         "active",

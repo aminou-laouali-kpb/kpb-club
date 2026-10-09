@@ -14,11 +14,15 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as VerificateurRouteImport } from './routes/verificateur'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
+import { Route as AuthenticatedCandidaturesRouteImport } from './routes/_authenticated/candidatures'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedGuideRouteImport } from './routes/_authenticated/guide'
 import { Route as AuthenticatedOffreRouteImport } from './routes/_authenticated/offre'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
+import { Route as AuthenticatedCandidaturesIndexRouteImport } from './routes/_authenticated/candidatures.index'
+import { Route as AuthenticatedCandidaturesIdRouteImport } from './routes/_authenticated/candidatures.$id'
 import { Route as AuthenticatedGuideIndexRouteImport } from './routes/_authenticated/guide.index'
 import { Route as AuthenticatedGuideChapterRouteImport } from './routes/_authenticated/guide.$chapter'
 import { Route as AuthenticatedPaiementRetourRouteImport } from './routes/_authenticated/paiement.retour'
@@ -52,6 +56,17 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedBienvenueRoute = AuthenticatedBienvenueRouteImport.update({
+  id: '/bienvenue',
+  path: '/bienvenue',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCandidaturesRoute =
+  AuthenticatedCandidaturesRouteImport.update({
+    id: '/candidatures',
+    path: '/candidatures',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
   path: '/compte',
@@ -77,6 +92,18 @@ const AuthenticatedTemplatesRoute = AuthenticatedTemplatesRouteImport.update({
   path: '/templates',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCandidaturesIndexRoute =
+  AuthenticatedCandidaturesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCandidaturesRoute,
+  } as any)
+const AuthenticatedCandidaturesIdRoute =
+  AuthenticatedCandidaturesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedCandidaturesRoute,
+  } as any)
 const AuthenticatedGuideIndexRoute = AuthenticatedGuideIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -128,14 +155,18 @@ export interface FileRoutesByFullPath {
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/guide': typeof AuthenticatedGuideRouteWithChildren
   '/offre': typeof AuthenticatedOffreRoute
   '/templates': typeof AuthenticatedTemplatesRouteWithChildren
+  '/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/guide/': typeof AuthenticatedGuideIndexRoute
   '/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
@@ -147,12 +178,15 @@ export interface FileRoutesByTo {
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/offre': typeof AuthenticatedOffreRoute
+  '/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/candidatures': typeof AuthenticatedCandidaturesIndexRoute
   '/guide': typeof AuthenticatedGuideIndexRoute
   '/templates': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
@@ -166,14 +200,18 @@ export interface FileRoutesById {
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/_authenticated/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/guide': typeof AuthenticatedGuideRouteWithChildren
   '/_authenticated/offre': typeof AuthenticatedOffreRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
+  '/_authenticated/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/_authenticated/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/_authenticated/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/_authenticated/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/_authenticated/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
   '/_authenticated/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
@@ -187,14 +225,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/verificateur'
     | '/admin'
+    | '/bienvenue'
+    | '/candidatures'
     | '/compte'
     | '/dashboard'
     | '/guide'
     | '/offre'
     | '/templates'
+    | '/candidatures/$id'
     | '/guide/$chapter'
     | '/paiement/retour'
     | '/templates/$slug'
+    | '/candidatures/'
     | '/guide/'
     | '/templates/'
     | '/api/public/hooks/bourse-alerts'
@@ -206,12 +248,15 @@ export interface FileRouteTypes {
     | '/auth'
     | '/verificateur'
     | '/admin'
+    | '/bienvenue'
     | '/compte'
     | '/dashboard'
     | '/offre'
+    | '/candidatures/$id'
     | '/guide/$chapter'
     | '/paiement/retour'
     | '/templates/$slug'
+    | '/candidatures'
     | '/guide'
     | '/templates'
     | '/api/public/hooks/bourse-alerts'
@@ -224,14 +269,18 @@ export interface FileRouteTypes {
     | '/auth'
     | '/verificateur'
     | '/_authenticated/admin'
+    | '/_authenticated/bienvenue'
+    | '/_authenticated/candidatures'
     | '/_authenticated/compte'
     | '/_authenticated/dashboard'
     | '/_authenticated/guide'
     | '/_authenticated/offre'
     | '/_authenticated/templates'
+    | '/_authenticated/candidatures/$id'
     | '/_authenticated/guide/$chapter'
     | '/_authenticated/paiement/retour'
     | '/_authenticated/templates/$slug'
+    | '/_authenticated/candidatures/'
     | '/_authenticated/guide/'
     | '/_authenticated/templates/'
     | '/api/public/hooks/bourse-alerts'
@@ -286,6 +335,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/bienvenue': {
+      id: '/_authenticated/bienvenue'
+      path: '/bienvenue'
+      fullPath: '/bienvenue'
+      preLoaderRoute: typeof AuthenticatedBienvenueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/candidatures': {
+      id: '/_authenticated/candidatures'
+      path: '/candidatures'
+      fullPath: '/candidatures'
+      preLoaderRoute: typeof AuthenticatedCandidaturesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/compte': {
       id: '/_authenticated/compte'
       path: '/compte'
@@ -320,6 +383,20 @@ declare module '@tanstack/react-router' {
       fullPath: '/templates'
       preLoaderRoute: typeof AuthenticatedTemplatesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/candidatures/': {
+      id: '/_authenticated/candidatures/'
+      path: '/'
+      fullPath: '/candidatures/'
+      preLoaderRoute: typeof AuthenticatedCandidaturesIndexRouteImport
+      parentRoute: typeof AuthenticatedCandidaturesRoute
+    }
+    '/_authenticated/candidatures/$id': {
+      id: '/_authenticated/candidatures/$id'
+      path: '/$id'
+      fullPath: '/candidatures/$id'
+      preLoaderRoute: typeof AuthenticatedCandidaturesIdRouteImport
+      parentRoute: typeof AuthenticatedCandidaturesRoute
     }
     '/_authenticated/guide/': {
       id: '/_authenticated/guide/'
@@ -380,6 +457,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AuthenticatedCandidaturesRouteChildren {
+  AuthenticatedCandidaturesIdRoute: typeof AuthenticatedCandidaturesIdRoute
+  AuthenticatedCandidaturesIndexRoute: typeof AuthenticatedCandidaturesIndexRoute
+}
+
+const AuthenticatedCandidaturesRouteChildren: AuthenticatedCandidaturesRouteChildren =
+  {
+    AuthenticatedCandidaturesIdRoute: AuthenticatedCandidaturesIdRoute,
+    AuthenticatedCandidaturesIndexRoute: AuthenticatedCandidaturesIndexRoute,
+  }
+
+const AuthenticatedCandidaturesRouteWithChildren =
+  AuthenticatedCandidaturesRoute._addFileChildren(
+    AuthenticatedCandidaturesRouteChildren,
+  )
+
 interface AuthenticatedGuideRouteChildren {
   AuthenticatedGuideChapterRoute: typeof AuthenticatedGuideChapterRoute
   AuthenticatedGuideIndexRoute: typeof AuthenticatedGuideIndexRoute
@@ -411,6 +504,8 @@ const AuthenticatedTemplatesRouteWithChildren =
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
+  AuthenticatedCandidaturesRoute: typeof AuthenticatedCandidaturesRouteWithChildren
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
@@ -421,6 +516,8 @@ interface AuthenticatedRouteRouteChildren {
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
+  AuthenticatedCandidaturesRoute: AuthenticatedCandidaturesRouteWithChildren,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
