@@ -11,7 +11,11 @@ import {
   ExternalLink,
   MessageCircle,
   PlayCircle,
+  Download,
+  FileText,
   Trash2,
+  Upload,
+  Users,
 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import {
@@ -32,6 +36,10 @@ import { countryName } from "@/lib/countries";
 import { formatDateFr } from "@/lib/matching";
 import { ACCOMPANIMENT_CONTACT_URL } from "@/lib/contact";
 import { EssayEditor } from "@/components/application/EssayEditor";
+import { RecommendersPanel } from "@/components/application/RecommendersPanel";
+import { UploadDialog, type UploadTarget } from "@/components/documents/UploadDialog";
+import { getDocumentUrl, getExportFiles } from "@/lib/documents.functions";
+import { downloadZip } from "@/lib/export-zip.browser";
 
 export const Route = createFileRoute("/_authenticated/candidatures/$id")({
   head: () => ({
@@ -60,6 +68,27 @@ function ApplicationPage() {
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const [openEssay, setOpenEssay] = useState<string | null>(null);
+  const [openRecommenders, setOpenRecommenders] = useState<string | null>(null);
+  const [uploadTarget, setUploadTarget] = useState<UploadTarget | null>(null);
+  const fetchDocUrl = useServerFn(getDocumentUrl);
+  const fetchExport = useServerFn(getExportFiles);
+
+  const viewDoc = useMutation({
+    mutationFn: (docId: string) => fetchDocUrl({ data: { id: docId } }),
+    onSuccess: ({ url }) => window.open(url, "_blank", "noopener"),
+    onError: () => toast.error("Ouverture impossible"),
+  });
+
+  const exportMutation = useMutation({
+    mutationFn: async (zipName: string) => {
+      const { files } = await fetchExport({ data: { applicationId: id } });
+      if (files.length === 0) throw new Error("Aucune pièce à exporter pour l'instant.");
+      await downloadZip(files, zipName);
+      return files.length;
+    },
+    onSuccess: (count) => toast.success(`${count} pièce(s) téléchargée(s)`),
+    onError: (e) => toast.error(e instanceof Error ? e.message : "Export impossible"),
+  });
 
   const queryKey = ["application", id];
   const { data, isPending, isError } = useQuery({
@@ -129,7 +158,7 @@ function ApplicationPage() {
       </div>
     );
 
-  const { application: app, items, bourse, hasAccess } = data;
+  const { application: app, items, bourse, hasAccess, studentName } = data;
   const readiness = app.readiness;
   const days = daysUntil(app.deadline);
   const groups = groupItemsByKind(items);
@@ -293,6 +322,70 @@ function ApplicationPage() {
                         {item.kind === "essay" && openEssay === item.id && (
                           <EssayEditor item={item} />
                         )}
+                        {item.kind === "document" && !isNa && (
+                          <div className="mt-2 flex flex-wrap items-center gap-3 text-sm">
+                            {item.document_id ? (
+                              <>
+                                <button
+                                  onClick={() => viewDoc.mutate(item.document_id!)}
+                                  className="inline-flex items-center gap-1 font-medium text-primary"
+                                >
+                                  <FileText className="size-4" /> Voir la pièce
+                                </button>
+                                <button
+                                  onClick={() =>
+                                    setUploadTarget({
+                                      type: item.document_type,
+                                      label: item.label,
+                                      itemId: item.id,
+                                    })
+                                  }
+                                  className="text-muted-foreground underline-offset-4 hover:underline"
+                                >
+                                  Remplacer
+                                </button>
+                              </>
+                            ) : (
+                              <button
+                                onClick={() =>
+                                  setUploadTarget({
+                                    type: item.document_type,
+                                    label: item.label,
+                                    itemId: item.id,
+                                  })
+                                }
+                                className="inline-flex items-center gap-1 font-medium text-primary"
+                              >
+                                <Upload className="size-4" /> Ajouter (photo ou PDF)
+                              </button>
+                            )}
+                          </div>
+                        )}
+                        {item.kind === "recommendation" && !isNa && (
+                          <>
+                            <button
+                              onClick={() =>
+                                setOpenRecommenders(openRecommenders === item.id ? null : item.id)
+                              }
+                              className="mt-2 inline-flex items-center gap-1 text-sm font-medium text-primary"
+                            >
+                              <Users className="size-4" />
+                              {openRecommenders === item.id
+                                ? "Fermer"
+                                : "Gérer mes recommandateurs"}
+                            </button>
+                            {openRecommenders === item.id && (
+                              <RecommendersPanel
+                                applicationId={app.id}
+                                studentName={studentName}
+                                bourseName={bourse?.university_name ?? "cette bourse"}
+                                deadline={app.deadline}
+                                required={item.recommenders_count ?? 2}
+                                onUpload={setUploadTarget}
+                              />
+                            )}
+                          </>
+                        )}
                       </div>
                       <button
                         onClick={() =>
@@ -383,6 +476,33 @@ function ApplicationPage() {
           </a>
         </section>
       )}
+
+      <div className="flex flex-wrap gap-3">
+        <button
+          onClick={() =>
+            exportMutation.mutate(
+              `Dossier_${(bourse?.university_name ?? "candidature").replace(/[^A-Za-z0-9]+/g, "_")}.zip`,
+            )
+          }
+          disabled={exportMutation.isPending}
+          className="inline-flex items-center gap-1.5 rounded-md border border-border px-4 py-2.5 text-sm font-medium disabled:opacity-60"
+        >
+          <Download className="size-4" />
+          {exportMutation.isPending ? "Préparation du dossier…" : "Télécharger mon dossier (ZIP)"}
+        </button>
+        <Link
+          to="/documents"
+          className="inline-flex items-center gap-1.5 rounded-md border border-border px-4 py-2.5 text-sm"
+        >
+          <FileText className="size-4" /> Mes documents
+        </Link>
+      </div>
+
+      <UploadDialog
+        open={uploadTarget !== null}
+        onOpenChange={(o) => !o && setUploadTarget(null)}
+        target={uploadTarget}
+      />
 
       <button
         onClick={() => {

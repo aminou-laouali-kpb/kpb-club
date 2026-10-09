@@ -22,6 +22,8 @@ export type Requirement = {
   description?: string | null;
   essay_prompt?: string | null;
   essay_max_words?: number | null;
+  document_type?: string | null;
+  recommenders_count?: number | null;
   sort_order: number;
   days_before_deadline?: number | null;
 };
@@ -42,6 +44,7 @@ export const DEFAULT_REQUIREMENTS: Requirement[] = [
   {
     kind: "document",
     label: "Passeport valide",
+    document_type: "passport",
     sort_order: 1,
     days_before_deadline: 45,
     description: "Valable au moins 6 mois après la date de départ prévue.",
@@ -49,13 +52,32 @@ export const DEFAULT_REQUIREMENTS: Requirement[] = [
   {
     kind: "document",
     label: "Relevés de notes",
+    document_type: "transcript",
     sort_order: 2,
     days_before_deadline: 30,
     description: "Toutes les années du dernier cycle, traduits si nécessaire.",
   },
-  { kind: "document", label: "Dernier diplôme obtenu", sort_order: 3, days_before_deadline: 30 },
-  { kind: "document", label: "CV académique", sort_order: 4, days_before_deadline: 21 },
-  { kind: "document", label: "Lettre de motivation", sort_order: 5, days_before_deadline: 14 },
+  {
+    kind: "document",
+    label: "Dernier diplôme obtenu",
+    document_type: "diploma_licence",
+    sort_order: 3,
+    days_before_deadline: 30,
+  },
+  {
+    kind: "document",
+    label: "CV académique",
+    document_type: "cv",
+    sort_order: 4,
+    days_before_deadline: 21,
+  },
+  {
+    kind: "document",
+    label: "Lettre de motivation",
+    document_type: "motivation_letter",
+    sort_order: 5,
+    days_before_deadline: 14,
+  },
   {
     kind: "essay",
     label: "Essai de candidature",
@@ -66,6 +88,7 @@ export const DEFAULT_REQUIREMENTS: Requirement[] = [
   {
     kind: "recommendation",
     label: "Lettres de recommandation",
+    recommenders_count: 2,
     sort_order: 7,
     days_before_deadline: 10,
     description: "Deux enseignants ou encadrants qui vous connaissent bien.",
@@ -96,6 +119,8 @@ export function buildItems(requirements: Requirement[], deadline: string | null)
       description: r.description ?? null,
       essay_prompt: r.essay_prompt ?? null,
       essay_max_words: r.essay_max_words ?? null,
+      document_type: r.document_type ?? null,
+      recommenders_count: r.recommenders_count ?? null,
       status: "todo" as ItemStatus,
       sort_order: r.sort_order,
       due_date:

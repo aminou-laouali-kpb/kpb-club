@@ -80,7 +80,7 @@ export async function createApplicationFor(profileId: string, bourseId: string) 
   const { data: requirements } = await supabaseAdmin
     .from("bourse_requirements")
     .select(
-      "id, kind, label, description, essay_prompt, essay_max_words, sort_order, days_before_deadline",
+      "id, kind, label, description, essay_prompt, essay_max_words, document_type, recommenders_count, sort_order, days_before_deadline",
     )
     .eq("bourse_id", bourseId);
   const source: Requirement[] =
@@ -97,5 +97,8 @@ export async function createApplicationFor(profileId: string, bourseId: string) 
   }
 
   await recomputeApplication(app.id);
+  // Les pièces déjà dans le coffre-fort cochent tout de suite les items correspondants
+  const { linkExistingDocuments } = await import("./documents.server");
+  await linkExistingDocuments(profileId, app.id);
   return { id: app.id, created: true };
 }

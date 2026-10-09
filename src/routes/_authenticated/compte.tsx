@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
@@ -103,6 +103,12 @@ function Compte() {
           Membre {data.profile.member_code ?? "—"} · crédit{" "}
           {formatFcfa(data.profile.credit_balance ?? 0)}
         </p>
+        <Link
+          to="/documents"
+          className="mt-3 inline-flex rounded-md border border-border px-3 py-2 text-sm"
+        >
+          Mes documents
+        </Link>
       </div>
 
       <form

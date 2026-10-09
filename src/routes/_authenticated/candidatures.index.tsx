@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { Plus, Search } from "lucide-react";
+import { FolderOpen, Plus, Search } from "lucide-react";
 import { createApplication, listApplications } from "@/lib/applications.functions";
 import { listBourses } from "@/lib/bourses.functions";
 import { useMemberOverview } from "@/hooks/useMemberOverview";
@@ -79,6 +79,12 @@ function Candidatures() {
         <p className="mt-1 text-sm text-muted-foreground">
           Pour chaque bourse : ce qu'il te reste à préparer, et dans quel ordre.
         </p>
+        <Link
+          to="/documents"
+          className="mt-3 inline-flex items-center gap-1.5 rounded-md border border-border px-3 py-2 text-sm"
+        >
+          <FolderOpen className="size-4" /> Mes documents
+        </Link>
       </div>
 
       {applications.length === 0 ? (

@@ -18,6 +18,7 @@ import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authentica
 import { Route as AuthenticatedCandidaturesRouteImport } from './routes/_authenticated/candidatures'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedGuideRouteImport } from './routes/_authenticated/guide'
 import { Route as AuthenticatedOffreRouteImport } from './routes/_authenticated/offre'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
@@ -75,6 +76,11 @@ const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
 const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   id: '/dashboard',
   path: '/dashboard',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedGuideRoute = AuthenticatedGuideRouteImport.update({
@@ -159,6 +165,7 @@ export interface FileRoutesByFullPath {
   '/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/documents': typeof AuthenticatedDocumentsRoute
   '/guide': typeof AuthenticatedGuideRouteWithChildren
   '/offre': typeof AuthenticatedOffreRoute
   '/templates': typeof AuthenticatedTemplatesRouteWithChildren
@@ -181,6 +188,7 @@ export interface FileRoutesByTo {
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/documents': typeof AuthenticatedDocumentsRoute
   '/offre': typeof AuthenticatedOffreRoute
   '/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
@@ -204,6 +212,7 @@ export interface FileRoutesById {
   '/_authenticated/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
   '/_authenticated/guide': typeof AuthenticatedGuideRouteWithChildren
   '/_authenticated/offre': typeof AuthenticatedOffreRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
@@ -229,6 +238,7 @@ export interface FileRouteTypes {
     | '/candidatures'
     | '/compte'
     | '/dashboard'
+    | '/documents'
     | '/guide'
     | '/offre'
     | '/templates'
@@ -251,6 +261,7 @@ export interface FileRouteTypes {
     | '/bienvenue'
     | '/compte'
     | '/dashboard'
+    | '/documents'
     | '/offre'
     | '/candidatures/$id'
     | '/guide/$chapter'
@@ -273,6 +284,7 @@ export interface FileRouteTypes {
     | '/_authenticated/candidatures'
     | '/_authenticated/compte'
     | '/_authenticated/dashboard'
+    | '/_authenticated/documents'
     | '/_authenticated/guide'
     | '/_authenticated/offre'
     | '/_authenticated/templates'
@@ -361,6 +373,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard'
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/documents': {
+      id: '/_authenticated/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof AuthenticatedDocumentsRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/guide': {
@@ -508,6 +527,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedCandidaturesRoute: typeof AuthenticatedCandidaturesRouteWithChildren
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
   AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
   AuthenticatedOffreRoute: typeof AuthenticatedOffreRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRouteWithChildren
@@ -520,6 +540,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedCandidaturesRoute: AuthenticatedCandidaturesRouteWithChildren,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
   AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
   AuthenticatedOffreRoute: AuthenticatedOffreRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRouteWithChildren,

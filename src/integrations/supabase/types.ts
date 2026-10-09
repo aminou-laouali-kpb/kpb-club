@@ -115,6 +115,9 @@ export type Database = {
       }
       application_items: {
         Row: {
+          document_id: string | null
+          document_type: string | null
+          recommenders_count: number | null
           application_id: string
           completed_at: string | null
           description: string | null
@@ -131,6 +134,9 @@ export type Database = {
           status: Database["public"]["Enums"]["item_status"]
         }
         Insert: {
+          document_id?: string | null
+          document_type?: string | null
+          recommenders_count?: number | null
           application_id: string
           completed_at?: string | null
           description?: string | null
@@ -147,6 +153,9 @@ export type Database = {
           status?: Database["public"]["Enums"]["item_status"]
         }
         Update: {
+          document_id?: string | null
+          document_type?: string | null
+          recommenders_count?: number | null
           application_id?: string
           completed_at?: string | null
           description?: string | null
@@ -399,6 +408,59 @@ export type Database = {
           window_opens?: string | null
         }
         Relationships: []
+      }
+      documents: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          label: string
+          mime_type: string
+          pages: number | null
+          processed: boolean
+          profile_id: string
+          size_bytes: number | null
+          source: string | null
+          storage_path: string
+          type: Database["public"]["Enums"]["document_type"]
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label: string
+          mime_type: string
+          pages?: number | null
+          processed?: boolean
+          profile_id: string
+          size_bytes?: number | null
+          source?: string | null
+          storage_path: string
+          type: Database["public"]["Enums"]["document_type"]
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label?: string
+          mime_type?: string
+          pages?: number | null
+          processed?: boolean
+          profile_id?: string
+          size_bytes?: number | null
+          source?: string | null
+          storage_path?: string
+          type?: Database["public"]["Enums"]["document_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       engagements: {
         Row: {
@@ -669,6 +731,91 @@ export type Database = {
         }
         Relationships: []
       }
+      recommenders: {
+        Row: {
+          application_id: string | null
+          auto_remind: boolean
+          created_at: string
+          document_id: string | null
+          email: string | null
+          full_name: string
+          id: string
+          institution: string | null
+          notes: string | null
+          phone: string | null
+          profile_id: string
+          received_at: string | null
+          relation: string | null
+          reminded_at: string | null
+          requested_at: string | null
+          status: Database["public"]["Enums"]["recommender_status"]
+          strengths: string | null
+          title: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          auto_remind?: boolean
+          created_at?: string
+          document_id?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          institution?: string | null
+          notes?: string | null
+          phone?: string | null
+          profile_id: string
+          received_at?: string | null
+          relation?: string | null
+          reminded_at?: string | null
+          requested_at?: string | null
+          status?: Database["public"]["Enums"]["recommender_status"]
+          strengths?: string | null
+          title?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          auto_remind?: boolean
+          created_at?: string
+          document_id?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          institution?: string | null
+          notes?: string | null
+          phone?: string | null
+          profile_id?: string
+          received_at?: string | null
+          relation?: string | null
+          reminded_at?: string | null
+          requested_at?: string | null
+          status?: Database["public"]["Enums"]["recommender_status"]
+          strengths?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommenders_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommenders_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommenders_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       subscriptions: {
         Row: {
           payment_id: string | null
@@ -781,7 +928,24 @@ export type Database = {
         | "accepted"
         | "rejected"
         | "abandoned"
+      document_type:
+        | "passport"
+        | "id_card"
+        | "birth_certificate"
+        | "photo_id"
+        | "diploma_bac"
+        | "diploma_licence"
+        | "diploma_master"
+        | "transcript"
+        | "cv"
+        | "motivation_letter"
+        | "recommendation_letter"
+        | "english_test"
+        | "proof_of_income"
+        | "proof_of_residence"
+        | "other"
       item_status: "todo" | "in_progress" | "done" | "na"
+      recommender_status: "to_contact" | "requested" | "reminded" | "received" | "declined"
       requirement_kind:
         | "document"
         | "essay"
@@ -946,7 +1110,25 @@ export const Constants = {
         "rejected",
         "abandoned",
       ],
+      document_type: [
+        "passport",
+        "id_card",
+        "birth_certificate",
+        "photo_id",
+        "diploma_bac",
+        "diploma_licence",
+        "diploma_master",
+        "transcript",
+        "cv",
+        "motivation_letter",
+        "recommendation_letter",
+        "english_test",
+        "proof_of_income",
+        "proof_of_residence",
+        "other",
+      ],
       item_status: ["todo", "in_progress", "done", "na"],
+      recommender_status: ["to_contact", "requested", "reminded", "received", "declined"],
       requirement_kind: ["document", "essay", "recommendation", "form", "test", "other"],
       engagement_status: [
         "pending_payment",

@@ -11,7 +11,7 @@ export const FREE_APPLICATION_LIMIT = 1;
 export const FREE_LIMIT_MESSAGE =
   "Le compte gratuit permet de suivre une candidature. Rejoignez le Club pour en suivre autant que vous voulez.";
 
-async function getMember(supabase: SupabaseClient<Database>, userId: string) {
+export async function getMember(supabase: SupabaseClient<Database>, userId: string) {
   const { data: profile } = await supabase
     .from("profiles")
     .select("id")
@@ -80,7 +80,7 @@ export const getApplication = createServerFn({ method: "GET" })
       .maybeSingle();
     if (!app) throw new Error("Candidature introuvable");
 
-    const [{ data: items }, { data: bourse }] = await Promise.all([
+    const [{ data: items }, { data: bourse }, { data: profile }] = await Promise.all([
       context.supabase
         .from("application_items")
         .select("*")
@@ -93,6 +93,7 @@ export const getApplication = createServerFn({ method: "GET" })
         )
         .eq("id", app.bourse_id)
         .maybeSingle(),
+      context.supabase.from("profiles").select("full_name").eq("id", member.profileId).single(),
     ]);
 
     return {
@@ -106,6 +107,7 @@ export const getApplication = createServerFn({ method: "GET" })
           }
         : null,
       hasAccess: member.hasAccess,
+      studentName: profile?.full_name ?? "",
     };
   });
 

@@ -139,9 +139,80 @@ export const Route = createFileRoute("/api/public/hooks/reminders")({
           if (result?.status === "success") reconciled += 1;
         }
 
+        // Recommandateurs : relance unique à J+7 après la demande
+        const { isReminderDue, buildReminderMessage, REMIND_AFTER_DAYS } =
+          await import("@/lib/recommenders");
+        const { data: recs } = await supabaseAdmin
+          .from("recommenders")
+          .select(
+            "id, full_name, title, email, status, auto_remind, requested_at, reminded_at, profiles ( id, full_name, email, email_optin ), applications ( deadline, bourses ( university_name ) )",
+          )
+          .eq("status", "requested")
+          .is("reminded_at", null)
+          .lte("requested_at", new Date(now - REMIND_AFTER_DAYS * DAY).toISOString())
+          .limit(200);
+        const recoQueue = [];
+        const remindedIds: string[] = [];
+        for (const rec of recs ?? []) {
+          if (!isReminderDue(rec, now)) continue;
+          const student = rec.profiles as unknown as {
+            id: string;
+            full_name: string | null;
+            email: string | null;
+            email_optin: boolean;
+          } | null;
+          if (!student) continue;
+          const app = rec.applications as unknown as {
+            deadline: string | null;
+            bourses: { university_name: string } | null;
+          } | null;
+          const message = buildReminderMessage({
+            studentName: student.full_name || "Un étudiant KPB",
+            recommender: { full_name: rec.full_name, title: rec.title },
+            bourseName: app?.bourses?.university_name ?? "ma candidature",
+            deadline: app?.deadline ?? null,
+          });
+          if (rec.auto_remind && rec.email) {
+            // L'étudiant a accepté que KPB relance le professeur à sa place
+            recoQueue.push({
+              profile_id: student.id,
+              recipient: rec.email,
+              kind: "recommender_reminder",
+              subject: message.subject,
+              body: `${message.body}\n\n—\nMessage envoyé via KPB Education à la demande de ${student.full_name || "l'étudiant"}.`,
+              dedupe_key: `reco:${rec.id}:j7`,
+            });
+          } else if (student.email && student.email_optin) {
+            recoQueue.push({
+              profile_id: student.id,
+              recipient: student.email,
+              kind: "recommender_reminder_student",
+              subject: `Pensez à relancer ${rec.full_name}`,
+              body: `Bonjour ${student.full_name || ""},\n\nVotre demande de lettre de recommandation à ${rec.full_name} date d'une semaine. Voici un message de relance prêt à envoyer :\n\n${message.body}\n\nL'équipe KPB Education`,
+              dedupe_key: `reco:${rec.id}:j7`,
+            });
+          } else {
+            continue;
+          }
+          remindedIds.push(rec.id);
+        }
+        await queueNotifications(recoQueue);
+        if (remindedIds.length > 0) {
+          await supabaseAdmin
+            .from("recommenders")
+            .update({ status: "reminded", reminded_at: new Date().toISOString() })
+            .in("id", remindedIds);
+        }
+
         const dispatch = await dispatchPending();
 
-        return Response.json({ ok: true, queued, reconciled, ...dispatch });
+        return Response.json({
+          ok: true,
+          queued,
+          reconciled,
+          recommenderReminders: remindedIds.length,
+          ...dispatch,
+        });
       },
     },
   },
