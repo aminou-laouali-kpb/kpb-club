@@ -29,7 +29,9 @@ export const getAdminData = createServerFn({ method: "GET" })
           .limit(100),
         supabaseAdmin
           .from("profiles")
-          .select("id, full_name, email, phone, member_code, credit_balance, created_at")
+          .select(
+            "id, full_name, email, phone, member_code, credit_balance, created_at, is_ambassador",
+          )
           .order("created_at", { ascending: false })
           .limit(200),
         supabaseAdmin
@@ -167,4 +169,86 @@ export const setAccessCodeActive = createServerFn({ method: "POST" })
       .eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
+  });
+
+export const setAmbassador = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ profileId: z.string().uuid(), value: z.boolean() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin
+      .from("profiles")
+      .update({ is_ambassador: data.value })
+      .eq("id", data.profileId);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+/** Accompagnements en cours, avec ce qui reste à payer et les trop-perçus à rembourser. */
+export const listAdminEngagements = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const [{ data: engagements }, { data: overpaid }] = await Promise.all([
+      supabaseAdmin
+        .from("engagements")
+        .select("*, profiles ( full_name, member_code, phone, email )")
+        .neq("status", "cancelled")
+        .or("status.neq.pending_payment,paid_amount.gt.0")
+        .order("created_at", { ascending: false })
+        .limit(200),
+      supabaseAdmin
+        .from("payments")
+        .select("id, amount, metadata, paid_at, profiles ( full_name, member_code )")
+        .eq("status", "success")
+        .not("metadata->overpaid", "is", null)
+        .order("paid_at", { ascending: false })
+        .limit(100),
+    ]);
+    return { engagements: engagements ?? [], overpaid: overpaid ?? [] };
+  });
+
+const ENGAGEMENT_STATUSES = [
+  "pending_payment",
+  "active",
+  "documents_review",
+  "submitted",
+  "completed",
+  "cancelled",
+] as const;
+
+export const setEngagementStatus = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) =>
+    z.object({ id: z.string().uuid(), status: z.enum(ENGAGEMENT_STATUSES) }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context.supabase, context.userId);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: engagement } = await supabaseAdmin
+      .from("engagements")
+      .select("amount, paid_amount")
+      .eq("id", data.id)
+      .single();
+    if (!engagement) throw new Error("Accompagnement introuvable");
+    // Le dépôt final attend le solde complet (2e tranche comprise)
+    if (
+      (data.status === "submitted" || data.status === "completed") &&
+      engagement.paid_amount < engagement.amount
+    ) {
+      return {
+        ok: false as const,
+        error: "Le dépôt final attend le règlement de la 2e tranche.",
+      };
+    }
+    const { error } = await supabaseAdmin
+      .from("engagements")
+      .update({ status: data.status })
+      .eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true as const };
   });

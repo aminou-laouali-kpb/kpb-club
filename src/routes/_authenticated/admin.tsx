@@ -9,8 +9,10 @@ import {
   rejectPayment,
   grantSubscription,
   recheckPayment,
+  setAmbassador,
 } from "@/lib/admin.functions";
 import { AccessCodesPanel } from "@/components/admin/AccessCodesPanel";
+import { EngagementsPanel } from "@/components/admin/EngagementsPanel";
 import { formatFcfa, PROVIDERS } from "@/lib/pricing";
 import { formatDateFr } from "@/lib/matching";
 
@@ -41,6 +43,12 @@ function Admin() {
   const reject = useServerFn(rejectPayment);
   const grant = useServerFn(grantSubscription);
   const recheck = useServerFn(recheckPayment);
+  const ambassador = useServerFn(setAmbassador);
+  const ambassadorMutation = useMutation({
+    mutationFn: (vars: { profileId: string; value: boolean }) => ambassador({ data: vars }),
+    onSuccess: () => void queryClient.invalidateQueries({ queryKey: ["admin-data"] }),
+    onError: () => toast.error("Action impossible"),
+  });
   const queryClient = useQueryClient();
 
   const { data, isPending, isError } = useQuery({
@@ -210,6 +218,8 @@ function Admin() {
         )}
       </section>
 
+      <EngagementsPanel />
+
       <AccessCodesPanel />
 
       <section>
@@ -228,6 +238,16 @@ function Admin() {
                 </p>
               </div>
               <div className="flex gap-2">
+                <button
+                  onClick={() =>
+                    ambassadorMutation.mutate({ profileId: m.id, value: !m.is_ambassador })
+                  }
+                  className={`rounded-md border px-3 py-1.5 text-xs ${
+                    m.is_ambassador ? "border-primary bg-primary/10 text-primary" : "border-border"
+                  }`}
+                >
+                  {m.is_ambassador ? "Ambassadeur ✓" : "Ambassadeur"}
+                </button>
                 <button
                   onClick={() => grantMutation.mutate({ profileId: m.id, plan: "monthly" })}
                   className="rounded-md border border-border px-3 py-1.5 text-xs"

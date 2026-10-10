@@ -1,5 +1,4 @@
 import { createServerFn } from "@tanstack/react-start";
-import { getRequest } from "@tanstack/react-start/server";
 import { z } from "zod";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
@@ -17,12 +16,6 @@ async function getProfile(supabase: SupabaseClient<Database>, userId: string) {
   return profile;
 }
 
-function appOrigin() {
-  const configured = process.env["APP_URL"];
-  if (configured) return configured.replace(/\/$/, "");
-  return new URL(getRequest().url).origin;
-}
-
 /** Crée le paiement en attente puis le panier Maketou, et renvoie l'URL de paiement. */
 export const startCheckout = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -31,7 +24,8 @@ export const startCheckout = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const { createCheckout } = await import("./maketou.server");
+    const { createCheckout, productIdForPlan } = await import("./maketou.server");
+    const { appOrigin } = await import("./app-origin.server");
     const profile = await getProfile(context.supabase, context.userId);
     const plan = data.plan as ClubPlan;
 
@@ -51,7 +45,8 @@ export const startCheckout = createServerFn({ method: "POST" })
 
     try {
       const checkout = await createCheckout({
-        plan,
+        productId: productIdForPlan(plan),
+        meta: { plan },
         paymentId: payment.id,
         customer: { name: profile.full_name, email: profile.email, phone: profile.phone },
         returnUrl: `${appOrigin()}/paiement/retour?payment=${payment.id}`,
@@ -84,19 +79,24 @@ export const getPaymentStatus = createServerFn({ method: "POST" })
     const profile = await getProfile(context.supabase, context.userId);
     const { data: payment } = await context.supabase
       .from("payments")
-      .select("id, status, amount, profile_id")
+      .select("id, status, amount, profile_id, payable_type")
       .eq("id", data.paymentId)
       .eq("profile_id", profile.id)
       .maybeSingle();
     if (!payment) throw new Error("Paiement introuvable");
     if (payment.status === "success" || !data.recheck) {
-      return { status: payment.status as string, amount: payment.amount };
+      return {
+        status: payment.status as string,
+        amount: payment.amount,
+        kind: payment.payable_type,
+      };
     }
     const { reconcilePayment } = await import("./payments.server");
     const result = await reconcilePayment(payment.id).catch(() => ({ status: "pending" as const }));
     return {
       status: result.status === "not_found" ? "pending" : result.status,
       amount: payment.amount,
+      kind: payment.payable_type,
     };
   });
 
@@ -167,4 +167,64 @@ export const redeemAccessCode = createServerFn({ method: "POST" })
       supabaseAdmin.from("access_code_attempts").insert({ profile_id: profile.id, success: true }),
     ]);
     return { ok: true as const, days: redemption.duration_days, endsAt: access.endsAt };
+  });
+
+/** Reçu PDF d'un paiement réussi du membre (renvoyé en base64). */
+export const getReceipt = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((input: unknown) => z.object({ paymentId: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    const { data: profile } = await context.supabase
+      .from("profiles")
+      .select("id, full_name, email, member_code")
+      .eq("auth_user_id", context.userId)
+      .maybeSingle();
+    if (!profile) throw new Error("Profil introuvable");
+    const { data: payment } = await context.supabase
+      .from("payments")
+      .select("*")
+      .eq("id", data.paymentId)
+      .eq("profile_id", profile.id)
+      .eq("status", "success")
+      .maybeSingle();
+    if (!payment || !payment.paid_at) throw new Error("Reçu indisponible");
+
+    const { buildReceiptPdf, receiptNumber } = await import("./receipt");
+    const { engagementDescription } = await import("./engagements.server");
+    const meta = (payment.metadata ?? {}) as { plan?: ClubPlan; installment?: 1 | 2 };
+    let description = "Paiement KPB Education";
+    if (payment.payable_type === "engagement") {
+      const { data: engagement } = await context.supabase
+        .from("engagements")
+        .select("installments")
+        .eq("id", payment.payable_id ?? "")
+        .maybeSingle();
+      description = engagementDescription(meta as never, engagement?.installments ?? 1);
+    } else if (meta.plan) {
+      description = `Club Boursier — formule ${PRICING.club[meta.plan].label.toLowerCase()}`;
+    }
+    const providers: Record<string, string> = {
+      maketou: "Paiement mobile (Maketou)",
+      wave: "Wave",
+      orange_money: "Orange Money",
+      mtn_momo: "MTN MoMo",
+      moov_money: "Moov Money",
+      manual: "Règlement enregistré par KPB",
+      promo: "Code d'accès",
+    };
+    const number = receiptNumber(payment.id, payment.paid_at);
+    const pdf = buildReceiptPdf({
+      number,
+      paidAt: payment.paid_at,
+      memberName: profile.full_name,
+      memberCode: profile.member_code,
+      email: profile.email,
+      description,
+      amount: payment.amount,
+      provider: providers[payment.provider] ?? payment.provider,
+      reference: payment.transaction_ref,
+    });
+    let binary = "";
+    for (const b of pdf) binary += String.fromCharCode(b);
+    return { fileName: `Recu_${number}.pdf`, base64: btoa(binary) };
   });

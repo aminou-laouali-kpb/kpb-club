@@ -158,12 +158,16 @@ function ApplicationPage() {
       </div>
     );
 
-  const { application: app, items, bourse, hasAccess, studentName } = data;
+  const { application: app, items, bourse, hasAccess, studentName, engagement } = data;
+  const secondDue =
+    engagement && engagement.installments === 2 && engagement.paid_amount < engagement.amount
+      ? engagement
+      : null;
   const readiness = app.readiness;
   const days = daysUntil(app.deadline);
   const groups = groupItemsByKind(items);
   const steps = (Array.isArray(bourse?.operations_order) ? bourse.operations_order : []) as Step[];
-  const showCoachingCta = readiness < 50 && days !== null && days >= 0 && days < 30;
+  const showCoachingCta = !engagement && readiness < 50 && days !== null && days >= 0 && days < 30;
 
   const scrollToItem = (itemId: string | null) => {
     if (!itemId) return;
@@ -240,6 +244,20 @@ function ApplicationPage() {
           )}
         </div>
       </header>
+
+      {secondDue && (
+        <section className="rounded-xl border border-accent/50 bg-accent/10 p-4 text-sm">
+          2e tranche de ton accompagnement à régler
+          {secondDue.second_due_at ? ` avant le ${formatDateFr(secondDue.second_due_at)}` : ""} : le
+          dépôt final du dossier attend ce règlement.{" "}
+          <Link
+            to="/accompagnement"
+            className="font-medium text-primary underline-offset-4 hover:underline"
+          >
+            Régler maintenant
+          </Link>
+        </section>
+      )}
 
       {app.next_action && (
         <section className="rounded-xl border border-primary/40 bg-primary/5 p-5">
@@ -466,14 +484,23 @@ function ApplicationPage() {
             Un conseiller KPB peut reprendre ton dossier avec toi et prioriser ce qui compte
             vraiment.
           </p>
-          <a
-            href={ACCOMPANIMENT_CONTACT_URL}
-            target="_blank"
-            rel="noreferrer"
-            className="mt-3 inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
-          >
-            Parler à un conseiller
-          </a>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <Link
+              to="/accompagnement"
+              search={{ application: app.id }}
+              className="inline-flex rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground"
+            >
+              Voir l'accompagnement
+            </Link>
+            <a
+              href={ACCOMPANIMENT_CONTACT_URL}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex rounded-md border border-border px-4 py-2 text-sm"
+            >
+              Parler à un conseiller
+            </a>
+          </div>
         </section>
       )}
 

@@ -19,6 +19,7 @@ const profileSchema = z.object({
   financial_need: z.boolean().optional(),
   whatsapp_optin: z.boolean().optional(),
   email_optin: z.boolean().optional(),
+  timezone: z.string().trim().max(64).optional().nullable(),
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
@@ -110,9 +111,13 @@ export const saveProfile = createServerFn({ method: "POST" })
       date_of_birth: data.date_of_birth ? data.date_of_birth : null,
     };
     for (const [key, value] of Object.entries(data)) {
-      if (key === "date_of_birth") continue;
+      if (key === "date_of_birth" || key === "timezone") continue;
       if (value !== undefined) payload[key] = value;
     }
+    // Fuseau : choisi par le membre, sinon déduit du pays de résidence
+    const { isValidTimezone, timezoneForCountry } = await import("./relance/window");
+    if (data.timezone && isValidTimezone(data.timezone)) payload["timezone"] = data.timezone;
+    else if (data.residence) payload["timezone"] = timezoneForCountry(data.residence);
     const { error } = await supabase
       .from("profiles")
       .update(payload as never)

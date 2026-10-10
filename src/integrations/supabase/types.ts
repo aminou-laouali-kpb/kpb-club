@@ -464,6 +464,16 @@ export type Database = {
       }
       engagements: {
         Row: {
+          application_id: string | null
+          installments: number
+          paid_amount: number
+          credit_applied: number
+          second_due_at: string | null
+          reminder_t2_j5_sent: boolean
+          reminder_t2_j1_sent: boolean
+          reminder_t2_j0_sent: boolean
+          reminder_t2_jp3_sent: boolean
+          assigned_agent: string | null
           amount: number
           bourse_id: string | null
           created_at: string
@@ -473,11 +483,21 @@ export type Database = {
           package_type: string | null
           profile_id: string
           status: Database["public"]["Enums"]["engagement_status"]
-          university: string
+          university: string | null
           updated_at: string
-          window_year: number
+          window_year: number | null
         }
         Insert: {
+          application_id?: string | null
+          installments?: number
+          paid_amount?: number
+          credit_applied?: number
+          second_due_at?: string | null
+          reminder_t2_j5_sent?: boolean
+          reminder_t2_j1_sent?: boolean
+          reminder_t2_j0_sent?: boolean
+          reminder_t2_jp3_sent?: boolean
+          assigned_agent?: string | null
           amount: number
           bourse_id?: string | null
           created_at?: string
@@ -487,11 +507,21 @@ export type Database = {
           package_type?: string | null
           profile_id: string
           status?: Database["public"]["Enums"]["engagement_status"]
-          university: string
+          university?: string | null
           updated_at?: string
-          window_year: number
+          window_year?: number | null
         }
         Update: {
+          application_id?: string | null
+          installments?: number
+          paid_amount?: number
+          credit_applied?: number
+          second_due_at?: string | null
+          reminder_t2_j5_sent?: boolean
+          reminder_t2_j1_sent?: boolean
+          reminder_t2_j0_sent?: boolean
+          reminder_t2_jp3_sent?: boolean
+          assigned_agent?: string | null
           amount?: number
           bourse_id?: string | null
           created_at?: string
@@ -501,9 +531,9 @@ export type Database = {
           package_type?: string | null
           profile_id?: string
           status?: Database["public"]["Enums"]["engagement_status"]
-          university?: string
+          university?: string | null
           updated_at?: string
-          window_year?: number
+          window_year?: number | null
         }
         Relationships: [
           {
@@ -555,6 +585,7 @@ export type Database = {
       }
       notifications: {
         Row: {
+          send_after: string
           body: string
           channel: string
           created_at: string
@@ -569,6 +600,7 @@ export type Database = {
           subject: string
         }
         Insert: {
+          send_after?: string
           body: string
           channel?: string
           created_at?: string
@@ -583,6 +615,7 @@ export type Database = {
           subject: string
         }
         Update: {
+          send_after?: string
           body?: string
           channel?: string
           created_at?: string
@@ -664,6 +697,10 @@ export type Database = {
       }
       profiles: {
         Row: {
+          timezone: string
+          referral_code: string | null
+          referred_by: string | null
+          is_ambassador: boolean
           onboarding_completed: boolean
           auth_user_id: string
           created_at: string
@@ -686,6 +723,10 @@ export type Database = {
           whatsapp_optin: boolean
         }
         Insert: {
+          timezone?: string
+          referral_code?: string | null
+          referred_by?: string | null
+          is_ambassador?: boolean
           onboarding_completed?: boolean
           auth_user_id: string
           created_at?: string
@@ -708,6 +749,10 @@ export type Database = {
           whatsapp_optin?: boolean
         }
         Update: {
+          timezone?: string
+          referral_code?: string | null
+          referred_by?: string | null
+          is_ambassador?: boolean
           onboarding_completed?: boolean
           auth_user_id?: string
           created_at?: string
@@ -810,6 +855,54 @@ export type Database = {
           {
             foreignKeyName: "recommenders_profile_id_fkey"
             columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          paid_at: string | null
+          referred_id: string
+          referrer_id: string
+          reward_subscription_id: string | null
+          rewarded_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          referred_id: string
+          referrer_id: string
+          reward_subscription_id?: string | null
+          rewarded_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          referred_id?: string
+          referrer_id?: string
+          reward_subscription_id?: string | null
+          rewarded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
             isOneToOne: false
             referencedRelation: "profiles"
             referencedColumns: ["id"]

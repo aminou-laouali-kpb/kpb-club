@@ -2,7 +2,7 @@ import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import { getCart, type CartInfo } from "./maketou.server";
 import { queueNotifications, dispatchPending } from "./notifications.server";
 import { settlePayment } from "./subscriptions.server";
-import { PRICING, formatFcfa } from "./pricing";
+import { formatFcfa } from "./pricing";
 import { formatDateFr } from "./matching";
 
 export type ReconcileResult =
@@ -55,6 +55,19 @@ export async function reconcilePayment(
     return { status: "failed", reason: "amount_mismatch" };
   }
 
+  // Maketou a encaissé plus que prévu (montant libre ignoré) : on accepte et on le signale
+  if (cart.amount !== null && cart.amount > payment.amount) {
+    await supabaseAdmin
+      .from("payments")
+      .update({
+        metadata: {
+          ...((payment.metadata as Record<string, unknown>) ?? {}),
+          overpaid: cart.amount - payment.amount,
+        },
+      })
+      .eq("id", payment.id);
+  }
+
   const settled = await settlePayment(payment.id, cart.transactionRef ?? cart.externalId);
   if (settled.activated) await notifyPaymentSuccess(settled.payment.profile_id, settled);
   return { status: "success", activated: settled.activated };
@@ -63,24 +76,33 @@ export async function reconcilePayment(
 async function notifyPaymentSuccess(
   profileId: string,
   settled: {
-    plan: "monthly" | "quarterly";
-    endsAt: string;
+    kind: "subscription" | "engagement";
+    description: string;
+    endsAt?: string;
     payment: { id: string; amount: number };
   },
 ) {
   const { data: profile } = await supabaseAdmin
     .from("profiles")
-    .select("email, full_name, email_optin")
+    .select("email, full_name")
     .eq("id", profileId)
     .maybeSingle();
   if (!profile?.email) return;
+  const appUrl = (process.env["APP_URL"] ?? "").replace(/\/$/, "");
+  const detail =
+    settled.kind === "subscription" && settled.endsAt
+      ? `Votre accès au Club Boursier est actif jusqu'au ${formatDateFr(settled.endsAt)}.`
+      : "Votre accompagnement est enregistré : un agent KPB vous contacte sous 48 heures.";
   await queueNotifications([
     {
       profile_id: profileId,
       recipient: profile.email,
       kind: "payment_success",
-      subject: "Paiement reçu — votre accès au Club Boursier est actif",
-      body: `Bonjour ${profile.full_name || "cher membre"},\n\nNous avons bien reçu votre paiement de ${formatFcfa(settled.payment.amount)} (formule ${PRICING.club[settled.plan].label.toLowerCase()}).\nVotre accès au Club Boursier est actif jusqu'au ${formatDateFr(settled.endsAt)}.\n\nL'équipe KPB Education`,
+      subject:
+        settled.kind === "subscription"
+          ? "Paiement reçu — votre accès au Club Boursier est actif"
+          : "Paiement reçu — votre accompagnement KPB",
+      body: `Bonjour ${profile.full_name || "cher membre"},\n\nNous avons bien reçu votre paiement de ${formatFcfa(settled.payment.amount)} (${settled.description}).\n${detail}\n\nVotre reçu est téléchargeable dans votre espace${appUrl ? ` : ${appUrl}/compte` : ", rubrique Compte"}.\n\nL'équipe KPB Education`,
       dedupe_key: `pay:${settled.payment.id}`,
     },
   ]);

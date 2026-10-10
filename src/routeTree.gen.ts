@@ -13,6 +13,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
 import { Route as VerificateurRouteImport } from './routes/verificateur'
+import { Route as AuthenticatedAccompagnementRouteImport } from './routes/_authenticated/accompagnement'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
 import { Route as AuthenticatedCandidaturesRouteImport } from './routes/_authenticated/candidatures'
@@ -21,6 +22,7 @@ import { Route as AuthenticatedDashboardRouteImport } from './routes/_authentica
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedGuideRouteImport } from './routes/_authenticated/guide'
 import { Route as AuthenticatedOffreRouteImport } from './routes/_authenticated/offre'
+import { Route as AuthenticatedParrainageRouteImport } from './routes/_authenticated/parrainage'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
 import { Route as AuthenticatedCandidaturesIndexRouteImport } from './routes/_authenticated/candidatures.index'
 import { Route as AuthenticatedCandidaturesIdRouteImport } from './routes/_authenticated/candidatures.$id'
@@ -30,6 +32,7 @@ import { Route as AuthenticatedPaiementRetourRouteImport } from './routes/_authe
 import { Route as AuthenticatedTemplatesIndexRouteImport } from './routes/_authenticated/templates.index'
 import { Route as AuthenticatedTemplatesSlugRouteImport } from './routes/_authenticated/templates.$slug'
 import { Route as ApiPublicHooksBourseAlertsRouteImport } from './routes/api/public/hooks/bourse-alerts'
+import { Route as ApiPublicHooksDispatchRouteImport } from './routes/api/public/hooks/dispatch'
 import { Route as ApiPublicHooksMaketouRouteImport } from './routes/api/public/hooks/maketou'
 import { Route as ApiPublicHooksRemindersRouteImport } from './routes/api/public/hooks/reminders'
 
@@ -52,6 +55,12 @@ const VerificateurRoute = VerificateurRouteImport.update({
   path: '/verificateur',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccompagnementRoute =
+  AuthenticatedAccompagnementRouteImport.update({
+    id: '/accompagnement',
+    path: '/accompagnement',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
@@ -91,6 +100,11 @@ const AuthenticatedGuideRoute = AuthenticatedGuideRouteImport.update({
 const AuthenticatedOffreRoute = AuthenticatedOffreRouteImport.update({
   id: '/offre',
   path: '/offre',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedParrainageRoute = AuthenticatedParrainageRouteImport.update({
+  id: '/parrainage',
+  path: '/parrainage',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedTemplatesRoute = AuthenticatedTemplatesRouteImport.update({
@@ -145,6 +159,11 @@ const ApiPublicHooksBourseAlertsRoute =
     path: '/api/public/hooks/bourse-alerts',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksDispatchRoute = ApiPublicHooksDispatchRouteImport.update({
+  id: '/api/public/hooks/dispatch',
+  path: '/api/public/hooks/dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksMaketouRoute = ApiPublicHooksMaketouRouteImport.update({
   id: '/api/public/hooks/maketou',
   path: '/api/public/hooks/maketou',
@@ -160,6 +179,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
@@ -168,6 +188,7 @@ export interface FileRoutesByFullPath {
   '/documents': typeof AuthenticatedDocumentsRoute
   '/guide': typeof AuthenticatedGuideRouteWithChildren
   '/offre': typeof AuthenticatedOffreRoute
+  '/parrainage': typeof AuthenticatedParrainageRoute
   '/templates': typeof AuthenticatedTemplatesRouteWithChildren
   '/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
@@ -177,6 +198,7 @@ export interface FileRoutesByFullPath {
   '/guide/': typeof AuthenticatedGuideIndexRoute
   '/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
   '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
@@ -184,12 +206,14 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
   '/offre': typeof AuthenticatedOffreRoute
+  '/parrainage': typeof AuthenticatedParrainageRoute
   '/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
@@ -198,6 +222,7 @@ export interface FileRoutesByTo {
   '/guide': typeof AuthenticatedGuideIndexRoute
   '/templates': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
   '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
@@ -207,6 +232,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/verificateur': typeof VerificateurRoute
+  '/_authenticated/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
   '/_authenticated/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
@@ -215,6 +241,7 @@ export interface FileRoutesById {
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
   '/_authenticated/guide': typeof AuthenticatedGuideRouteWithChildren
   '/_authenticated/offre': typeof AuthenticatedOffreRoute
+  '/_authenticated/parrainage': typeof AuthenticatedParrainageRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
   '/_authenticated/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/_authenticated/guide/$chapter': typeof AuthenticatedGuideChapterRoute
@@ -224,6 +251,7 @@ export interface FileRoutesById {
   '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
   '/_authenticated/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
   '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
 }
@@ -233,6 +261,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/verificateur'
+    | '/accompagnement'
     | '/admin'
     | '/bienvenue'
     | '/candidatures'
@@ -241,6 +270,7 @@ export interface FileRouteTypes {
     | '/documents'
     | '/guide'
     | '/offre'
+    | '/parrainage'
     | '/templates'
     | '/candidatures/$id'
     | '/guide/$chapter'
@@ -250,6 +280,7 @@ export interface FileRouteTypes {
     | '/guide/'
     | '/templates/'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/dispatch'
     | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
   fileRoutesByTo: FileRoutesByTo
@@ -257,12 +288,14 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/verificateur'
+    | '/accompagnement'
     | '/admin'
     | '/bienvenue'
     | '/compte'
     | '/dashboard'
     | '/documents'
     | '/offre'
+    | '/parrainage'
     | '/candidatures/$id'
     | '/guide/$chapter'
     | '/paiement/retour'
@@ -271,6 +304,7 @@ export interface FileRouteTypes {
     | '/guide'
     | '/templates'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/dispatch'
     | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
   id:
@@ -279,6 +313,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/verificateur'
+    | '/_authenticated/accompagnement'
     | '/_authenticated/admin'
     | '/_authenticated/bienvenue'
     | '/_authenticated/candidatures'
@@ -287,6 +322,7 @@ export interface FileRouteTypes {
     | '/_authenticated/documents'
     | '/_authenticated/guide'
     | '/_authenticated/offre'
+    | '/_authenticated/parrainage'
     | '/_authenticated/templates'
     | '/_authenticated/candidatures/$id'
     | '/_authenticated/guide/$chapter'
@@ -296,6 +332,7 @@ export interface FileRouteTypes {
     | '/_authenticated/guide/'
     | '/_authenticated/templates/'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/dispatch'
     | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
   fileRoutesById: FileRoutesById
@@ -306,6 +343,7 @@ export interface RootRouteChildren {
   AuthRoute: typeof AuthRoute
   VerificateurRoute: typeof VerificateurRoute
   ApiPublicHooksBourseAlertsRoute: typeof ApiPublicHooksBourseAlertsRoute
+  ApiPublicHooksDispatchRoute: typeof ApiPublicHooksDispatchRoute
   ApiPublicHooksMaketouRoute: typeof ApiPublicHooksMaketouRoute
   ApiPublicHooksRemindersRoute: typeof ApiPublicHooksRemindersRoute
 }
@@ -339,6 +377,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/verificateur'
       preLoaderRoute: typeof VerificateurRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/accompagnement': {
+      id: '/_authenticated/accompagnement'
+      path: '/accompagnement'
+      fullPath: '/accompagnement'
+      preLoaderRoute: typeof AuthenticatedAccompagnementRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
@@ -394,6 +439,13 @@ declare module '@tanstack/react-router' {
       path: '/offre'
       fullPath: '/offre'
       preLoaderRoute: typeof AuthenticatedOffreRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/parrainage': {
+      id: '/_authenticated/parrainage'
+      path: '/parrainage'
+      fullPath: '/parrainage'
+      preLoaderRoute: typeof AuthenticatedParrainageRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/templates': {
@@ -459,6 +511,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksBourseAlertsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/dispatch': {
+      id: '/api/public/hooks/dispatch'
+      path: '/api/public/hooks/dispatch'
+      fullPath: '/api/public/hooks/dispatch'
+      preLoaderRoute: typeof ApiPublicHooksDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/maketou': {
       id: '/api/public/hooks/maketou'
       path: '/api/public/hooks/maketou'
@@ -522,6 +581,7 @@ const AuthenticatedTemplatesRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccompagnementRoute: typeof AuthenticatedAccompagnementRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
   AuthenticatedCandidaturesRoute: typeof AuthenticatedCandidaturesRouteWithChildren
@@ -530,11 +590,13 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
   AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
   AuthenticatedOffreRoute: typeof AuthenticatedOffreRoute
+  AuthenticatedParrainageRoute: typeof AuthenticatedParrainageRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRouteWithChildren
   AuthenticatedPaiementRetourRoute: typeof AuthenticatedPaiementRetourRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccompagnementRoute: AuthenticatedAccompagnementRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
   AuthenticatedCandidaturesRoute: AuthenticatedCandidaturesRouteWithChildren,
@@ -543,6 +605,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
   AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
   AuthenticatedOffreRoute: AuthenticatedOffreRoute,
+  AuthenticatedParrainageRoute: AuthenticatedParrainageRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRouteWithChildren,
   AuthenticatedPaiementRetourRoute: AuthenticatedPaiementRetourRoute,
 }
@@ -556,6 +619,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthRoute: AuthRoute,
   VerificateurRoute: VerificateurRoute,
   ApiPublicHooksBourseAlertsRoute: ApiPublicHooksBourseAlertsRoute,
+  ApiPublicHooksDispatchRoute: ApiPublicHooksDispatchRoute,
   ApiPublicHooksMaketouRoute: ApiPublicHooksMaketouRoute,
   ApiPublicHooksRemindersRoute: ApiPublicHooksRemindersRoute,
 }

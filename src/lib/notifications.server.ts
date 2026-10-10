@@ -7,6 +7,8 @@ export type QueuedNotification = {
   subject: string;
   body: string;
   dedupe_key: string;
+  /** Envoi différé (fenêtre 8 h – 20 h locale) ; immédiat par défaut. */
+  send_after?: string;
 };
 
 /** Met en file les notifications, en ignorant celles déjà créées (dedupe_key). */
@@ -29,6 +31,7 @@ export async function dispatchPending(limit = 100) {
     .from("notifications")
     .select("id, recipient, subject, body")
     .eq("status", "pending")
+    .lte("send_after", new Date().toISOString())
     .order("created_at", { ascending: true })
     .limit(limit);
   if (error) throw new Error(error.message);

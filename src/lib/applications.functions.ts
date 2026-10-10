@@ -80,21 +80,30 @@ export const getApplication = createServerFn({ method: "GET" })
       .maybeSingle();
     if (!app) throw new Error("Candidature introuvable");
 
-    const [{ data: items }, { data: bourse }, { data: profile }] = await Promise.all([
-      context.supabase
-        .from("application_items")
-        .select("*")
-        .eq("application_id", app.id)
-        .order("sort_order", { ascending: true }),
-      context.supabase
-        .from("bourses")
-        .select(
-          "id, university_name, country, program_url, window_opens, window_closes, operations_order, video_url, whatsapp_group_url",
-        )
-        .eq("id", app.bourse_id)
-        .maybeSingle(),
-      context.supabase.from("profiles").select("full_name").eq("id", member.profileId).single(),
-    ]);
+    const [{ data: items }, { data: bourse }, { data: profile }, { data: engagement }] =
+      await Promise.all([
+        context.supabase
+          .from("application_items")
+          .select("*")
+          .eq("application_id", app.id)
+          .order("sort_order", { ascending: true }),
+        context.supabase
+          .from("bourses")
+          .select(
+            "id, university_name, country, program_url, window_opens, window_closes, operations_order, video_url, whatsapp_group_url",
+          )
+          .eq("id", app.bourse_id)
+          .maybeSingle(),
+        context.supabase.from("profiles").select("full_name").eq("id", member.profileId).single(),
+        context.supabase
+          .from("engagements")
+          .select("id, amount, paid_amount, installments, second_due_at, status")
+          .eq("application_id", app.id)
+          .not("status", "in", "(pending_payment,cancelled)")
+          .order("created_at", { ascending: false })
+          .limit(1)
+          .maybeSingle(),
+      ]);
 
     return {
       application: app,
@@ -108,6 +117,7 @@ export const getApplication = createServerFn({ method: "GET" })
         : null,
       hasAccess: member.hasAccess,
       studentName: profile?.full_name ?? "",
+      engagement: engagement ?? null,
     };
   });
 

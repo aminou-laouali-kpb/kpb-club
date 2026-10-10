@@ -5,6 +5,9 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useMemberOverview } from "@/hooks/useMemberOverview";
 import { saveProfile } from "@/lib/member.functions";
+import { getReceipt } from "@/lib/payments.functions";
+import { TIMEZONE_OPTIONS } from "@/lib/relance/window";
+import { Download } from "lucide-react";
 import { formatFcfa } from "@/lib/pricing";
 import { formatDateFr } from "@/lib/matching";
 import { COUNTRIES, EDUCATION_OPTIONS, ENGLISH_OPTIONS, GENDER_OPTIONS } from "@/lib/countries";
@@ -24,6 +27,12 @@ export const Route = createFileRoute("/_authenticated/compte")({
 const inputCls =
   "mt-1 w-full rounded-md border border-input bg-card px-3 py-2.5 text-base outline-none focus:ring-2 focus:ring-ring";
 
+const PAYMENT_STATUS: Record<string, string> = {
+  pending: "En attente",
+  failed: "Non abouti",
+  refunded: "Remboursé",
+};
+
 type Form = {
   full_name: string;
   phone: string;
@@ -37,6 +46,7 @@ type Form = {
   financial_need: boolean;
   whatsapp_optin: boolean;
   email_optin: boolean;
+  timezone: string;
 };
 
 function Compte() {
@@ -61,8 +71,24 @@ function Compte() {
       financial_need: p.financial_need ?? false,
       whatsapp_optin: p.whatsapp_optin ?? false,
       email_optin: p.email_optin ?? true,
+      timezone: p.timezone ?? "Africa/Niamey",
     });
   }, [data, form]);
+
+  const receipt = useServerFn(getReceipt);
+  const receiptMutation = useMutation({
+    mutationFn: (paymentId: string) => receipt({ data: { paymentId } }),
+    onSuccess: ({ fileName, base64 }) => {
+      const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    },
+    onError: () => toast.error("Reçu indisponible"),
+  });
 
   const mutation = useMutation({
     mutationFn: (values: Form) =>
@@ -80,6 +106,7 @@ function Compte() {
           financial_need: values.financial_need,
           whatsapp_optin: values.whatsapp_optin,
           email_optin: values.email_optin,
+          timezone: values.timezone,
         },
       }),
     onSuccess: () => {
@@ -103,12 +130,26 @@ function Compte() {
           Membre {data.profile.member_code ?? "—"} · crédit{" "}
           {formatFcfa(data.profile.credit_balance ?? 0)}
         </p>
-        <Link
-          to="/documents"
-          className="mt-3 inline-flex rounded-md border border-border px-3 py-2 text-sm"
-        >
-          Mes documents
-        </Link>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            to="/documents"
+            className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+          >
+            Mes documents
+          </Link>
+          <Link
+            to="/parrainage"
+            className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+          >
+            Parrainage
+          </Link>
+          <Link
+            to="/accompagnement"
+            className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+          >
+            Accompagnement
+          </Link>
+        </div>
       </div>
 
       <form
@@ -270,6 +311,26 @@ function Compte() {
           />
           <span className="text-sm">J'ai besoin d'un financement</span>
         </label>
+        <div>
+          <label className="text-sm font-medium" htmlFor="timezone">
+            Fuseau horaire (nos messages arrivent entre 8 h et 20 h)
+          </label>
+          <select
+            id="timezone"
+            className={inputCls}
+            value={form.timezone}
+            onChange={(e) => set("timezone", e.target.value)}
+          >
+            {(TIMEZONE_OPTIONS.includes(form.timezone)
+              ? TIMEZONE_OPTIONS
+              : [form.timezone, ...TIMEZONE_OPTIONS]
+            ).map((tz) => (
+              <option key={tz} value={tz}>
+                {tz.replace(/^.*\//, "").replace(/_/g, " ")} ({tz.split("/")[0]})
+              </option>
+            ))}
+          </select>
+        </div>
         <label className="flex items-center gap-3">
           <input
             type="checkbox"
@@ -312,9 +373,19 @@ function Compte() {
                     {formatDateFr(p.created_at)}
                   </span>
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {p.status === "pending" ? "En attente" : p.status}
-                </span>
+                {p.status === "success" ? (
+                  <button
+                    onClick={() => receiptMutation.mutate(p.id)}
+                    disabled={receiptMutation.isPending}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary"
+                  >
+                    <Download className="size-3.5" /> Reçu
+                  </button>
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    {PAYMENT_STATUS[p.status] ?? p.status}
+                  </span>
+                )}
               </li>
             ))}
           </ul>

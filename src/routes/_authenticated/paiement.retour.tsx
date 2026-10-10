@@ -73,7 +73,10 @@ function PaymentReturn() {
           <CheckCircle2 className="mx-auto size-8 text-primary" />
           <h1 className="mt-3 font-display text-2xl font-semibold">Paiement confirmé</h1>
           <p className="mt-2 text-sm text-muted-foreground">
-            Votre accès au Club Boursier est actif. Redirection vers votre espace…
+            {(recheck.data ?? data)?.kind === "engagement"
+              ? "Votre accompagnement est enregistré : un agent KPB vous contacte sous 48 heures."
+              : "Votre accès au Club Boursier est actif."}{" "}
+            Redirection vers votre espace…
           </p>
         </>
       ) : status === "failed" ? (

@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, BookOpen, FileText, Plus } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, Gift, Plus } from "lucide-react";
 import { createApplication } from "@/lib/applications.functions";
 import { ApplicationCard } from "@/components/application/ApplicationCard";
 import { isActiveStatus, type ApplicationStatus } from "@/lib/applications";
@@ -184,6 +184,19 @@ function Dashboard() {
           </div>
         )}
       </section>
+
+      <Link
+        to="/parrainage"
+        className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
+      >
+        <Gift className="size-5 text-primary" />
+        <span className="flex-1">
+          <span className="block font-medium">Invite tes amis, gagne des mois offerts</span>
+          <span className="block text-sm text-muted-foreground">
+            30 jours de Club pour toi tous les 2 amis qui rejoignent le Club.
+          </span>
+        </span>
+      </Link>
 
       <section className="grid gap-3 sm:grid-cols-2">
         <Link

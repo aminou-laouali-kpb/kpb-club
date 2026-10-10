@@ -1,7 +1,10 @@
 import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { MemberNav } from "@/components/MemberNav";
+import { useServerFn } from "@tanstack/react-start";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
+import { useAttachCapturedReferral } from "@/hooks/useReferralCapture";
+import { attachReferral } from "@/lib/referrals.functions";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -15,6 +18,8 @@ export const Route = createFileRoute("/_authenticated")({
 
 function MemberLayout() {
   useSessionGuard();
+  const attach = useServerFn(attachReferral);
+  useAttachCapturedReferral((code) => attach({ data: { code } }));
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <MemberNav />

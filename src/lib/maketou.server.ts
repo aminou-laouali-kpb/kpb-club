@@ -5,7 +5,7 @@
  * champs envoyés, lecture des réponses et du webhook. Les chemins sont surchargeables
  * par variables d'environnement pour s'aligner sur la documentation sans toucher au code.
  */
-import type { ClubPlan } from "./pricing";
+import type { ClubPlan, PackageType } from "./pricing";
 
 const BASE_URL = () => process.env["MAKETOU_BASE_URL"] ?? "https://api.maketou.net";
 const CHECKOUT_PATH = () => process.env["MAKETOU_CHECKOUT_PATH"] ?? "/api/v1/stores/cart/checkout";
@@ -17,6 +17,17 @@ export type CheckoutStatus = "paid" | "pending" | "failed";
 export function productIdForPlan(plan: ClubPlan): string {
   const key =
     plan === "monthly" ? "MAKETOU_PRODUCT_CLUB_MONTHLY" : "MAKETOU_PRODUCT_CLUB_QUARTERLY";
+  const id = process.env[key];
+  if (!id) throw new Error(`Configuration manquante : ${key}`);
+  return id;
+}
+
+/**
+ * Produit Maketou d'un accompagnement. En 2 fois, on utilise le produit « _HALF »
+ * (prix = une tranche) ; le montant réel, crédit déduit, est aussi transmis.
+ */
+export function productIdForEngagement(pkg: PackageType, installments: 1 | 2): string {
+  const key = `MAKETOU_PRODUCT_ENG_${pkg.toUpperCase()}${installments === 2 ? "_HALF" : ""}`;
   const id = process.env[key];
   if (!id) throw new Error(`Configuration manquante : ${key}`);
   return id;
@@ -127,22 +138,27 @@ export function parseCart(body: unknown): CartInfo {
 }
 
 export async function createCheckout(input: {
-  plan: ClubPlan;
+  productId: string;
   paymentId: string;
   customer: { name: string; email: string | null; phone: string | null };
   returnUrl: string;
+  /** Montant à facturer s'il diffère du prix du produit (crédit déduit). */
+  amount?: number;
+  meta?: Record<string, string | number>;
 }) {
   const [firstName, ...rest] = input.customer.name.trim().split(/\s+/);
   const body = await call(CHECKOUT_PATH(), {
     method: "POST",
     body: JSON.stringify({
-      productDocumentId: productIdForPlan(input.plan),
+      productDocumentId: input.productId,
       email: input.customer.email ?? undefined,
       firstName: firstName || undefined,
       lastName: rest.join(" ") || undefined,
       phone: input.customer.phone ?? undefined,
       redirectURL: input.returnUrl,
-      meta: { paymentId: input.paymentId, plan: input.plan },
+      // Montant libre : pris en compte seulement si l'API Maketou l'accepte
+      ...(input.amount !== undefined ? { amount: input.amount, price: input.amount } : {}),
+      meta: { ...input.meta, paymentId: input.paymentId },
     }),
   });
   const checkoutUrl = pick(body, [

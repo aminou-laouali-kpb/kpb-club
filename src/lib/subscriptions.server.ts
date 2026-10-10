@@ -88,14 +88,31 @@ export async function settlePayment(paymentId: string, transactionRef?: string |
   if (error) throw new Error(error.message);
   if (!claimed) return { activated: false as const };
 
-  const metadata = (claimed.metadata ?? {}) as { plan?: ClubPlan };
-  const plan: ClubPlan = metadata.plan === "monthly" ? "monthly" : "quarterly";
-  const result = await activateClubAccess({
-    profileId: claimed.profile_id,
-    plan,
-    amount: claimed.amount,
-    source: "payment",
-    paymentId: claimed.id,
-  });
-  return { activated: true as const, plan, ...result, payment: claimed };
+  let result: { kind: "subscription" | "engagement"; description: string; endsAt?: string };
+  if (claimed.payable_type === "engagement") {
+    const { settleEngagementPayment } = await import("./engagements.server");
+    const settled = await settleEngagementPayment(claimed);
+    result = { kind: "engagement", description: settled.description };
+  } else {
+    const metadata = (claimed.metadata ?? {}) as { plan?: ClubPlan };
+    const plan: ClubPlan = metadata.plan === "monthly" ? "monthly" : "quarterly";
+    const access = await activateClubAccess({
+      profileId: claimed.profile_id,
+      plan,
+      amount: claimed.amount,
+      source: "payment",
+      paymentId: claimed.id,
+    });
+    result = {
+      kind: "subscription",
+      description: `Club Boursier — formule ${PRICING.club[plan].label.toLowerCase()}`,
+      endsAt: access.endsAt,
+    };
+  }
+
+  // Un filleul qui paie pour la première fois compte pour son parrain
+  const { markReferralPaid } = await import("./referrals.server");
+  await markReferralPaid(claimed.profile_id).catch((e) => console.error("referral", e));
+
+  return { activated: true as const, ...result, payment: claimed };
 }

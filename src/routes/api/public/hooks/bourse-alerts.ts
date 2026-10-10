@@ -11,6 +11,7 @@ export const Route = createFileRoute("/api/public/hooks/bourse-alerts")({
 
         const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
         const { queueNotifications, dispatchPending } = await import("@/lib/notifications.server");
+        const { nextSendTime } = await import("@/lib/relance/window");
 
         const now = Date.now();
 
@@ -70,6 +71,7 @@ export const Route = createFileRoute("/api/public/hooks/bourse-alerts")({
                 : `${matches.length} bourses compatibles viennent d'ouvrir`,
             body: `Bonjour ${profile.full_name || "cher membre"},\n\nCes fenêtres correspondent à votre profil :\n\n${lines}\n\nRetrouvez le détail dans votre espace membre.\n\nL'équipe KPB Education`,
             dedupe_key: `alert:${profile.id}:${matches.map((m) => m.id).join("-")}`,
+            send_after: nextSendTime(new Date(), profile.timezone).toISOString(),
           });
           for (const m of matches) {
             logs.push({ profile_id: profile.id, bourse_id: m.id, channel: "email" });
