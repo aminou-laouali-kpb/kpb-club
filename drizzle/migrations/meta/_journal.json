@@ -64,6 +64,20 @@
       "when": 1791820800000,
       "tag": "0008_engagements_referrals_relance",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791907200000,
+      "tag": "0009_ai_coach",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791907260000,
+      "tag": "0010_knowledge_seed",
+      "breakpoints": true
     }
   ]
 }

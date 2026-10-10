@@ -17,6 +17,7 @@ import { Route as AuthenticatedAccompagnementRouteImport } from './routes/_authe
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
 import { Route as AuthenticatedCandidaturesRouteImport } from './routes/_authenticated/candidatures'
+import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
@@ -31,6 +32,7 @@ import { Route as AuthenticatedGuideChapterRouteImport } from './routes/_authent
 import { Route as AuthenticatedPaiementRetourRouteImport } from './routes/_authenticated/paiement.retour'
 import { Route as AuthenticatedTemplatesIndexRouteImport } from './routes/_authenticated/templates.index'
 import { Route as AuthenticatedTemplatesSlugRouteImport } from './routes/_authenticated/templates.$slug'
+import { Route as ApiAiStreamRouteImport } from './routes/api/ai/stream'
 import { Route as ApiPublicHooksBourseAlertsRouteImport } from './routes/api/public/hooks/bourse-alerts'
 import { Route as ApiPublicHooksDispatchRouteImport } from './routes/api/public/hooks/dispatch'
 import { Route as ApiPublicHooksMaketouRouteImport } from './routes/api/public/hooks/maketou'
@@ -77,6 +79,11 @@ const AuthenticatedCandidaturesRoute =
     path: '/candidatures',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
+const AuthenticatedCoachRoute = AuthenticatedCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
   id: '/compte',
   path: '/compte',
@@ -153,6 +160,11 @@ const AuthenticatedTemplatesSlugRoute =
     path: '/$slug',
     getParentRoute: () => AuthenticatedTemplatesRoute,
   } as any)
+const ApiAiStreamRoute = ApiAiStreamRouteImport.update({
+  id: '/api/ai/stream',
+  path: '/api/ai/stream',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksBourseAlertsRoute =
   ApiPublicHooksBourseAlertsRouteImport.update({
     id: '/api/public/hooks/bourse-alerts',
@@ -183,6 +195,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
+  '/coach': typeof AuthenticatedCoachRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
@@ -194,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/ai/stream': typeof ApiAiStreamRoute
   '/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/guide/': typeof AuthenticatedGuideIndexRoute
   '/templates/': typeof AuthenticatedTemplatesIndexRoute
@@ -209,6 +223,7 @@ export interface FileRoutesByTo {
   '/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/coach': typeof AuthenticatedCoachRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/documents': typeof AuthenticatedDocumentsRoute
@@ -218,6 +233,7 @@ export interface FileRoutesByTo {
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/ai/stream': typeof ApiAiStreamRoute
   '/candidatures': typeof AuthenticatedCandidaturesIndexRoute
   '/guide': typeof AuthenticatedGuideIndexRoute
   '/templates': typeof AuthenticatedTemplatesIndexRoute
@@ -236,6 +252,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
   '/_authenticated/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
+  '/_authenticated/coach': typeof AuthenticatedCoachRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
@@ -247,6 +264,7 @@ export interface FileRoutesById {
   '/_authenticated/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/_authenticated/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/_authenticated/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/ai/stream': typeof ApiAiStreamRoute
   '/_authenticated/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
   '/_authenticated/templates/': typeof AuthenticatedTemplatesIndexRoute
@@ -265,6 +283,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/bienvenue'
     | '/candidatures'
+    | '/coach'
     | '/compte'
     | '/dashboard'
     | '/documents'
@@ -276,6 +295,7 @@ export interface FileRouteTypes {
     | '/guide/$chapter'
     | '/paiement/retour'
     | '/templates/$slug'
+    | '/api/ai/stream'
     | '/candidatures/'
     | '/guide/'
     | '/templates/'
@@ -291,6 +311,7 @@ export interface FileRouteTypes {
     | '/accompagnement'
     | '/admin'
     | '/bienvenue'
+    | '/coach'
     | '/compte'
     | '/dashboard'
     | '/documents'
@@ -300,6 +321,7 @@ export interface FileRouteTypes {
     | '/guide/$chapter'
     | '/paiement/retour'
     | '/templates/$slug'
+    | '/api/ai/stream'
     | '/candidatures'
     | '/guide'
     | '/templates'
@@ -317,6 +339,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/bienvenue'
     | '/_authenticated/candidatures'
+    | '/_authenticated/coach'
     | '/_authenticated/compte'
     | '/_authenticated/dashboard'
     | '/_authenticated/documents'
@@ -328,6 +351,7 @@ export interface FileRouteTypes {
     | '/_authenticated/guide/$chapter'
     | '/_authenticated/paiement/retour'
     | '/_authenticated/templates/$slug'
+    | '/api/ai/stream'
     | '/_authenticated/candidatures/'
     | '/_authenticated/guide/'
     | '/_authenticated/templates/'
@@ -342,6 +366,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   VerificateurRoute: typeof VerificateurRoute
+  ApiAiStreamRoute: typeof ApiAiStreamRoute
   ApiPublicHooksBourseAlertsRoute: typeof ApiPublicHooksBourseAlertsRoute
   ApiPublicHooksDispatchRoute: typeof ApiPublicHooksDispatchRoute
   ApiPublicHooksMaketouRoute: typeof ApiPublicHooksMaketouRoute
@@ -404,6 +429,13 @@ declare module '@tanstack/react-router' {
       path: '/candidatures'
       fullPath: '/candidatures'
       preLoaderRoute: typeof AuthenticatedCandidaturesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/coach': {
+      id: '/_authenticated/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof AuthenticatedCoachRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/compte': {
@@ -504,6 +536,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTemplatesSlugRouteImport
       parentRoute: typeof AuthenticatedTemplatesRoute
     }
+    '/api/ai/stream': {
+      id: '/api/ai/stream'
+      path: '/api/ai/stream'
+      fullPath: '/api/ai/stream'
+      preLoaderRoute: typeof ApiAiStreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/bourse-alerts': {
       id: '/api/public/hooks/bourse-alerts'
       path: '/api/public/hooks/bourse-alerts'
@@ -585,6 +624,7 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
   AuthenticatedCandidaturesRoute: typeof AuthenticatedCandidaturesRouteWithChildren
+  AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
   AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
@@ -600,6 +640,7 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
   AuthenticatedCandidaturesRoute: AuthenticatedCandidaturesRouteWithChildren,
+  AuthenticatedCoachRoute: AuthenticatedCoachRoute,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
   AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
@@ -618,6 +659,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   VerificateurRoute: VerificateurRoute,
+  ApiAiStreamRoute: ApiAiStreamRoute,
   ApiPublicHooksBourseAlertsRoute: ApiPublicHooksBourseAlertsRoute,
   ApiPublicHooksDispatchRoute: ApiPublicHooksDispatchRoute,
   ApiPublicHooksMaketouRoute: ApiPublicHooksMaketouRoute,

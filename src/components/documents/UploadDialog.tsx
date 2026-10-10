@@ -2,12 +2,13 @@ import { useEffect, useState } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowUp, Camera, FileUp, Trash2 } from "lucide-react";
+import { ArrowUp, Camera, FileUp, Sparkles, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
 import { confirmUpload, prepareUpload } from "@/lib/documents.functions";
 import { DOCUMENT_TYPES, MAX_FILE_BYTES, typeExpires, type DocumentType } from "@/lib/documents";
-import { photosToPdf } from "@/lib/image-to-pdf.browser";
+import { photosToPdf, thumbnailBase64 } from "@/lib/image-to-pdf.browser";
+import { suggestDocumentType } from "@/lib/ai.functions";
 
 export type UploadTarget = {
   type?: string | null;
@@ -39,6 +40,35 @@ export function UploadDialog({
   const [expiresAt, setExpiresAt] = useState("");
   const [textMode, setTextMode] = useState(true);
   const [stage, setStage] = useState("");
+  const suggest = useServerFn(suggestDocumentType);
+
+  // Identification à la demande seulement : l'étudiant l'utilise pour un document scolaire,
+  // jamais pour une pièce d'identité (rappelé à l'écran)
+  const identify = useMutation({
+    mutationFn: async () => {
+      const first = photos[0]?.file;
+      return suggest({
+        data: {
+          fileName: mode === "pdf" ? (pdf?.name ?? "document.pdf") : (first?.name ?? "photo.jpg"),
+          imageBase64: mode === "photos" && first ? await thumbnailBase64(first) : null,
+        },
+      });
+    },
+    onSuccess: (res) => {
+      if (!res.ok) {
+        toast.error(res.error);
+        return;
+      }
+      setType(res.guess.type as DocumentType);
+      setLabel(res.guess.label);
+      toast.success(
+        res.guess.confidence >= 0.7
+          ? `Reconnu : ${DOCUMENT_TYPES.find((t) => t.value === res.guess.type)?.label ?? "document"}. Vérifie avant d'enregistrer.`
+          : "Type incertain : vérifie et corrige si besoin.",
+      );
+    },
+    onError: () => toast.error("Identification impossible. Choisis le type à la main."),
+  });
 
   // Réinitialisation à chaque ouverture, avec le type attendu par l'item d'origine
   useEffect(() => {
@@ -260,6 +290,24 @@ export function UploadDialog({
               onChange={(e) => setPdf(e.target.files?.[0] ?? null)}
             />
           </label>
+        )}
+
+        {type === "other" && ready && (
+          <div className="rounded-md bg-secondary/60 p-3 text-sm">
+            <button
+              type="button"
+              onClick={() => identify.mutate()}
+              disabled={identify.isPending}
+              className="inline-flex items-center gap-1.5 font-medium text-primary disabled:opacity-60"
+            >
+              <Sparkles className="size-4" />
+              {identify.isPending ? "Identification…" : "Identifier le type automatiquement"}
+            </button>
+            <p className="mt-1 text-xs text-muted-foreground">
+              Diplômes, relevés, CV, lettres… Pour un passeport ou une carte d'identité, choisis le
+              type toi-même : ces pièces ne sont jamais envoyées à l'IA.
+            </p>
+          </div>
         )}
 
         <div className="grid gap-3 sm:grid-cols-2">

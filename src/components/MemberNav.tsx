@@ -3,7 +3,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import {
   BookOpen,
   ClipboardList,
-  FileText,
+  Sparkles,
   LayoutDashboard,
   LogOut,
   Shield,
@@ -15,8 +15,8 @@ import { useMemberOverview } from "@/hooks/useMemberOverview";
 const items = [
   { to: "/dashboard", label: "Accueil", icon: LayoutDashboard },
   { to: "/candidatures", label: "Candidatures", icon: ClipboardList },
+  { to: "/coach", label: "Coach", icon: Sparkles },
   { to: "/guide", label: "Guide", icon: BookOpen },
-  { to: "/templates", label: "Modèles", icon: FileText },
   { to: "/compte", label: "Compte", icon: User },
 ] as const;
 

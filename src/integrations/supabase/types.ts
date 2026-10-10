@@ -115,6 +115,7 @@ export type Database = {
       }
       application_items: {
         Row: {
+          last_ai_review_id: string | null
           document_id: string | null
           document_type: string | null
           recommenders_count: number | null
@@ -134,6 +135,7 @@ export type Database = {
           status: Database["public"]["Enums"]["item_status"]
         }
         Insert: {
+          last_ai_review_id?: string | null
           document_id?: string | null
           document_type?: string | null
           recommenders_count?: number | null
@@ -153,6 +155,7 @@ export type Database = {
           status?: Database["public"]["Enums"]["item_status"]
         }
         Update: {
+          last_ai_review_id?: string | null
           document_id?: string | null
           document_type?: string | null
           recommenders_count?: number | null
@@ -244,6 +247,132 @@ export type Database = {
           },
           {
             foreignKeyName: "applications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          thread_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          thread_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "ai_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_threads: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id: string
+          profile_id: string
+          state: Json | null
+          title: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          profile_id: string
+          state?: Json | null
+          title?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          feature?: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          profile_id?: string
+          state?: Json | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_threads_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_usage: {
+        Row: {
+          application_id: string | null
+          cached_tokens: number | null
+          cost_usd: number | null
+          created_at: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id: string
+          input_tokens: number | null
+          item_id: string | null
+          model: string
+          output_tokens: number | null
+          profile_id: string
+          result: Json | null
+          thread_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          cached_tokens?: number | null
+          cost_usd?: number | null
+          created_at?: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          input_tokens?: number | null
+          item_id?: string | null
+          model: string
+          output_tokens?: number | null
+          profile_id: string
+          result?: Json | null
+          thread_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          cached_tokens?: number | null
+          cost_usd?: number | null
+          created_at?: string
+          feature?: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          input_tokens?: number | null
+          item_id?: string | null
+          model?: string
+          output_tokens?: number | null
+          profile_id?: string
+          result?: Json | null
+          thread_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -345,6 +474,8 @@ export type Database = {
       }
       bourses: {
         Row: {
+          essay_criteria: Json | null
+          interview_format: string | null
           operations_order: Json | null
           video_url: string | null
           whatsapp_group_url: string | null
@@ -366,6 +497,8 @@ export type Database = {
           window_opens: string | null
         }
         Insert: {
+          essay_criteria?: Json | null
+          interview_format?: string | null
           operations_order?: Json | null
           video_url?: string | null
           whatsapp_group_url?: string | null
@@ -387,6 +520,8 @@ export type Database = {
           window_opens?: string | null
         }
         Update: {
+          essay_criteria?: Json | null
+          interview_format?: string | null
           operations_order?: Json | null
           video_url?: string | null
           whatsapp_group_url?: string | null
@@ -582,6 +717,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      knowledge_chunks: {
+        Row: {
+          content: string
+          id: string
+          ref: string
+          source: string
+          title: string
+          tsv: unknown
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          id?: string
+          ref: string
+          source: string
+          title: string
+          tsv?: unknown
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          id?: string
+          ref?: string
+          source?: string
+          title?: string
+          tsv?: unknown
+          updated_at?: string
+        }
+        Relationships: []
       }
       notifications: {
         Row: {
@@ -997,6 +1162,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      search_knowledge: {
+        Args: { _limit?: number; _query: string }
+        Returns: { content: string; rank: number; ref: string; source: string; title: string }[]
+      }
       redeem_access_code: {
         Args: { _code: string; _profile_id: string }
         Returns: { duration_days: number; redemption_id: string }[]
@@ -1011,6 +1180,7 @@ export type Database = {
       verify_cron_token: { Args: { _token: string }; Returns: boolean }
     }
     Enums: {
+      ai_feature: "essay_review" | "cv_review" | "interview_sim" | "coach_chat" | "doc_classify"
       app_role: "admin" | "moderator" | "user"
       application_status:
         | "targeting"
@@ -1192,6 +1362,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_feature: ["essay_review", "cv_review", "interview_sim", "coach_chat", "doc_classify"],
       app_role: ["admin", "moderator", "user"],
       application_status: [
         "targeting",

@@ -123,3 +123,14 @@ export async function photosToPdf(
 export function previewUrl(file: Blob) {
   return URL.createObjectURL(file);
 }
+
+/** Miniature JPEG en base64 (sans préfixe), pour l'identification du type de document. */
+export async function thumbnailBase64(file: Blob, maxSide = 800): Promise<string> {
+  const canvas = resized(await photoToCanvas(file, false), maxSide);
+  const jpeg = await canvasToJpeg(canvas, 0.6);
+  let binary = "";
+  for (let i = 0; i < jpeg.length; i += 0x8000) {
+    binary += String.fromCharCode(...jpeg.subarray(i, i + 0x8000));
+  }
+  return btoa(binary);
+}

@@ -31,6 +31,12 @@ function GuideIndex() {
       <p className="mt-2 text-sm text-muted-foreground">
         Chapitre par chapitre, de la sélection des programmes à l'entretien.
       </p>
+      <Link
+        to="/templates"
+        className="mt-3 inline-flex rounded-md border border-border px-3 py-2 text-sm"
+      >
+        Voir les modèles (CV, lettres, essai)
+      </Link>
       <div className="mt-6 space-y-3">
         {GUIDE_CHAPTERS.map((chapter, index) => (
           <Link

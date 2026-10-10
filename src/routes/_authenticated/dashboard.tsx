@@ -11,6 +11,7 @@ import { useMemberOverview, hasAccess } from "@/hooks/useMemberOverview";
 import { formatDateFr } from "@/lib/matching";
 import { formatFcfa } from "@/lib/pricing";
 import { AccessCodeForm } from "@/components/AccessCodeForm";
+import { AiQuotaCard } from "@/components/coach/AiQuotaCard";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
   head: () => ({
@@ -184,6 +185,8 @@ function Dashboard() {
           </div>
         )}
       </section>
+
+      <AiQuotaCard />
 
       <Link
         to="/parrainage"
