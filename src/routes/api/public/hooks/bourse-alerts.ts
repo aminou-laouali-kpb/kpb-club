@@ -41,8 +41,7 @@ export const Route = createFileRoute("/api/public/hooks/bourse-alerts")({
         const { data: profiles } = await supabaseAdmin
           .from("profiles")
           .select("*")
-          .in("id", [...activeProfileIds])
-          .eq("email_optin", true);
+          .in("id", [...activeProfileIds]);
 
         const already = new Set((alerts ?? []).map((a) => `${a.profile_id}:${a.bourse_id}`));
         const queue = [];

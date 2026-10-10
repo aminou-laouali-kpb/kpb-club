@@ -3,7 +3,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { ArrowRight, BookOpen, FileText, Gift, Plus } from "lucide-react";
+import { ArrowRight, BookOpen, FileText, Gift, Languages, Library, Plus } from "lucide-react";
 import { createApplication } from "@/lib/applications.functions";
 import { ApplicationCard } from "@/components/application/ApplicationCard";
 import { isActiveStatus, type ApplicationStatus } from "@/lib/applications";
@@ -215,6 +215,20 @@ function Dashboard() {
         >
           <FileText className="size-5 text-primary" />
           <span className="font-medium">Les modèles</span>
+        </Link>
+        <Link
+          to="/bibliotheque"
+          className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
+        >
+          <Library className="size-5 text-primary" />
+          <span className="font-medium">La bibliothèque</span>
+        </Link>
+        <Link
+          to="/anglais"
+          className="flex items-center gap-3 rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
+        >
+          <Languages className="size-5 text-primary" />
+          <span className="font-medium">Parcours anglais</span>
         </Link>
       </section>
     </div>

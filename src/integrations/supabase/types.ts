@@ -14,6 +14,306 @@ export type Database = {
   }
   public: {
     Tables: {
+      content_chapters: {
+        Row: {
+          body_md: string
+          id: string
+          published: boolean
+          slug: string
+          sort_order: number | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md: string
+          id?: string
+          published?: boolean
+          slug: string
+          sort_order?: number | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          id?: string
+          published?: boolean
+          slug?: string
+          sort_order?: number | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_post_reads: {
+        Row: {
+          post_id: string
+          profile_id: string
+          read_at: string
+        }
+        Insert: {
+          post_id: string
+          profile_id: string
+          read_at?: string
+        }
+        Update: {
+          post_id?: string
+          profile_id?: string
+          read_at?: string
+        }
+        Relationships: []
+      }
+      content_posts: {
+        Row: {
+          body_md: string | null
+          bourse_id: string | null
+          id: string
+          kind: string
+          notify: boolean
+          published_at: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          body_md?: string | null
+          bourse_id?: string | null
+          id?: string
+          kind: string
+          notify?: boolean
+          published_at?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          body_md?: string | null
+          bourse_id?: string | null
+          id?: string
+          kind?: string
+          notify?: boolean
+          published_at?: string | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      content_templates: {
+        Row: {
+          body_md: string
+          category: string | null
+          id: string
+          prefill: boolean
+          published: boolean
+          slug: string
+          sort_order: number | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md: string
+          category?: string | null
+          id?: string
+          prefill?: boolean
+          published?: boolean
+          slug: string
+          sort_order?: number | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          category?: string | null
+          id?: string
+          prefill?: boolean
+          published?: boolean
+          slug?: string
+          sort_order?: number | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      english_test_sessions: {
+        Row: {
+          city: string
+          cost_indicative: string | null
+          country: string | null
+          id: string
+          notes: string | null
+          register_by: string | null
+          results_days: number | null
+          session_date: string
+          test: string
+        }
+        Insert: {
+          city: string
+          cost_indicative?: string | null
+          country?: string | null
+          id?: string
+          notes?: string | null
+          register_by?: string | null
+          results_days?: number | null
+          session_date: string
+          test: string
+        }
+        Update: {
+          city?: string
+          cost_indicative?: string | null
+          country?: string | null
+          id?: string
+          notes?: string | null
+          register_by?: string | null
+          results_days?: number | null
+          session_date?: string
+          test?: string
+        }
+        Relationships: []
+      }
+      laureates: {
+        Row: {
+          bourse_id: string | null
+          bourse_name: string | null
+          consent_at: string | null
+          country: string | null
+          created_at: string
+          first_name: string
+          id: string
+          is_demo: boolean
+          quote: string | null
+          verified: boolean
+          video_url: string | null
+          year: number | null
+        }
+        Insert: {
+          bourse_id?: string | null
+          bourse_name?: string | null
+          consent_at?: string | null
+          country?: string | null
+          created_at?: string
+          first_name: string
+          id?: string
+          is_demo?: boolean
+          quote?: string | null
+          verified?: boolean
+          video_url?: string | null
+          year?: number | null
+        }
+        Update: {
+          bourse_id?: string | null
+          bourse_name?: string | null
+          consent_at?: string | null
+          country?: string | null
+          created_at?: string
+          first_name?: string
+          id?: string
+          is_demo?: boolean
+          quote?: string | null
+          verified?: boolean
+          video_url?: string | null
+          year?: number | null
+        }
+        Relationships: []
+      }
+      otp_codes: {
+        Row: {
+          attempts: number
+          channel: string
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          delivery_status: string | null
+          expires_at: string
+          id: string
+          ip: string | null
+          phone_e164: string
+          profile_id: string | null
+          purpose: string
+          wa_message_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          channel: string
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          expires_at: string
+          id?: string
+          ip?: string | null
+          phone_e164: string
+          profile_id?: string | null
+          purpose?: string
+          wa_message_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          expires_at?: string
+          id?: string
+          ip?: string | null
+          phone_e164?: string
+          profile_id?: string | null
+          purpose?: string
+          wa_message_id?: string | null
+        }
+        Relationships: []
+      }
+      whatsapp_inbound: {
+        Row: {
+          body: string | null
+          kind: string
+          phone_e164: string
+          received_at: string
+          wa_message_id: string
+        }
+        Insert: {
+          body?: string | null
+          kind: string
+          phone_e164: string
+          received_at?: string
+          wa_message_id: string
+        }
+        Update: {
+          body?: string | null
+          kind?: string
+          phone_e164?: string
+          received_at?: string
+          wa_message_id?: string
+        }
+        Relationships: []
+      }
+      whatsapp_sessions: {
+        Row: {
+          last_inbound_at: string | null
+          pending: Json | null
+          phone_e164: string
+          profile_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          last_inbound_at?: string | null
+          pending?: Json | null
+          phone_e164: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          last_inbound_at?: string | null
+          pending?: Json | null
+          phone_e164?: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       access_code_attempts: {
         Row: {
           attempted_at: string
@@ -474,6 +774,7 @@ export type Database = {
       }
       bourses: {
         Row: {
+          english_tests: Json | null
           essay_criteria: Json | null
           interview_format: string | null
           operations_order: Json | null
@@ -497,6 +798,7 @@ export type Database = {
           window_opens: string | null
         }
         Insert: {
+          english_tests?: Json | null
           essay_criteria?: Json | null
           interview_format?: string | null
           operations_order?: Json | null
@@ -520,6 +822,7 @@ export type Database = {
           window_opens?: string | null
         }
         Update: {
+          english_tests?: Json | null
           essay_criteria?: Json | null
           interview_format?: string | null
           operations_order?: Json | null
@@ -750,6 +1053,9 @@ export type Database = {
       }
       notifications: {
         Row: {
+          template: string | null
+          template_params: Json | null
+          wa_message_id: string | null
           send_after: string
           body: string
           channel: string
@@ -765,6 +1071,9 @@ export type Database = {
           subject: string
         }
         Insert: {
+          template?: string | null
+          template_params?: Json | null
+          wa_message_id?: string | null
           send_after?: string
           body: string
           channel?: string
@@ -780,6 +1089,9 @@ export type Database = {
           subject: string
         }
         Update: {
+          template?: string | null
+          template_params?: Json | null
+          wa_message_id?: string | null
           send_after?: string
           body?: string
           channel?: string
@@ -862,6 +1174,16 @@ export type Database = {
       }
       profiles: {
         Row: {
+          phone_e164: string | null
+          phone_verified_at: string | null
+          notif_whatsapp_alerts: boolean
+          notif_whatsapp_reminders: boolean
+          notif_whatsapp_content: boolean
+          notif_email: boolean
+          english_test: string | null
+          english_test_score: string | null
+          english_test_date: string | null
+          english_self_level: string | null
           timezone: string
           referral_code: string | null
           referred_by: string | null
@@ -888,6 +1210,16 @@ export type Database = {
           whatsapp_optin: boolean
         }
         Insert: {
+          phone_e164?: string | null
+          phone_verified_at?: string | null
+          notif_whatsapp_alerts?: boolean
+          notif_whatsapp_reminders?: boolean
+          notif_whatsapp_content?: boolean
+          notif_email?: boolean
+          english_test?: string | null
+          english_test_score?: string | null
+          english_test_date?: string | null
+          english_self_level?: string | null
           timezone?: string
           referral_code?: string | null
           referred_by?: string | null
@@ -914,6 +1246,16 @@ export type Database = {
           whatsapp_optin?: boolean
         }
         Update: {
+          phone_e164?: string | null
+          phone_verified_at?: string | null
+          notif_whatsapp_alerts?: boolean
+          notif_whatsapp_reminders?: boolean
+          notif_whatsapp_content?: boolean
+          notif_email?: boolean
+          english_test?: string | null
+          english_test_score?: string | null
+          english_test_date?: string | null
+          english_self_level?: string | null
           timezone?: string
           referral_code?: string | null
           referred_by?: string | null

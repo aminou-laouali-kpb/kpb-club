@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowRight, BellRing, BookOpen, FileText, ShieldCheck } from "lucide-react";
 import { SiteHeader } from "@/components/SiteHeader";
+import { LaureatesWall } from "@/components/LaureatesWall";
 import { PRICING, formatFcfa } from "@/lib/pricing";
 
 export const Route = createFileRoute("/")({
@@ -92,6 +93,18 @@ function Landing() {
                 </div>
               </div>
             ))}
+          </div>
+        </section>
+
+        <section className="mx-auto max-w-5xl px-4 pt-14">
+          <div className="flex flex-wrap items-end justify-between gap-2">
+            <h2 className="font-display text-3xl font-semibold">Ils ont réussi</h2>
+            <Link to="/laureats" className="text-sm font-medium text-primary">
+              Tous les témoignages
+            </Link>
+          </div>
+          <div className="mt-6">
+            <LaureatesWall limit={3} />
           </div>
         </section>
 

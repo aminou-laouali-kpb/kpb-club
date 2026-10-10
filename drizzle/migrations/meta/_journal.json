@@ -78,6 +78,20 @@
       "when": 1791907260000,
       "tag": "0010_knowledge_seed",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791993600000,
+      "tag": "0011_whatsapp_content_pwa",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791993660000,
+      "tag": "0012_content_seed",
+      "breakpoints": true
     }
   ]
 }

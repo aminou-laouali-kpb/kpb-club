@@ -4,7 +4,7 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { matchBourses, type Bourse } from "./matching";
 
 const profileSchema = z.object({
-  full_name: z.string().trim().min(1).max(120),
+  full_name: z.string().trim().min(1).max(120).optional(),
   phone: z.string().trim().max(24).optional().nullable(),
   date_of_birth: z.string().trim().max(10).optional().nullable(),
   gender: z.enum(["M", "F", "other"]).optional().nullable(),
@@ -20,6 +20,14 @@ const profileSchema = z.object({
   whatsapp_optin: z.boolean().optional(),
   email_optin: z.boolean().optional(),
   timezone: z.string().trim().max(64).optional().nullable(),
+  notif_email: z.boolean().optional(),
+  notif_whatsapp_alerts: z.boolean().optional(),
+  notif_whatsapp_reminders: z.boolean().optional(),
+  notif_whatsapp_content: z.boolean().optional(),
+  english_test: z.enum(["ielts", "toefl", "duolingo", "none"]).optional().nullable(),
+  english_test_score: z.string().trim().max(10).optional().nullable(),
+  english_test_date: z.string().date().optional().nullable(),
+  english_self_level: z.enum(["A2", "B1", "B2", "C1"]).optional().nullable(),
 });
 
 export type ProfileInput = z.infer<typeof profileSchema>;
@@ -107,9 +115,9 @@ export const saveProfile = createServerFn({ method: "POST" })
   .inputValidator((input: unknown) => profileSchema.parse(input))
   .handler(async ({ data, context }) => {
     const { supabase, userId } = context;
-    const payload: Record<string, unknown> = {
-      date_of_birth: data.date_of_birth ? data.date_of_birth : null,
-    };
+    // Mise à jour partielle : seuls les champs envoyés sont modifiés
+    const payload: Record<string, unknown> = {};
+    if (data.date_of_birth !== undefined) payload["date_of_birth"] = data.date_of_birth || null;
     for (const [key, value] of Object.entries(data)) {
       if (key === "date_of_birth" || key === "timezone") continue;
       if (value !== undefined) payload[key] = value;

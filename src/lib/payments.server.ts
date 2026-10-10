@@ -87,7 +87,7 @@ async function notifyPaymentSuccess(
     .select("email, full_name")
     .eq("id", profileId)
     .maybeSingle();
-  if (!profile?.email) return;
+  if (!profile) return;
   const appUrl = (process.env["APP_URL"] ?? "").replace(/\/$/, "");
   const detail =
     settled.kind === "subscription" && settled.endsAt

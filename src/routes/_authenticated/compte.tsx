@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useMemberOverview } from "@/hooks/useMemberOverview";
 import { saveProfile } from "@/lib/member.functions";
+import { WhatsAppLink } from "@/components/auth/WhatsAppLink";
 import { getReceipt } from "@/lib/payments.functions";
 import { TIMEZONE_OPTIONS } from "@/lib/relance/window";
 import { Download } from "lucide-react";
@@ -46,6 +47,10 @@ type Form = {
   financial_need: boolean;
   whatsapp_optin: boolean;
   email_optin: boolean;
+  notif_email: boolean;
+  notif_whatsapp_alerts: boolean;
+  notif_whatsapp_reminders: boolean;
+  notif_whatsapp_content: boolean;
   timezone: string;
 };
 
@@ -71,6 +76,10 @@ function Compte() {
       financial_need: p.financial_need ?? false,
       whatsapp_optin: p.whatsapp_optin ?? false,
       email_optin: p.email_optin ?? true,
+      notif_email: p.notif_email ?? true,
+      notif_whatsapp_alerts: p.notif_whatsapp_alerts ?? true,
+      notif_whatsapp_reminders: p.notif_whatsapp_reminders ?? true,
+      notif_whatsapp_content: p.notif_whatsapp_content ?? true,
       timezone: p.timezone ?? "Africa/Niamey",
     });
   }, [data, form]);
@@ -106,6 +115,10 @@ function Compte() {
           financial_need: values.financial_need,
           whatsapp_optin: values.whatsapp_optin,
           email_optin: values.email_optin,
+          notif_email: values.notif_email,
+          notif_whatsapp_alerts: values.notif_whatsapp_alerts,
+          notif_whatsapp_reminders: values.notif_whatsapp_reminders,
+          notif_whatsapp_content: values.notif_whatsapp_content,
           timezone: values.timezone,
         },
       }),
@@ -331,24 +344,58 @@ function Compte() {
             ))}
           </select>
         </div>
-        <label className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            className="size-4"
-            checked={form.email_optin}
-            onChange={(e) => set("email_optin", e.target.checked)}
-          />
-          <span className="text-sm">Recevoir les alertes par email</span>
-        </label>
-        <label className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            className="size-4"
-            checked={form.whatsapp_optin}
-            onChange={(e) => set("whatsapp_optin", e.target.checked)}
-          />
-          <span className="text-sm">Recevoir les alertes par WhatsApp</span>
-        </label>
+        <fieldset className="space-y-3 rounded-lg border border-border p-4">
+          <legend className="px-1 text-sm font-medium">Mes notifications</legend>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Sur WhatsApp
+          </p>
+          {(
+            [
+              ["Rappels (échéances, abonnement, paiements)", "notif_whatsapp_reminders"],
+              ["Alertes de nouvelles bourses", "notif_whatsapp_alerts"],
+              ["Nouveaux contenus (bulletin, vidéos)", "notif_whatsapp_content"],
+            ] as const
+          ).map(([label, key]) => (
+            <label key={key} className="flex items-center gap-3 text-sm">
+              <input
+                type="checkbox"
+                className="size-4"
+                checked={form.whatsapp_optin && form[key]}
+                disabled={!data.profile.phone_verified_at}
+                onChange={(e) => {
+                  set(key, e.target.checked);
+                  if (e.target.checked) set("whatsapp_optin", true);
+                }}
+              />
+              {label}
+            </label>
+          ))}
+          <p className="pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Par email
+          </p>
+          <label className="flex items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="size-4"
+              checked={form.email_optin && form.notif_email}
+              disabled={!data.profile.email}
+              onChange={(e) => {
+                set("notif_email", e.target.checked);
+                set("email_optin", e.target.checked);
+              }}
+            />
+            {data.profile.email
+              ? `Recevoir aussi mes messages à ${data.profile.email}`
+              : "Aucune adresse email sur ce compte"}
+          </label>
+          <p className="text-xs text-muted-foreground">
+            {!data.profile.phone_verified_at
+              ? "Relie ton WhatsApp ci-dessous pour recevoir tes rappels dessus. "
+              : ""}
+            Les rappels importants (échéance, fin d'abonnement) continuent par email si tu coupes
+            WhatsApp : tu ne perds jamais le fil sans le savoir.
+          </p>
+        </fieldset>
 
         <button
           type="submit"
@@ -358,6 +405,13 @@ function Compte() {
           {mutation.isPending ? "Enregistrement…" : "Enregistrer"}
         </button>
       </form>
+
+      <section className="rounded-xl border border-border bg-card p-5">
+        <h2 className="mb-3 font-display text-xl font-semibold">Mon WhatsApp</h2>
+        <WhatsAppLink
+          verifiedPhone={data.profile.phone_verified_at ? data.profile.phone_e164 : null}
+        />
+      </section>
 
       <section className="rounded-xl border border-border bg-card p-5">
         <h2 className="font-display text-xl font-semibold">Paiements</h2>

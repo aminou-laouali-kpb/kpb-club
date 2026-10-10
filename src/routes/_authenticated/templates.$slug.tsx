@@ -1,31 +1,16 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft } from "lucide-react";
-import { useMemberOverview, hasAccess, watermarkFor } from "@/hooks/useMemberOverview";
 import { MemberGate } from "@/components/MemberGate";
 import { WatermarkedContent } from "@/components/WatermarkedContent";
 import { Markdown } from "@/components/Markdown";
-import { findTemplate } from "@/lib/content";
+import { getTemplate } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/_authenticated/templates/$slug")({
-  loader: ({ params }) => {
-    const template = findTemplate(params.slug);
-    if (!template) throw notFound();
-    return { template };
-  },
-  head: ({ loaderData }) => {
-    const title = loaderData?.template.title ?? "Modèle indisponible";
-    return {
-      meta: [
-        { title: `${title} — Modèles KPB Education` },
-        { name: "description", content: loaderData?.template.summary ?? "Modèle du Club." },
-        { name: "robots", content: "noindex" },
-        { property: "og:title", content: `${title} — Modèles KPB Education` },
-        { property: "og:description", content: loaderData?.template.summary ?? "Modèle du Club." },
-      ],
-    };
-  },
-  notFoundComponent: TemplateNotFound,
-  errorComponent: TemplateNotFound,
+  head: () => ({
+    meta: [{ title: "Modèle — KPB Education" }, { name: "robots", content: "noindex" }],
+  }),
   component: TemplatePage,
 });
 
@@ -41,11 +26,16 @@ function TemplateNotFound() {
 }
 
 function TemplatePage() {
-  const { template } = Route.useLoaderData();
-  const { data, isPending } = useMemberOverview();
+  const { slug } = Route.useParams();
+  const fetchTemplate = useServerFn(getTemplate);
+  const { data, isPending } = useQuery({
+    queryKey: ["template", slug],
+    queryFn: () => fetchTemplate({ data: { slug } }),
+  });
 
   if (isPending) return <p className="py-10 text-sm text-muted-foreground">Chargement…</p>;
-  if (!data || !hasAccess(data.subscriptionState)) return <MemberGate />;
+  if (!data?.found) return <TemplateNotFound />;
+  if (!data.access) return <MemberGate />;
 
   return (
     <div>
@@ -55,9 +45,9 @@ function TemplatePage() {
       >
         <ArrowLeft className="size-4" /> Les modèles
       </Link>
-      <h1 className="mt-3 mb-4 font-display text-3xl font-semibold">{template.title}</h1>
-      <WatermarkedContent watermark={watermarkFor(data.profile)}>
-        <Markdown source={template.body} />
+      <h1 className="mt-3 mb-4 font-display text-3xl font-semibold">{data.title}</h1>
+      <WatermarkedContent watermark={data.watermark}>
+        <Markdown source={data.body} />
       </WatermarkedContent>
     </div>
   );

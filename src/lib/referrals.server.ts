@@ -62,7 +62,7 @@ export async function processReferralRewards(referrerId: string) {
       .select("email, full_name, email_optin, timezone")
       .eq("id", referrerId)
       .maybeSingle();
-    if (profile?.email && profile.email_optin) {
+    if (profile) {
       await queueNotifications([
         {
           profile_id: referrerId,

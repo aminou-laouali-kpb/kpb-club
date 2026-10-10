@@ -12,9 +12,12 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as LaureatsRouteImport } from './routes/laureats'
 import { Route as VerificateurRouteImport } from './routes/verificateur'
 import { Route as AuthenticatedAccompagnementRouteImport } from './routes/_authenticated/accompagnement'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAnglaisRouteImport } from './routes/_authenticated/anglais'
+import { Route as AuthenticatedBibliothequeRouteImport } from './routes/_authenticated/bibliotheque'
 import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
 import { Route as AuthenticatedCandidaturesRouteImport } from './routes/_authenticated/candidatures'
 import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
@@ -37,6 +40,7 @@ import { Route as ApiPublicHooksBourseAlertsRouteImport } from './routes/api/pub
 import { Route as ApiPublicHooksDispatchRouteImport } from './routes/api/public/hooks/dispatch'
 import { Route as ApiPublicHooksMaketouRouteImport } from './routes/api/public/hooks/maketou'
 import { Route as ApiPublicHooksRemindersRouteImport } from './routes/api/public/hooks/reminders'
+import { Route as ApiPublicHooksWhatsappRouteImport } from './routes/api/public/hooks/whatsapp'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -50,6 +54,11 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LaureatsRoute = LaureatsRouteImport.update({
+  id: '/laureats',
+  path: '/laureats',
   getParentRoute: () => rootRouteImport,
 } as any)
 const VerificateurRoute = VerificateurRouteImport.update({
@@ -68,6 +77,17 @@ const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   path: '/admin',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedAnglaisRoute = AuthenticatedAnglaisRouteImport.update({
+  id: '/anglais',
+  path: '/anglais',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBibliothequeRoute =
+  AuthenticatedBibliothequeRouteImport.update({
+    id: '/bibliotheque',
+    path: '/bibliotheque',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedBienvenueRoute = AuthenticatedBienvenueRouteImport.update({
   id: '/bienvenue',
   path: '/bienvenue',
@@ -186,13 +206,21 @@ const ApiPublicHooksRemindersRoute = ApiPublicHooksRemindersRouteImport.update({
   path: '/api/public/hooks/reminders',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicHooksWhatsappRoute = ApiPublicHooksWhatsappRouteImport.update({
+  id: '/api/public/hooks/whatsapp',
+  path: '/api/public/hooks/whatsapp',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
   '/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/anglais': typeof AuthenticatedAnglaisRoute
+  '/bibliotheque': typeof AuthenticatedBibliothequeRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
   '/coach': typeof AuthenticatedCoachRoute
@@ -215,13 +243,17 @@ export interface FileRoutesByFullPath {
   '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
   '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
+  '/api/public/hooks/whatsapp': typeof ApiPublicHooksWhatsappRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
   '/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/anglais': typeof AuthenticatedAnglaisRoute
+  '/bibliotheque': typeof AuthenticatedBibliothequeRoute
   '/bienvenue': typeof AuthenticatedBienvenueRoute
   '/coach': typeof AuthenticatedCoachRoute
   '/compte': typeof AuthenticatedCompteRoute
@@ -241,15 +273,19 @@ export interface FileRoutesByTo {
   '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
   '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
+  '/api/public/hooks/whatsapp': typeof ApiPublicHooksWhatsappRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
   '/_authenticated/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/anglais': typeof AuthenticatedAnglaisRoute
+  '/_authenticated/bibliotheque': typeof AuthenticatedBibliothequeRoute
   '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
   '/_authenticated/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
   '/_authenticated/coach': typeof AuthenticatedCoachRoute
@@ -272,15 +308,19 @@ export interface FileRoutesById {
   '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
   '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
+  '/api/public/hooks/whatsapp': typeof ApiPublicHooksWhatsappRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/laureats'
     | '/verificateur'
     | '/accompagnement'
     | '/admin'
+    | '/anglais'
+    | '/bibliotheque'
     | '/bienvenue'
     | '/candidatures'
     | '/coach'
@@ -303,13 +343,17 @@ export interface FileRouteTypes {
     | '/api/public/hooks/dispatch'
     | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
+    | '/api/public/hooks/whatsapp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/laureats'
     | '/verificateur'
     | '/accompagnement'
     | '/admin'
+    | '/anglais'
+    | '/bibliotheque'
     | '/bienvenue'
     | '/coach'
     | '/compte'
@@ -329,14 +373,18 @@ export interface FileRouteTypes {
     | '/api/public/hooks/dispatch'
     | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
+    | '/api/public/hooks/whatsapp'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/laureats'
     | '/verificateur'
     | '/_authenticated/accompagnement'
     | '/_authenticated/admin'
+    | '/_authenticated/anglais'
+    | '/_authenticated/bibliotheque'
     | '/_authenticated/bienvenue'
     | '/_authenticated/candidatures'
     | '/_authenticated/coach'
@@ -359,18 +407,21 @@ export interface FileRouteTypes {
     | '/api/public/hooks/dispatch'
     | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
+    | '/api/public/hooks/whatsapp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  LaureatsRoute: typeof LaureatsRoute
   VerificateurRoute: typeof VerificateurRoute
   ApiAiStreamRoute: typeof ApiAiStreamRoute
   ApiPublicHooksBourseAlertsRoute: typeof ApiPublicHooksBourseAlertsRoute
   ApiPublicHooksDispatchRoute: typeof ApiPublicHooksDispatchRoute
   ApiPublicHooksMaketouRoute: typeof ApiPublicHooksMaketouRoute
   ApiPublicHooksRemindersRoute: typeof ApiPublicHooksRemindersRoute
+  ApiPublicHooksWhatsappRoute: typeof ApiPublicHooksWhatsappRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -396,6 +447,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/laureats': {
+      id: '/laureats'
+      path: '/laureats'
+      fullPath: '/laureats'
+      preLoaderRoute: typeof LaureatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verificateur': {
       id: '/verificateur'
       path: '/verificateur'
@@ -415,6 +473,20 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/anglais': {
+      id: '/_authenticated/anglais'
+      path: '/anglais'
+      fullPath: '/anglais'
+      preLoaderRoute: typeof AuthenticatedAnglaisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bibliotheque': {
+      id: '/_authenticated/bibliotheque'
+      path: '/bibliotheque'
+      fullPath: '/bibliotheque'
+      preLoaderRoute: typeof AuthenticatedBibliothequeRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/bienvenue': {
@@ -571,6 +643,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/whatsapp': {
+      id: '/api/public/hooks/whatsapp'
+      path: '/api/public/hooks/whatsapp'
+      fullPath: '/api/public/hooks/whatsapp'
+      preLoaderRoute: typeof ApiPublicHooksWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -622,6 +701,8 @@ const AuthenticatedTemplatesRouteWithChildren =
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAccompagnementRoute: typeof AuthenticatedAccompagnementRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAnglaisRoute: typeof AuthenticatedAnglaisRoute
+  AuthenticatedBibliothequeRoute: typeof AuthenticatedBibliothequeRoute
   AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
   AuthenticatedCandidaturesRoute: typeof AuthenticatedCandidaturesRouteWithChildren
   AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
@@ -638,6 +719,8 @@ interface AuthenticatedRouteRouteChildren {
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAccompagnementRoute: AuthenticatedAccompagnementRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAnglaisRoute: AuthenticatedAnglaisRoute,
+  AuthenticatedBibliothequeRoute: AuthenticatedBibliothequeRoute,
   AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
   AuthenticatedCandidaturesRoute: AuthenticatedCandidaturesRouteWithChildren,
   AuthenticatedCoachRoute: AuthenticatedCoachRoute,
@@ -658,12 +741,14 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  LaureatsRoute: LaureatsRoute,
   VerificateurRoute: VerificateurRoute,
   ApiAiStreamRoute: ApiAiStreamRoute,
   ApiPublicHooksBourseAlertsRoute: ApiPublicHooksBourseAlertsRoute,
   ApiPublicHooksDispatchRoute: ApiPublicHooksDispatchRoute,
   ApiPublicHooksMaketouRoute: ApiPublicHooksMaketouRoute,
   ApiPublicHooksRemindersRoute: ApiPublicHooksRemindersRoute,
+  ApiPublicHooksWhatsappRoute: ApiPublicHooksWhatsappRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

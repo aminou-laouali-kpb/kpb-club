@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { useAttachCapturedReferral } from "@/hooks/useReferralCapture";
 import { attachReferral } from "@/lib/referrals.functions";
+import { useOfflineReplay } from "@/hooks/useOfflineReplay";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -20,6 +21,7 @@ function MemberLayout() {
   useSessionGuard();
   const attach = useServerFn(attachReferral);
   useAttachCapturedReferral((code) => attach({ data: { code } }));
+  useOfflineReplay();
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
       <MemberNav />

@@ -103,7 +103,15 @@ function ApplicationPage() {
   };
 
   const itemMutation = useMutation({
-    mutationFn: (vars: { itemId: string; status: ItemStatus }) => setItemStatus({ data: vars }),
+    mutationFn: async (vars: { itemId: string; status: ItemStatus }) => {
+      // Hors ligne : l'action est gardée et rejouée au retour du réseau
+      if (typeof navigator !== "undefined" && !navigator.onLine) {
+        const { enqueue } = await import("@/lib/offline/queue");
+        await enqueue({ type: "item_status", ...vars });
+        return { queued: true };
+      }
+      return setItemStatus({ data: vars });
+    },
     onMutate: async (vars) => {
       // Mise à jour immédiate de la case, avant la réponse du serveur
       await queryClient.cancelQueries({ queryKey });
@@ -124,7 +132,9 @@ function ApplicationPage() {
       if (ctx?.previous) queryClient.setQueryData(queryKey, ctx.previous);
       toast.error("Modification non enregistrée. Vérifie ta connexion.");
     },
-    onSettled: refresh,
+    onSettled: () => {
+      if (typeof navigator === "undefined" || navigator.onLine) refresh();
+    },
   });
 
   const statusMutation = useMutation({

@@ -109,7 +109,7 @@ async function subscriptionReminders(now: Date) {
     if (sub.status !== nextStatus) updates.push({ id: sub.id, patch: { status: nextStatus } });
 
     const profile = sub.profiles as unknown as Profile | null;
-    if (!profile?.email_optin) continue;
+    if (!profile) continue;
     if (ends < (latestEnd.get(sub.profile_id) ?? 0)) continue;
 
     const daysToEnd = Math.ceil((ends - t) / DAY);
@@ -139,7 +139,10 @@ async function subscriptionReminders(now: Date) {
 
   const queued = await queueNotifications(queue);
   for (const u of updates) {
-    await supabaseAdmin.from("subscriptions").update(u.patch as never).eq("id", u.id);
+    await supabaseAdmin
+      .from("subscriptions")
+      .update(u.patch as never)
+      .eq("id", u.id);
   }
   return queued;
 }
@@ -180,7 +183,7 @@ async function secondInstallmentReminders(now: Date) {
   for (const e of rows ?? []) {
     if (e.paid_amount >= e.amount) continue;
     const profile = e.profiles as unknown as Profile | null;
-    if (!profile?.email) continue;
+    if (!profile) continue;
     const kind = secondInstallmentReminder(e.second_due_at, now, {
       reminder_t2_j5_sent: e.reminder_t2_j5_sent,
       reminder_t2_j1_sent: e.reminder_t2_j1_sent,
@@ -236,9 +239,10 @@ async function engagementNudges(now: Date) {
       profiles: Profile | null;
     };
     if (seen.has(app.id)) continue; // une seule relance par candidature, l'item le plus urgent
-    if (["submitted", "interview", "accepted", "rejected", "abandoned"].includes(app.status)) continue;
+    if (["submitted", "interview", "accepted", "rejected", "abandoned"].includes(app.status))
+      continue;
     const profile = app.profiles;
-    if (!profile?.email_optin) continue;
+    if (!profile) continue;
     if (!engagementNudgeDue(item, app.last_activity_at, now)) continue;
     seen.add(app.id);
     const days = Math.round(
@@ -267,7 +271,7 @@ async function inactivityReminders(now: Date) {
   const profiles = new Map<string, Profile>();
   for (const s of subs ?? []) {
     const p = s.profiles as unknown as Profile | null;
-    if (p?.email_optin && p.email) profiles.set(p.id, p);
+    if (p) profiles.set(p.id, p);
   }
   if (profiles.size === 0) return 0;
   const ids = [...profiles.keys()];
@@ -286,7 +290,8 @@ async function inactivityReminders(now: Date) {
       .order("deadline", { ascending: true, nullsFirst: false }),
   ]);
   const lastSeen = new Map<string, string>();
-  for (const s of sessions ?? []) if (!lastSeen.has(s.profile_id)) lastSeen.set(s.profile_id, s.last_seen_at);
+  for (const s of sessions ?? [])
+    if (!lastSeen.has(s.profile_id)) lastSeen.set(s.profile_id, s.last_seen_at);
 
   const queue: QueuedNotification[] = [];
   for (const [id, profile] of profiles) {
@@ -311,7 +316,8 @@ async function inactivityReminders(now: Date) {
 // 5. Recommandateurs : relance unique à J+7
 
 async function recommenderReminders(now: Date) {
-  const { isReminderDue, buildReminderMessage, REMIND_AFTER_DAYS } = await import("../recommenders");
+  const { isReminderDue, buildReminderMessage, REMIND_AFTER_DAYS } =
+    await import("../recommenders");
   const { data: recs } = await supabaseAdmin
     .from("recommenders")
     .select(
@@ -349,7 +355,7 @@ async function recommenderReminders(now: Date) {
         }),
         recipient: rec.email,
       });
-    } else if (student.email && student.email_optin) {
+    } else {
       queue.push(
         message(student, now, {
           kind: "recommender_reminder_student",
@@ -358,8 +364,6 @@ async function recommenderReminders(now: Date) {
           dedupe_key: `reco:${rec.id}:j7`,
         }),
       );
-    } else {
-      continue;
     }
     remindedIds.push(rec.id);
   }

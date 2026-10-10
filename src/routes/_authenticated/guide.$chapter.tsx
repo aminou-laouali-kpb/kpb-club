@@ -1,31 +1,16 @@
-import { createFileRoute, Link, notFound } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft } from "lucide-react";
-import { useMemberOverview, hasAccess, watermarkFor } from "@/hooks/useMemberOverview";
 import { MemberGate } from "@/components/MemberGate";
 import { WatermarkedContent } from "@/components/WatermarkedContent";
 import { Markdown } from "@/components/Markdown";
-import { findGuideChapter, GUIDE_CHAPTERS } from "@/lib/content";
+import { getChapter } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/_authenticated/guide/$chapter")({
-  loader: ({ params }) => {
-    const chapter = findGuideChapter(params.chapter);
-    if (!chapter) throw notFound();
-    return { chapter };
-  },
-  head: ({ loaderData }) => {
-    const title = loaderData?.chapter.title ?? "Chapitre indisponible";
-    return {
-      meta: [
-        { title: `${title} — Guide KPB Education` },
-        { name: "description", content: loaderData?.chapter.summary ?? "Chapitre du guide." },
-        { name: "robots", content: "noindex" },
-        { property: "og:title", content: `${title} — Guide KPB Education` },
-        { property: "og:description", content: loaderData?.chapter.summary ?? "Guide du Club." },
-      ],
-    };
-  },
-  notFoundComponent: ChapterNotFound,
-  errorComponent: ChapterNotFound,
+  head: () => ({
+    meta: [{ title: "Guide — KPB Education" }, { name: "robots", content: "noindex" }],
+  }),
   component: ChapterPage,
 });
 
@@ -41,13 +26,16 @@ function ChapterNotFound() {
 }
 
 function ChapterPage() {
-  const { chapter } = Route.useLoaderData();
-  const { data, isPending } = useMemberOverview();
-  const index = GUIDE_CHAPTERS.findIndex((c) => c.slug === chapter.slug);
-  const next = GUIDE_CHAPTERS[index + 1];
+  const { chapter: slug } = Route.useParams();
+  const fetchChapter = useServerFn(getChapter);
+  const { data, isPending } = useQuery({
+    queryKey: ["chapter", slug],
+    queryFn: () => fetchChapter({ data: { slug } }),
+  });
 
   if (isPending) return <p className="py-10 text-sm text-muted-foreground">Chargement…</p>;
-  if (!data || !hasAccess(data.subscriptionState)) return <MemberGate />;
+  if (!data?.found) return <ChapterNotFound />;
+  if (!data.access) return <MemberGate />;
 
   return (
     <div>
@@ -57,18 +45,18 @@ function ChapterPage() {
       >
         <ArrowLeft className="size-4" /> Le guide
       </Link>
-      <h1 className="mt-3 mb-4 font-display text-3xl font-semibold">{chapter.title}</h1>
-      <WatermarkedContent watermark={watermarkFor(data.profile)}>
-        <Markdown source={chapter.body} />
+      <h1 className="mt-3 mb-4 font-display text-3xl font-semibold">{data.title}</h1>
+      <WatermarkedContent watermark={data.watermark}>
+        <Markdown source={data.body} />
       </WatermarkedContent>
-      {next && (
+      {data.next && (
         <Link
           to="/guide/$chapter"
-          params={{ chapter: next.slug }}
+          params={{ chapter: data.next.slug }}
           className="mt-6 block rounded-xl border border-border bg-card p-4 transition-colors hover:bg-secondary"
         >
           <span className="text-xs text-muted-foreground">Chapitre suivant</span>
-          <span className="mt-1 block font-medium">{next.title}</span>
+          <span className="mt-1 block font-medium">{data.next.title}</span>
         </Link>
       )}
     </div>

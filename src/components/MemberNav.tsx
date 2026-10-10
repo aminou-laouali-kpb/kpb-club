@@ -28,6 +28,9 @@ export function MemberNav() {
   async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
+    // Les données gardées pour le hors ligne ne doivent pas survivre à la déconnexion
+    const { clearPersisted } = await import("@/lib/offline/persist");
+    await clearPersisted();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
