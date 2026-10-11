@@ -117,6 +117,8 @@ export const confirmUpload = createServerFn({ method: "POST" })
     if (data.recommenderId) {
       await docs.markRecommendationReceived(member.profileId, data.recommenderId, doc.id);
     }
+    const { track } = await import("./analytics.server");
+    await track(member.profileId, "doc_uploaded", { type: data.type, source: data.source });
     return { ok: true as const, id: doc.id, linked };
   });
 

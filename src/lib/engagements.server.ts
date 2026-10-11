@@ -49,7 +49,7 @@ export async function settleEngagementPayment(payment: Payment) {
   if (error) throw new Error(error.message);
 
   // Le crédit Club imputé sur la 1re tranche est retiré du solde du membre
-  if (meta.installment !== 2 && (meta.credit ?? 0) > 0) {
+  if (meta.installment !== 2 && (meta.credit ?? 0) > 0 && payment.profile_id) {
     const { data: profile } = await supabaseAdmin
       .from("profiles")
       .select("credit_balance")

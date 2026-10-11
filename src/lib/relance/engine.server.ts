@@ -398,6 +398,33 @@ async function reconcilePendingPayments(now: Date) {
 }
 
 /** Exécute toutes les règles ; une règle en échec n'empêche pas les autres. */
+/** Membres dont l'accès est terminé depuis 7 jours sans renouvellement : événement « churned ». */
+async function churnEvents(now: Date) {
+  const { findChurned } = await import("../metrics");
+  const { track } = await import("../analytics.server");
+  const since = new Date(now.getTime() - 60 * DAY).toISOString();
+  const [{ data: subs }, { data: reported }] = await Promise.all([
+    supabaseAdmin
+      .from("subscriptions")
+      .select("id, profile_id, plan, amount, ends_at, grace_ends_at, status")
+      .gte("ends_at", since),
+    supabaseAdmin.from("events").select("props").eq("name", "churned").gte("created_at", since),
+  ]);
+  const keys = new Set(
+    (reported ?? []).map((r) => String((r.props as { subscription_id?: string })?.subscription_id)),
+  );
+  const churned = findChurned(subs ?? [], keys, now);
+  for (const c of churned) {
+    await track(c.profile_id, "churned", { subscription_id: c.subscription_id });
+  }
+  return churned.length;
+}
+
+async function purgeAccounts(now: Date) {
+  const { purgeDueAccounts } = await import("../account-deletion.server");
+  return purgeDueAccounts(now);
+}
+
 export async function runDailyRelance(now = new Date()) {
   const steps = {
     subscriptions: subscriptionReminders,
@@ -406,6 +433,8 @@ export async function runDailyRelance(now = new Date()) {
     inactivity: inactivityReminders,
     recommenders: recommenderReminders,
     reconciledPayments: reconcilePendingPayments,
+    churned: churnEvents,
+    purgedAccounts: purgeAccounts,
   };
   const results: Record<string, number | string> = {};
   for (const [name, step] of Object.entries(steps)) {

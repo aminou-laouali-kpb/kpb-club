@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { z } from "zod";
+import { compact, optionalUuid } from "@/lib/search-params";
 import { CheckCircle2, Clock, XCircle } from "lucide-react";
 import { getPaymentStatus } from "@/lib/payments.functions";
 
@@ -10,7 +10,8 @@ const POLL_MS = 3_000;
 const POLL_LIMIT_MS = 60_000;
 
 export const Route = createFileRoute("/_authenticated/paiement/retour")({
-  validateSearch: (search) => z.object({ payment: z.string().uuid().optional() }).parse(search),
+  validateSearch: (search: Record<string, unknown>) =>
+    compact({ payment: optionalUuid(search["payment"]) }),
   head: () => ({
     meta: [
       { title: "Confirmation du paiement — KPB Education" },

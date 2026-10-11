@@ -191,6 +191,8 @@ export const reviewEssay = createServerFn({ method: "POST" })
           .update({ last_ai_review_id: usageId })
           .eq("id", data.itemId);
       }
+      const { track } = await import("./analytics.server");
+      await track(member.profileId, "essay_reviewed", { score: result.data.overall_score ?? null });
       return { ok: true as const, review: result.data, reviewId: usageId };
     }),
   );

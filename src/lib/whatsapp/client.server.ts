@@ -50,13 +50,22 @@ export function sendOtpTemplate(phone: string, code: string) {
 }
 
 /** Notification hors fenêtre de 24 h : modèle UTILITY à 3 variables (titre, message, lien). */
-export function sendNotificationTemplate(phone: string, params: [string, string, string]) {
+/** Modèles à 3 variables (titre, message, lien) : `kpb_notification` (UTILITY) ou `kpb_annonce` (MARKETING). */
+export function sendNotificationTemplate(
+  phone: string,
+  params: [string, string, string],
+  template: "kpb_notification" | "kpb_annonce" = "kpb_notification",
+) {
   const { lang } = config();
+  const name =
+    template === "kpb_annonce"
+      ? (process.env["WHATSAPP_ANNOUNCE_TEMPLATE"] ?? "kpb_annonce")
+      : (process.env["WHATSAPP_NOTIFICATION_TEMPLATE"] ?? "kpb_notification");
   return send({
     to: to(phone),
     type: "template",
     template: {
-      name: process.env["WHATSAPP_NOTIFICATION_TEMPLATE"] ?? "kpb_notification",
+      name,
       language: { code: lang },
       components: [
         {

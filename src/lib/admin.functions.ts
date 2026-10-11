@@ -2,12 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { type ClubPlan } from "./pricing";
-
-async function assertAdmin(supabase: any, userId: string) {
-  const { data, error } = await supabase.rpc("has_role", { _user_id: userId, _role: "admin" });
-  if (error) throw new Error(error.message);
-  if (!data) throw new Error("Accès refusé");
-}
+import { assertAdmin } from "./admin/guard";
 
 export const getAdminData = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])

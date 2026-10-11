@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { useMemberOverview } from "@/hooks/useMemberOverview";
 import { saveProfile } from "@/lib/member.functions";
 import { WhatsAppLink } from "@/components/auth/WhatsAppLink";
+import { DeleteAccount } from "@/components/DeleteAccount";
 import { getReceipt } from "@/lib/payments.functions";
 import { TIMEZONE_OPTIONS } from "@/lib/relance/window";
 import { Download } from "lucide-react";
@@ -445,6 +446,8 @@ function Compte() {
           </ul>
         )}
       </section>
+
+      <DeleteAccount />
     </div>
   );
 }

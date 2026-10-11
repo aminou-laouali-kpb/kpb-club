@@ -325,6 +325,11 @@ function ApplicationPage() {
                             </span>
                           )}
                         </p>
+                        {item.reviewed_by_kpb_at && (
+                          <span className="mt-1 inline-block rounded-full bg-primary/10 px-2 py-0.5 text-xs font-medium text-primary">
+                            Revu par KPB
+                          </span>
+                        )}
                         {item.description && !isNa && (
                           <p className="mt-0.5 text-sm text-muted-foreground">{item.description}</p>
                         )}

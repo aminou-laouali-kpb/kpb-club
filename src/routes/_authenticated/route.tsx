@@ -6,6 +6,7 @@ import { useSessionGuard } from "@/hooks/useSessionGuard";
 import { useAttachCapturedReferral } from "@/hooks/useReferralCapture";
 import { attachReferral } from "@/lib/referrals.functions";
 import { useOfflineReplay } from "@/hooks/useOfflineReplay";
+import { PrivacyGate } from "@/components/PrivacyGate";
 
 export const Route = createFileRoute("/_authenticated")({
   ssr: false,
@@ -24,6 +25,7 @@ function MemberLayout() {
   useOfflineReplay();
   return (
     <div className="min-h-screen bg-background pb-20 md:pb-0">
+      <PrivacyGate />
       <MemberNav />
       <main className="mx-auto max-w-5xl px-4 py-6">
         <Outlet />

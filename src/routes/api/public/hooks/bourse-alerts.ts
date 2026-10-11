@@ -14,6 +14,7 @@ export const Route = createFileRoute("/api/public/hooks/bourse-alerts")({
         const { nextSendTime } = await import("@/lib/relance/window");
 
         const now = Date.now();
+        const alertLink = `${process.env["APP_URL"] ?? "https://kpb-education.com"}/dashboard?src=alert`;
 
         const [{ data: bourses }, { data: subs }, { data: alerts }] = await Promise.all([
           supabaseAdmin.from("bourses").select("*").eq("window_confirmed", true),
@@ -68,7 +69,7 @@ export const Route = createFileRoute("/api/public/hooks/bourse-alerts")({
               matches.length === 1
                 ? "Une bourse compatible vient d'ouvrir"
                 : `${matches.length} bourses compatibles viennent d'ouvrir`,
-            body: `Bonjour ${profile.full_name || "cher membre"},\n\nCes fenêtres correspondent à votre profil :\n\n${lines}\n\nRetrouvez le détail dans votre espace membre.\n\nL'équipe KPB Education`,
+            body: `Bonjour ${profile.full_name || "cher membre"},\n\nCes fenêtres correspondent à votre profil :\n\n${lines}\n\nRetrouvez le détail dans votre espace membre : ${alertLink}\n\nL'équipe KPB Education`,
             dedupe_key: `alert:${profile.id}:${matches.map((m) => m.id).join("-")}`,
             send_after: nextSendTime(new Date(), profile.timezone).toISOString(),
           });

@@ -1,6 +1,6 @@
 import { supabaseAdmin } from "@/integrations/supabase/client.server";
 import type { Json } from "@/integrations/supabase/types";
-import { channelsFor, type Prefs } from "./notification-prefs";
+import { categoryOf, channelsFor, type Prefs } from "./notification-prefs";
 
 export type QueuedNotification = {
   profile_id: string;
@@ -11,6 +11,13 @@ export type QueuedNotification = {
   dedupe_key: string;
   /** Envoi différé (fenêtre 8 h – 20 h locale) ; immédiat par défaut. */
   send_after?: string;
+  broadcast_id?: string;
+  /** Texte WhatsApp (sinon résumé automatique du corps de l'email). */
+  wa_text?: string;
+  /** Lien WhatsApp (sinon premier lien du corps). */
+  wa_link?: string;
+  /** Canaux autorisés pour ce message (diffusion) ; tous par défaut. */
+  allow_channels?: ("email" | "whatsapp")[];
 };
 
 const PREF_FIELDS =
@@ -45,7 +52,7 @@ export async function queueNotifications(items: QueuedNotification[]) {
   const { data: profiles } = await supabaseAdmin.from("profiles").select(PREF_FIELDS).in("id", ids);
   const prefsById = new Map((profiles ?? []).map((p) => [p.id, p as Prefs & { id: string }]));
 
-  type Row = QueuedNotification & {
+  type Row = Omit<QueuedNotification, "wa_text" | "wa_link" | "allow_channels"> & {
     channel: string;
     template?: string | null;
     template_params?: Json | null;
@@ -55,19 +62,31 @@ export async function queueNotifications(items: QueuedNotification[]) {
     const prefs = prefsById.get(item.profile_id);
     const toThirdParty = Boolean(item.recipient && prefs && item.recipient !== prefs.email);
     if (!prefs || toThirdParty) {
-      if (item.recipient) rows.push({ ...item, channel: "email" });
+      if (item.recipient) {
+        const { wa_text: _t, wa_link: _l, allow_channels: _c, ...base } = item;
+        rows.push({ ...base, channel: "email" });
+      }
       continue;
     }
     const channels = channelsFor(item.kind, prefs);
-    if (channels.email && item.recipient) rows.push({ ...item, channel: "email" });
-    if (channels.whatsapp && prefs.phone_e164) {
+    const { wa_text, wa_link, allow_channels, ...base } = item;
+    const allowed = (c: "email" | "whatsapp") => !allow_channels || allow_channels.includes(c);
+    if (channels.email && item.recipient && allowed("email")) {
+      rows.push({ ...base, channel: "email" });
+    }
+    if (channels.whatsapp && prefs.phone_e164 && allowed("whatsapp")) {
       rows.push({
-        ...item,
+        ...base,
         channel: "whatsapp",
         recipient: prefs.phone_e164,
         dedupe_key: `${item.dedupe_key}:wa`,
-        template: "kpb_notification",
-        template_params: [item.subject, whatsappSummary(item.body), firstLink(item.body)],
+        // Annonces et nouveaux contenus : modèle marketing ; le reste : modèle utilitaire
+        template: categoryOf(item.kind) === "content" ? "kpb_annonce" : "kpb_notification",
+        template_params: [
+          item.subject,
+          wa_text ?? whatsappSummary(item.body),
+          wa_link ?? firstLink(item.body),
+        ],
       });
     }
   }
@@ -100,7 +119,7 @@ async function markFailed(id: string, error: string) {
 export async function dispatchPending(limit = 100) {
   const { data: pending, error } = await supabaseAdmin
     .from("notifications")
-    .select("id, channel, recipient, subject, body, template_params")
+    .select("id, channel, recipient, subject, body, template, template_params")
     .eq("status", "pending")
     .lte("send_after", new Date().toISOString())
     .order("created_at", { ascending: true })
@@ -143,7 +162,11 @@ export async function dispatchPending(limit = 100) {
         const params = (item.template_params ?? []) as [string, string, string];
         const id = recentInbound.has(item.recipient)
           ? await wa.sendText(item.recipient, `*${params[0]}*\n${params[1]}\n${params[2]}`)
-          : await wa.sendNotificationTemplate(item.recipient, params);
+          : await wa.sendNotificationTemplate(
+              item.recipient,
+              params,
+              item.template === "kpb_annonce" ? "kpb_annonce" : "kpb_notification",
+            );
         await markSent(item.id, id);
       } else {
         if (!apiKey) {

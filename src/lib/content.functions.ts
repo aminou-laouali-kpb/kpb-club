@@ -66,13 +66,15 @@ export const getChapter = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((input: unknown) => z.object({ slug: z.string().max(120) }).parse(input))
   .handler(async ({ data, context }) => {
-    const { access, mark } = await contentAccess(context.userId);
+    const { access, mark, profile } = await contentAccess(context.userId);
     const list = await chapters();
     const index = list.findIndex((c) => c.slug === data.slug);
     const chapter = list[index];
     if (!chapter) return { found: false as const };
     if (!access) return { found: true as const, access: false as const, title: chapter.title };
     const next = list[index + 1];
+    const { track } = await import("./analytics.server");
+    await track(profile.id, "chapter_read", { slug: chapter.slug });
     return {
       found: true as const,
       access: true as const,

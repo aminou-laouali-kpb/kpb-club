@@ -3,7 +3,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { z } from "zod";
+import { compact, optionalUuid } from "@/lib/search-params";
 import { CheckCircle2 } from "lucide-react";
 import {
   listEngagements,
@@ -15,7 +15,8 @@ import { formatDateFr } from "@/lib/matching";
 import { ACCOMPANIMENT_CONTACT_URL } from "@/lib/contact";
 
 export const Route = createFileRoute("/_authenticated/accompagnement")({
-  validateSearch: (search) => z.object({ application: z.string().uuid().optional() }).parse(search),
+  validateSearch: (search: Record<string, unknown>) =>
+    compact({ application: optionalUuid(search["application"]) }),
   head: () => ({
     meta: [
       { title: "Accompagnement — KPB Education" },

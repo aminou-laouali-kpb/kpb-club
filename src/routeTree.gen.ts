@@ -12,6 +12,8 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CguRouteImport } from './routes/cgu'
+import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
 import { Route as LaureatsRouteImport } from './routes/laureats'
 import { Route as VerificateurRouteImport } from './routes/verificateur'
 import { Route as AuthenticatedAccompagnementRouteImport } from './routes/_authenticated/accompagnement'
@@ -35,6 +37,7 @@ import { Route as AuthenticatedGuideChapterRouteImport } from './routes/_authent
 import { Route as AuthenticatedPaiementRetourRouteImport } from './routes/_authenticated/paiement.retour'
 import { Route as AuthenticatedTemplatesIndexRouteImport } from './routes/_authenticated/templates.index'
 import { Route as AuthenticatedTemplatesSlugRouteImport } from './routes/_authenticated/templates.$slug'
+import { Route as ApiAdminBoursesDotjsonRouteImport } from './routes/api/admin/bourses[.]json'
 import { Route as ApiAiStreamRouteImport } from './routes/api/ai/stream'
 import { Route as ApiPublicHooksBourseAlertsRouteImport } from './routes/api/public/hooks/bourse-alerts'
 import { Route as ApiPublicHooksDispatchRouteImport } from './routes/api/public/hooks/dispatch'
@@ -54,6 +57,16 @@ const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CguRoute = CguRouteImport.update({
+  id: '/cgu',
+  path: '/cgu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LaureatsRoute = LaureatsRouteImport.update({
@@ -180,6 +193,11 @@ const AuthenticatedTemplatesSlugRoute =
     path: '/$slug',
     getParentRoute: () => AuthenticatedTemplatesRoute,
   } as any)
+const ApiAdminBoursesDotjsonRoute = ApiAdminBoursesDotjsonRouteImport.update({
+  id: '/api/admin/bourses.json',
+  path: '/api/admin/bourses.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiAiStreamRoute = ApiAiStreamRouteImport.update({
   id: '/api/ai/stream',
   path: '/api/ai/stream',
@@ -215,6 +233,8 @@ const ApiPublicHooksWhatsappRoute = ApiPublicHooksWhatsappRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
   '/accompagnement': typeof AuthenticatedAccompagnementRoute
@@ -235,6 +255,7 @@ export interface FileRoutesByFullPath {
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/admin/bourses.json': typeof ApiAdminBoursesDotjsonRoute
   '/api/ai/stream': typeof ApiAiStreamRoute
   '/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/guide/': typeof AuthenticatedGuideIndexRoute
@@ -248,6 +269,8 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
   '/accompagnement': typeof AuthenticatedAccompagnementRoute
@@ -265,6 +288,7 @@ export interface FileRoutesByTo {
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/admin/bourses.json': typeof ApiAdminBoursesDotjsonRoute
   '/api/ai/stream': typeof ApiAiStreamRoute
   '/candidatures': typeof AuthenticatedCandidaturesIndexRoute
   '/guide': typeof AuthenticatedGuideIndexRoute
@@ -280,6 +304,8 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
   '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
   '/_authenticated/accompagnement': typeof AuthenticatedAccompagnementRoute
@@ -300,6 +326,7 @@ export interface FileRoutesById {
   '/_authenticated/guide/$chapter': typeof AuthenticatedGuideChapterRoute
   '/_authenticated/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/_authenticated/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/admin/bourses.json': typeof ApiAdminBoursesDotjsonRoute
   '/api/ai/stream': typeof ApiAiStreamRoute
   '/_authenticated/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
@@ -315,6 +342,8 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/auth'
+    | '/cgu'
+    | '/confidentialite'
     | '/laureats'
     | '/verificateur'
     | '/accompagnement'
@@ -335,6 +364,7 @@ export interface FileRouteTypes {
     | '/guide/$chapter'
     | '/paiement/retour'
     | '/templates/$slug'
+    | '/api/admin/bourses.json'
     | '/api/ai/stream'
     | '/candidatures/'
     | '/guide/'
@@ -348,6 +378,8 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/auth'
+    | '/cgu'
+    | '/confidentialite'
     | '/laureats'
     | '/verificateur'
     | '/accompagnement'
@@ -365,6 +397,7 @@ export interface FileRouteTypes {
     | '/guide/$chapter'
     | '/paiement/retour'
     | '/templates/$slug'
+    | '/api/admin/bourses.json'
     | '/api/ai/stream'
     | '/candidatures'
     | '/guide'
@@ -379,6 +412,8 @@ export interface FileRouteTypes {
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/cgu'
+    | '/confidentialite'
     | '/laureats'
     | '/verificateur'
     | '/_authenticated/accompagnement'
@@ -399,6 +434,7 @@ export interface FileRouteTypes {
     | '/_authenticated/guide/$chapter'
     | '/_authenticated/paiement/retour'
     | '/_authenticated/templates/$slug'
+    | '/api/admin/bourses.json'
     | '/api/ai/stream'
     | '/_authenticated/candidatures/'
     | '/_authenticated/guide/'
@@ -414,8 +450,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CguRoute: typeof CguRoute
+  ConfidentialiteRoute: typeof ConfidentialiteRoute
   LaureatsRoute: typeof LaureatsRoute
   VerificateurRoute: typeof VerificateurRoute
+  ApiAdminBoursesDotjsonRoute: typeof ApiAdminBoursesDotjsonRoute
   ApiAiStreamRoute: typeof ApiAiStreamRoute
   ApiPublicHooksBourseAlertsRoute: typeof ApiPublicHooksBourseAlertsRoute
   ApiPublicHooksDispatchRoute: typeof ApiPublicHooksDispatchRoute
@@ -445,6 +484,20 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cgu': {
+      id: '/cgu'
+      path: '/cgu'
+      fullPath: '/cgu'
+      preLoaderRoute: typeof CguRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confidentialite': {
+      id: '/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/confidentialite'
+      preLoaderRoute: typeof ConfidentialiteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/laureats': {
@@ -608,6 +661,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTemplatesSlugRouteImport
       parentRoute: typeof AuthenticatedTemplatesRoute
     }
+    '/api/admin/bourses.json': {
+      id: '/api/admin/bourses.json'
+      path: '/api/admin/bourses.json'
+      fullPath: '/api/admin/bourses.json'
+      preLoaderRoute: typeof ApiAdminBoursesDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/ai/stream': {
       id: '/api/ai/stream'
       path: '/api/ai/stream'
@@ -741,8 +801,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CguRoute: CguRoute,
+  ConfidentialiteRoute: ConfidentialiteRoute,
   LaureatsRoute: LaureatsRoute,
   VerificateurRoute: VerificateurRoute,
+  ApiAdminBoursesDotjsonRoute: ApiAdminBoursesDotjsonRoute,
   ApiAiStreamRoute: ApiAiStreamRoute,
   ApiPublicHooksBourseAlertsRoute: ApiPublicHooksBourseAlertsRoute,
   ApiPublicHooksDispatchRoute: ApiPublicHooksDispatchRoute,

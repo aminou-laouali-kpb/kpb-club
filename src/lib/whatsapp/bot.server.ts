@@ -115,7 +115,10 @@ export async function handleInbound(message: Inbound) {
     return;
   }
 
-  switch (parseCommand(text)) {
+  const command = parseCommand(text);
+  const { track } = await import("../analytics.server");
+  await track(member.id, "whatsapp_command", { command });
+  switch (command) {
     case "help":
       return sendMenu(phone);
     case "status":
@@ -360,6 +363,8 @@ async function receiveDocument(phone: string, member: Member, message: Inbound) 
     .select("id")
     .single();
   if (error) throw new Error(error.message);
+  const { track } = await import("../analytics.server");
+  await track(member.id, "doc_uploaded", { type: "other", source: "whatsapp" });
 
   // Pas d'analyse automatique : la pièce peut être une pièce d'identité (spec §12.6)
   await supabaseAdmin

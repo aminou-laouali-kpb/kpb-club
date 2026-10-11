@@ -144,6 +144,8 @@ export const createApplication = createServerFn({ method: "POST" })
     }
     const { createApplicationFor } = await import("./applications.server");
     const created = await createApplicationFor(member.profileId, data.bourseId);
+    const { track } = await import("./analytics.server");
+    await track(member.profileId, "application_created", { bourse_id: data.bourseId });
     return { ok: true as const, id: created.id };
   });
 
@@ -166,6 +168,11 @@ export const updateItemStatus = createServerFn({ method: "POST" })
       })
       .eq("id", item.id);
     if (error) throw new Error(error.message);
+    if (data.status === "done") {
+      const member = await getMember(context.supabase, context.userId);
+      const { track } = await import("./analytics.server");
+      await track(member.profileId, "item_done", { application_id: item.application_id });
+    }
     return recomputeApplication(item.application_id);
   });
 
@@ -322,5 +329,10 @@ export const completeOnboarding = createServerFn({ method: "POST" })
       })
       .eq("id", member.profileId);
     if (error) throw new Error(error.message);
+    const { track } = await import("./analytics.server");
+    await track(member.profileId, "onboarding_done", { applications: ids.length });
+    for (const bourseId of data.bourseIds.slice(0, allowed)) {
+      await track(member.profileId, "application_created", { bourse_id: bourseId });
+    }
     return { ok: true, applicationIds: ids };
   });

@@ -87,6 +87,9 @@ export async function settlePayment(paymentId: string, transactionRef?: string |
     .maybeSingle();
   if (error) throw new Error(error.message);
   if (!claimed) return { activated: false as const };
+  // Compte supprimé entre-temps : le paiement reste enregistré, sans accès à ouvrir
+  const profileId = claimed.profile_id;
+  if (!profileId) return { activated: false as const };
 
   let result: { kind: "subscription" | "engagement"; description: string; endsAt?: string };
   if (claimed.payable_type === "engagement") {
@@ -97,7 +100,7 @@ export async function settlePayment(paymentId: string, transactionRef?: string |
     const metadata = (claimed.metadata ?? {}) as { plan?: ClubPlan };
     const plan: ClubPlan = metadata.plan === "monthly" ? "monthly" : "quarterly";
     const access = await activateClubAccess({
-      profileId: claimed.profile_id,
+      profileId,
       plan,
       amount: claimed.amount,
       source: "payment",
@@ -112,7 +115,20 @@ export async function settlePayment(paymentId: string, transactionRef?: string |
 
   // Un filleul qui paie pour la première fois compte pour son parrain
   const { markReferralPaid } = await import("./referrals.server");
-  await markReferralPaid(claimed.profile_id).catch((e) => console.error("referral", e));
+  await markReferralPaid(profileId).catch((e) => console.error("referral", e));
 
-  return { activated: true as const, ...result, payment: claimed };
+  const { track } = await import("./analytics.server");
+  const { count } = await supabaseAdmin
+    .from("payments")
+    .select("id", { count: "exact", head: true })
+    .eq("profile_id", profileId)
+    .eq("payable_type", claimed.payable_type)
+    .eq("status", "success");
+  const renewal = result.kind === "subscription" && (count ?? 0) > 1;
+  await track(profileId, renewal ? "renewal_success" : "payment_success", {
+    kind: result.kind,
+    amount: claimed.amount,
+  });
+
+  return { activated: true as const, ...result, payment: { ...claimed, profile_id: profileId } };
 }

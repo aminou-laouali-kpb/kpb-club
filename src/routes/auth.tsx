@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { ConsentFields } from "@/components/PrivacyGate";
+import { clearPendingConsent, savePendingConsent } from "@/lib/consent.browser";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -35,6 +37,14 @@ function AuthPage() {
   const [busy, setBusy] = useState(false);
   const [pendingEmail, setPendingEmail] = useState(false);
   const [showEmail, setShowEmail] = useState(false);
+  const [terms, setTerms] = useState(false);
+  const [waOptin, setWaOptin] = useState(true);
+
+  // Accord donné ici : enregistré après la connexion (sinon il est demandé à l'arrivée)
+  useEffect(() => {
+    if (terms) savePendingConsent(waOptin);
+    else clearPendingConsent();
+  }, [terms, waOptin]);
 
   useEffect(() => {
     supabase.auth.getSession().then(({ data }) => {
@@ -52,6 +62,10 @@ function AuthPage() {
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (mode === "signup" && !terms) {
+      toast.error("Merci d'accepter les conditions d'utilisation pour créer ton compte.");
+      return;
+    }
     setBusy(true);
     try {
       if (mode === "signup") {
@@ -114,7 +128,16 @@ function AuthPage() {
           Votre compte sauvegarde votre profil, vos candidatures et vos documents.
         </p>
 
-        <div className="mt-6 rounded-xl border border-border bg-card p-5">
+        <div className="mt-6 rounded-xl border border-border bg-card p-4">
+          <ConsentFields
+            terms={terms}
+            whatsapp={waOptin}
+            onTerms={setTerms}
+            onWhatsapp={setWaOptin}
+          />
+        </div>
+
+        <div className="mt-4 rounded-xl border border-border bg-card p-5">
           <PhoneLogin
             onSignedIn={async () => {
               await syncPendingProfile();

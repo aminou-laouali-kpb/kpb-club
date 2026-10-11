@@ -3,7 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
-import { z } from "zod";
+import { compact, optionalEnum } from "@/lib/search-params";
 import { FileText, MessageCircleQuestion, Mic, PenLine } from "lucide-react";
 import { getAiOverview, listCoachInputs, reviewCv, reviewEssay } from "@/lib/ai.functions";
 import { FEATURE_LABELS } from "@/lib/ai/quotas";
@@ -22,8 +22,8 @@ const TABS = [
 type Tab = (typeof TABS)[number]["id"];
 
 export const Route = createFileRoute("/_authenticated/coach")({
-  validateSearch: (search) =>
-    z.object({ tab: z.enum(["essay", "cv", "interview", "chat"]).optional() }).parse(search),
+  validateSearch: (search: Record<string, unknown>) =>
+    compact({ tab: optionalEnum(search["tab"], ["essay", "cv", "interview", "chat"] as const) }),
   head: () => ({
     meta: [
       { title: "Coach — KPB Education" },

@@ -92,6 +92,13 @@
       "when": 1791993660000,
       "tag": "0012_content_seed",
       "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791993720000,
+      "tag": "0013_admin_analytics_privacy",
+      "breakpoints": true
     }
   ]
 }

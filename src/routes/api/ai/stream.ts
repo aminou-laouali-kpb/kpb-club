@@ -179,6 +179,8 @@ async function handleChat(
     { thread_id: threadId, role: "assistant", content: answer },
   ]);
   await recordUsage({ member, feature: "coach_chat", usage: result.usage, threadId });
+  const { track } = await import("@/lib/analytics.server");
+  await track(member.profileId, "coach_used", { channel: "web" });
   send({ type: "done", sources: sources.map((s) => s.title) });
 }
 
