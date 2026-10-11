@@ -14,6 +14,299 @@ export type Database = {
   }
   public: {
     Tables: {
+      access_code_attempts: {
+        Row: {
+          attempted_at: string
+          id: number
+          profile_id: string
+          success: boolean
+        }
+        Insert: {
+          attempted_at?: string
+          id?: number
+          profile_id: string
+          success: boolean
+        }
+        Update: {
+          attempted_at?: string
+          id?: number
+          profile_id?: string
+          success?: boolean
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_code_attempts_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      access_code_redemptions: {
+        Row: {
+          code_id: string
+          id: string
+          profile_id: string
+          redeemed_at: string
+          subscription_id: string | null
+        }
+        Insert: {
+          code_id: string
+          id?: string
+          profile_id: string
+          redeemed_at?: string
+          subscription_id?: string | null
+        }
+        Update: {
+          code_id?: string
+          id?: string
+          profile_id?: string
+          redeemed_at?: string
+          subscription_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "access_code_redemptions_code_id_fkey"
+            columns: ["code_id"]
+            isOneToOne: false
+            referencedRelation: "access_codes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "access_code_redemptions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "access_code_redemptions_subscription_id_fkey"
+            columns: ["subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      access_codes: {
+        Row: {
+          active: boolean
+          batch_label: string | null
+          code: string
+          created_at: string
+          created_by: string | null
+          duration_days: number
+          expires_at: string | null
+          id: string
+          max_uses: number
+          uses_count: number
+        }
+        Insert: {
+          active?: boolean
+          batch_label?: string | null
+          code: string
+          created_at?: string
+          created_by?: string | null
+          duration_days: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number
+          uses_count?: number
+        }
+        Update: {
+          active?: boolean
+          batch_label?: string | null
+          code?: string
+          created_at?: string
+          created_by?: string | null
+          duration_days?: number
+          expires_at?: string | null
+          id?: string
+          max_uses?: number
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      admin_notes: {
+        Row: {
+          author: string
+          body: string
+          created_at: string
+          id: string
+          profile_id: string
+        }
+        Insert: {
+          author: string
+          body: string
+          created_at?: string
+          id?: string
+          profile_id: string
+        }
+        Update: {
+          author?: string
+          body?: string
+          created_at?: string
+          id?: string
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "admin_notes_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          role: string
+          thread_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          role: string
+          thread_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          role?: string
+          thread_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_messages_thread_id_fkey"
+            columns: ["thread_id"]
+            isOneToOne: false
+            referencedRelation: "ai_threads"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_threads: {
+        Row: {
+          application_id: string | null
+          created_at: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id: string
+          profile_id: string
+          state: Json | null
+          title: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          created_at?: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          profile_id: string
+          state?: Json | null
+          title?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          created_at?: string
+          feature?: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          profile_id?: string
+          state?: Json | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_threads_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_threads_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_usage: {
+        Row: {
+          application_id: string | null
+          cached_tokens: number | null
+          cost_usd: number | null
+          created_at: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id: string
+          input_tokens: number | null
+          item_id: string | null
+          model: string
+          output_tokens: number | null
+          profile_id: string | null
+          result: Json | null
+          thread_id: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          cached_tokens?: number | null
+          cost_usd?: number | null
+          created_at?: string
+          feature: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          input_tokens?: number | null
+          item_id?: string | null
+          model: string
+          output_tokens?: number | null
+          profile_id?: string | null
+          result?: Json | null
+          thread_id?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          cached_tokens?: number | null
+          cost_usd?: number | null
+          created_at?: string
+          feature?: Database["public"]["Enums"]["ai_feature"]
+          id?: string
+          input_tokens?: number | null
+          item_id?: string | null
+          model?: string
+          output_tokens?: number | null
+          profile_id?: string | null
+          result?: Json | null
+          thread_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_usage_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_item_id_fkey"
+            columns: ["item_id"]
+            isOneToOne: false
+            referencedRelation: "application_items"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "ai_usage_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       alerts_log: {
         Row: {
           bourse_id: string
@@ -53,21 +346,245 @@ export type Database = {
           },
         ]
       }
+      application_items: {
+        Row: {
+          application_id: string
+          completed_at: string | null
+          description: string | null
+          document_id: string | null
+          document_type: string | null
+          due_date: string | null
+          essay_draft: string | null
+          essay_draft_saved_at: string | null
+          essay_max_words: number | null
+          essay_prompt: string | null
+          id: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          last_ai_review_id: string | null
+          recommenders_count: number | null
+          requirement_id: string | null
+          reviewed_by: string | null
+          reviewed_by_kpb_at: string | null
+          sort_order: number | null
+          status: Database["public"]["Enums"]["item_status"]
+        }
+        Insert: {
+          application_id: string
+          completed_at?: string | null
+          description?: string | null
+          document_id?: string | null
+          document_type?: string | null
+          due_date?: string | null
+          essay_draft?: string | null
+          essay_draft_saved_at?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          last_ai_review_id?: string | null
+          recommenders_count?: number | null
+          requirement_id?: string | null
+          reviewed_by?: string | null
+          reviewed_by_kpb_at?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Update: {
+          application_id?: string
+          completed_at?: string | null
+          description?: string | null
+          document_id?: string | null
+          document_type?: string | null
+          due_date?: string | null
+          essay_draft?: string | null
+          essay_draft_saved_at?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["requirement_kind"]
+          label?: string
+          last_ai_review_id?: string | null
+          recommenders_count?: number | null
+          requirement_id?: string | null
+          reviewed_by?: string | null
+          reviewed_by_kpb_at?: string | null
+          sort_order?: number | null
+          status?: Database["public"]["Enums"]["item_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "application_items_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_items_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_items_last_ai_review_id_fkey"
+            columns: ["last_ai_review_id"]
+            isOneToOne: false
+            referencedRelation: "ai_usage"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "application_items_requirement_id_fkey"
+            columns: ["requirement_id"]
+            isOneToOne: false
+            referencedRelation: "bourse_requirements"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      applications: {
+        Row: {
+          bourse_id: string
+          created_at: string
+          deadline: string | null
+          id: string
+          last_activity_at: string
+          next_action: string | null
+          next_item_id: string | null
+          outcome_note: string | null
+          profile_id: string
+          readiness: number
+          status: Database["public"]["Enums"]["application_status"]
+          submitted_at: string | null
+          updated_at: string
+        }
+        Insert: {
+          bourse_id: string
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          last_activity_at?: string
+          next_action?: string | null
+          next_item_id?: string | null
+          outcome_note?: string | null
+          profile_id: string
+          readiness?: number
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Update: {
+          bourse_id?: string
+          created_at?: string
+          deadline?: string | null
+          id?: string
+          last_activity_at?: string
+          next_action?: string | null
+          next_item_id?: string | null
+          outcome_note?: string | null
+          profile_id?: string
+          readiness?: number
+          status?: Database["public"]["Enums"]["application_status"]
+          submitted_at?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "applications_bourse_id_fkey"
+            columns: ["bourse_id"]
+            isOneToOne: false
+            referencedRelation: "bourses"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "applications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      bourse_requirements: {
+        Row: {
+          bourse_id: string
+          days_before_deadline: number | null
+          description: string | null
+          document_type: string | null
+          essay_language: string | null
+          essay_max_words: number | null
+          essay_prompt: string | null
+          id: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          recommenders_count: number | null
+          sort_order: number
+        }
+        Insert: {
+          bourse_id: string
+          days_before_deadline?: number | null
+          description?: string | null
+          document_type?: string | null
+          essay_language?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind: Database["public"]["Enums"]["requirement_kind"]
+          label: string
+          recommenders_count?: number | null
+          sort_order: number
+        }
+        Update: {
+          bourse_id?: string
+          days_before_deadline?: number | null
+          description?: string | null
+          document_type?: string | null
+          essay_language?: string | null
+          essay_max_words?: number | null
+          essay_prompt?: string | null
+          id?: string
+          kind?: Database["public"]["Enums"]["requirement_kind"]
+          label?: string
+          recommenders_count?: number | null
+          sort_order?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bourse_requirements_bourse_id_fkey"
+            columns: ["bourse_id"]
+            isOneToOne: false
+            referencedRelation: "bourses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bourses: {
         Row: {
           academic_year: number | null
           country: string
           eligible_nationalities: string[]
           english_required: boolean
+          english_tests: Json | null
+          essay_criteria: Json | null
           financial_need_required: boolean
+          funding: string | null
           gender_restriction: string
           id: string
+          interview_format: string | null
+          level: string[]
           max_age: number | null
           min_education: string | null
           notes: string | null
+          operations_order: Json | null
           program_url: string | null
+          published: boolean
           university_name: string
           updated_at: string
+          verified_by_kpb: boolean
+          video_url: string | null
+          whatsapp_group_url: string | null
           window_closes: string | null
           window_confirmed: boolean
           window_opens: string | null
@@ -77,15 +594,25 @@ export type Database = {
           country: string
           eligible_nationalities?: string[]
           english_required?: boolean
+          english_tests?: Json | null
+          essay_criteria?: Json | null
           financial_need_required?: boolean
+          funding?: string | null
           gender_restriction?: string
           id: string
+          interview_format?: string | null
+          level?: string[]
           max_age?: number | null
           min_education?: string | null
           notes?: string | null
+          operations_order?: Json | null
           program_url?: string | null
+          published?: boolean
           university_name: string
           updated_at?: string
+          verified_by_kpb?: boolean
+          video_url?: string | null
+          whatsapp_group_url?: string | null
           window_closes?: string | null
           window_confirmed?: boolean
           window_opens?: string | null
@@ -95,70 +622,506 @@ export type Database = {
           country?: string
           eligible_nationalities?: string[]
           english_required?: boolean
+          english_tests?: Json | null
+          essay_criteria?: Json | null
           financial_need_required?: boolean
+          funding?: string | null
           gender_restriction?: string
           id?: string
+          interview_format?: string | null
+          level?: string[]
           max_age?: number | null
           min_education?: string | null
           notes?: string | null
+          operations_order?: Json | null
           program_url?: string | null
+          published?: boolean
           university_name?: string
           updated_at?: string
+          verified_by_kpb?: boolean
+          video_url?: string | null
+          whatsapp_group_url?: string | null
           window_closes?: string | null
           window_confirmed?: boolean
           window_opens?: string | null
         }
         Relationships: []
       }
+      broadcasts: {
+        Row: {
+          body: string
+          channels: string[]
+          created_at: string
+          created_by: string
+          id: string
+          link: string | null
+          recipients_count: number
+          segment: Json
+          status: string
+          title: string
+        }
+        Insert: {
+          body: string
+          channels: string[]
+          created_at?: string
+          created_by: string
+          id?: string
+          link?: string | null
+          recipients_count?: number
+          segment?: Json
+          status?: string
+          title: string
+        }
+        Update: {
+          body?: string
+          channels?: string[]
+          created_at?: string
+          created_by?: string
+          id?: string
+          link?: string | null
+          recipients_count?: number
+          segment?: Json
+          status?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      content_chapters: {
+        Row: {
+          body_md: string
+          id: string
+          published: boolean
+          slug: string
+          sort_order: number | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md: string
+          id?: string
+          published?: boolean
+          slug: string
+          sort_order?: number | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          id?: string
+          published?: boolean
+          slug?: string
+          sort_order?: number | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      content_post_reads: {
+        Row: {
+          post_id: string
+          profile_id: string
+          read_at: string
+        }
+        Insert: {
+          post_id: string
+          profile_id: string
+          read_at?: string
+        }
+        Update: {
+          post_id?: string
+          profile_id?: string
+          read_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_post_reads_post_id_fkey"
+            columns: ["post_id"]
+            isOneToOne: false
+            referencedRelation: "content_posts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "content_post_reads_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_posts: {
+        Row: {
+          body_md: string | null
+          bourse_id: string | null
+          id: string
+          kind: string
+          notify: boolean
+          published_at: string | null
+          title: string
+          url: string | null
+        }
+        Insert: {
+          body_md?: string | null
+          bourse_id?: string | null
+          id?: string
+          kind: string
+          notify?: boolean
+          published_at?: string | null
+          title: string
+          url?: string | null
+        }
+        Update: {
+          body_md?: string | null
+          bourse_id?: string | null
+          id?: string
+          kind?: string
+          notify?: boolean
+          published_at?: string | null
+          title?: string
+          url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_posts_bourse_id_fkey"
+            columns: ["bourse_id"]
+            isOneToOne: false
+            referencedRelation: "bourses"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      content_templates: {
+        Row: {
+          body_md: string
+          category: string | null
+          id: string
+          prefill: boolean
+          published: boolean
+          slug: string
+          sort_order: number | null
+          summary: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body_md: string
+          category?: string | null
+          id?: string
+          prefill?: boolean
+          published?: boolean
+          slug: string
+          sort_order?: number | null
+          summary?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body_md?: string
+          category?: string | null
+          id?: string
+          prefill?: boolean
+          published?: boolean
+          slug?: string
+          sort_order?: number | null
+          summary?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      documents: {
+        Row: {
+          created_at: string
+          expires_at: string | null
+          id: string
+          label: string
+          mime_type: string
+          pages: number | null
+          processed: boolean
+          profile_id: string
+          size_bytes: number | null
+          source: string | null
+          storage_path: string
+          type: Database["public"]["Enums"]["document_type"]
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label: string
+          mime_type: string
+          pages?: number | null
+          processed?: boolean
+          profile_id: string
+          size_bytes?: number | null
+          source?: string | null
+          storage_path: string
+          type: Database["public"]["Enums"]["document_type"]
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          label?: string
+          mime_type?: string
+          pages?: number | null
+          processed?: boolean
+          profile_id?: string
+          size_bytes?: number | null
+          source?: string | null
+          storage_path?: string
+          type?: Database["public"]["Enums"]["document_type"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "documents_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       engagements: {
         Row: {
           amount: number
+          application_id: string | null
+          assigned_agent: string | null
           bourse_id: string | null
           created_at: string
+          credit_applied: number
           deadline: string | null
           id: string
+          installments: number
           notes: string | null
           package_type: string | null
-          profile_id: string
+          paid_amount: number
+          profile_id: string | null
+          reminder_t2_j0_sent: boolean
+          reminder_t2_j1_sent: boolean
+          reminder_t2_j5_sent: boolean
+          reminder_t2_jp3_sent: boolean
+          second_due_at: string | null
           status: Database["public"]["Enums"]["engagement_status"]
-          university: string
+          university: string | null
           updated_at: string
-          window_year: number
+          window_year: number | null
         }
         Insert: {
           amount: number
+          application_id?: string | null
+          assigned_agent?: string | null
           bourse_id?: string | null
           created_at?: string
+          credit_applied?: number
           deadline?: string | null
           id?: string
+          installments?: number
           notes?: string | null
           package_type?: string | null
-          profile_id: string
+          paid_amount?: number
+          profile_id?: string | null
+          reminder_t2_j0_sent?: boolean
+          reminder_t2_j1_sent?: boolean
+          reminder_t2_j5_sent?: boolean
+          reminder_t2_jp3_sent?: boolean
+          second_due_at?: string | null
           status?: Database["public"]["Enums"]["engagement_status"]
-          university: string
+          university?: string | null
           updated_at?: string
-          window_year: number
+          window_year?: number | null
         }
         Update: {
           amount?: number
+          application_id?: string | null
+          assigned_agent?: string | null
           bourse_id?: string | null
           created_at?: string
+          credit_applied?: number
           deadline?: string | null
           id?: string
+          installments?: number
           notes?: string | null
           package_type?: string | null
-          profile_id?: string
+          paid_amount?: number
+          profile_id?: string | null
+          reminder_t2_j0_sent?: boolean
+          reminder_t2_j1_sent?: boolean
+          reminder_t2_j5_sent?: boolean
+          reminder_t2_jp3_sent?: boolean
+          second_due_at?: string | null
           status?: Database["public"]["Enums"]["engagement_status"]
-          university?: string
+          university?: string | null
           updated_at?: string
-          window_year?: number
+          window_year?: number | null
         }
         Relationships: [
+          {
+            foreignKeyName: "engagements_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "engagements_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      english_test_sessions: {
+        Row: {
+          city: string
+          cost_indicative: string | null
+          country: string | null
+          id: string
+          notes: string | null
+          register_by: string | null
+          results_days: number | null
+          session_date: string
+          test: string
+        }
+        Insert: {
+          city: string
+          cost_indicative?: string | null
+          country?: string | null
+          id?: string
+          notes?: string | null
+          register_by?: string | null
+          results_days?: number | null
+          session_date: string
+          test: string
+        }
+        Update: {
+          city?: string
+          cost_indicative?: string | null
+          country?: string | null
+          id?: string
+          notes?: string | null
+          register_by?: string | null
+          results_days?: number | null
+          session_date?: string
+          test?: string
+        }
+        Relationships: []
+      }
+      events: {
+        Row: {
+          created_at: string
+          id: number
+          name: string
+          profile_id: string | null
+          props: Json | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          name: string
+          profile_id?: string | null
+          props?: Json | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          name?: string
+          profile_id?: string | null
+          props?: Json | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "events_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      knowledge_chunks: {
+        Row: {
+          content: string
+          id: string
+          ref: string
+          source: string
+          title: string
+          tsv: unknown
+          updated_at: string
+        }
+        Insert: {
+          content: string
+          id?: string
+          ref: string
+          source: string
+          title: string
+          tsv?: unknown
+          updated_at?: string
+        }
+        Update: {
+          content?: string
+          id?: string
+          ref?: string
+          source?: string
+          title?: string
+          tsv?: unknown
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      laureates: {
+        Row: {
+          bourse_id: string | null
+          bourse_name: string | null
+          consent_at: string | null
+          country: string | null
+          created_at: string
+          first_name: string
+          id: string
+          is_demo: boolean
+          quote: string | null
+          verified: boolean
+          video_url: string | null
+          year: number | null
+        }
+        Insert: {
+          bourse_id?: string | null
+          bourse_name?: string | null
+          consent_at?: string | null
+          country?: string | null
+          created_at?: string
+          first_name: string
+          id?: string
+          is_demo?: boolean
+          quote?: string | null
+          verified?: boolean
+          video_url?: string | null
+          year?: number | null
+        }
+        Update: {
+          bourse_id?: string | null
+          bourse_name?: string | null
+          consent_at?: string | null
+          country?: string | null
+          created_at?: string
+          first_name?: string
+          id?: string
+          is_demo?: boolean
+          quote?: string | null
+          verified?: boolean
+          video_url?: string | null
+          year?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "laureates_bourse_id_fkey"
+            columns: ["bourse_id"]
+            isOneToOne: false
+            referencedRelation: "bourses"
             referencedColumns: ["id"]
           },
         ]
@@ -204,6 +1167,7 @@ export type Database = {
       notifications: {
         Row: {
           body: string
+          broadcast_id: string | null
           channel: string
           created_at: string
           dedupe_key: string
@@ -212,12 +1176,17 @@ export type Database = {
           kind: string
           profile_id: string
           recipient: string | null
+          send_after: string
           sent_at: string | null
           status: string
           subject: string
+          template: string | null
+          template_params: Json | null
+          wa_message_id: string | null
         }
         Insert: {
           body: string
+          broadcast_id?: string | null
           channel?: string
           created_at?: string
           dedupe_key: string
@@ -226,12 +1195,17 @@ export type Database = {
           kind: string
           profile_id: string
           recipient?: string | null
+          send_after?: string
           sent_at?: string | null
           status?: string
           subject: string
+          template?: string | null
+          template_params?: Json | null
+          wa_message_id?: string | null
         }
         Update: {
           body?: string
+          broadcast_id?: string | null
           channel?: string
           created_at?: string
           dedupe_key?: string
@@ -240,13 +1214,80 @@ export type Database = {
           kind?: string
           profile_id?: string
           recipient?: string | null
+          send_after?: string
           sent_at?: string | null
           status?: string
           subject?: string
+          template?: string | null
+          template_params?: Json | null
+          wa_message_id?: string | null
         }
         Relationships: [
           {
+            foreignKeyName: "notifications_broadcast_id_fkey"
+            columns: ["broadcast_id"]
+            isOneToOne: false
+            referencedRelation: "broadcasts"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "notifications_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      otp_codes: {
+        Row: {
+          attempts: number
+          channel: string
+          code_hash: string
+          consumed_at: string | null
+          created_at: string
+          delivery_status: string | null
+          expires_at: string
+          id: string
+          ip: string | null
+          phone_e164: string
+          profile_id: string | null
+          purpose: string
+          wa_message_id: string | null
+        }
+        Insert: {
+          attempts?: number
+          channel: string
+          code_hash: string
+          consumed_at?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          expires_at: string
+          id?: string
+          ip?: string | null
+          phone_e164: string
+          profile_id?: string | null
+          purpose?: string
+          wa_message_id?: string | null
+        }
+        Update: {
+          attempts?: number
+          channel?: string
+          code_hash?: string
+          consumed_at?: string | null
+          created_at?: string
+          delivery_status?: string | null
+          expires_at?: string
+          id?: string
+          ip?: string | null
+          phone_e164?: string
+          profile_id?: string | null
+          purpose?: string
+          wa_message_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "otp_codes_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
@@ -257,39 +1298,45 @@ export type Database = {
       payments: {
         Row: {
           amount: number
+          checkout_url: string | null
           created_at: string
+          external_id: string | null
           id: string
           metadata: Json | null
           paid_at: string | null
           payable_id: string | null
           payable_type: Database["public"]["Enums"]["payable_type"]
-          profile_id: string
+          profile_id: string | null
           provider: Database["public"]["Enums"]["payment_provider"]
           status: Database["public"]["Enums"]["payment_status"]
           transaction_ref: string | null
         }
         Insert: {
           amount: number
+          checkout_url?: string | null
           created_at?: string
+          external_id?: string | null
           id?: string
           metadata?: Json | null
           paid_at?: string | null
           payable_id?: string | null
           payable_type: Database["public"]["Enums"]["payable_type"]
-          profile_id: string
+          profile_id?: string | null
           provider?: Database["public"]["Enums"]["payment_provider"]
           status?: Database["public"]["Enums"]["payment_status"]
           transaction_ref?: string | null
         }
         Update: {
           amount?: number
+          checkout_url?: string | null
           created_at?: string
+          external_id?: string | null
           id?: string
           metadata?: Json | null
           paid_at?: string | null
           payable_id?: string | null
           payable_type?: Database["public"]["Enums"]["payable_type"]
-          profile_id?: string
+          profile_id?: string | null
           provider?: Database["public"]["Enums"]["payment_provider"]
           status?: Database["public"]["Enums"]["payment_status"]
           transaction_ref?: string | null
@@ -307,68 +1354,270 @@ export type Database = {
       profiles: {
         Row: {
           auth_user_id: string
+          consent_at: string | null
+          consent_version: string | null
           created_at: string
           credit_balance: number
           date_of_birth: string | null
+          deletion_requested_at: string | null
           education: string | null
           email: string | null
           email_optin: boolean
           english_level: string | null
+          english_self_level: string | null
+          english_test: string | null
+          english_test_date: string | null
+          english_test_score: string | null
           field_of_study: string | null
           financial_need: boolean
           full_name: string
           gender: string | null
           id: string
+          is_ambassador: boolean
           member_code: string
           nationality: string | null
+          notif_email: boolean
+          notif_whatsapp_alerts: boolean
+          notif_whatsapp_content: boolean
+          notif_whatsapp_reminders: boolean
+          onboarding_completed: boolean
           phone: string | null
+          phone_e164: string | null
+          phone_verified_at: string | null
+          referral_code: string | null
+          referred_by: string | null
           residence: string | null
+          timezone: string
           updated_at: string
           whatsapp_optin: boolean
         }
         Insert: {
           auth_user_id: string
+          consent_at?: string | null
+          consent_version?: string | null
           created_at?: string
           credit_balance?: number
           date_of_birth?: string | null
+          deletion_requested_at?: string | null
           education?: string | null
           email?: string | null
           email_optin?: boolean
           english_level?: string | null
+          english_self_level?: string | null
+          english_test?: string | null
+          english_test_date?: string | null
+          english_test_score?: string | null
           field_of_study?: string | null
           financial_need?: boolean
           full_name?: string
           gender?: string | null
           id?: string
+          is_ambassador?: boolean
           member_code?: string
           nationality?: string | null
+          notif_email?: boolean
+          notif_whatsapp_alerts?: boolean
+          notif_whatsapp_content?: boolean
+          notif_whatsapp_reminders?: boolean
+          onboarding_completed?: boolean
           phone?: string | null
+          phone_e164?: string | null
+          phone_verified_at?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           residence?: string | null
+          timezone?: string
           updated_at?: string
           whatsapp_optin?: boolean
         }
         Update: {
           auth_user_id?: string
+          consent_at?: string | null
+          consent_version?: string | null
           created_at?: string
           credit_balance?: number
           date_of_birth?: string | null
+          deletion_requested_at?: string | null
           education?: string | null
           email?: string | null
           email_optin?: boolean
           english_level?: string | null
+          english_self_level?: string | null
+          english_test?: string | null
+          english_test_date?: string | null
+          english_test_score?: string | null
           field_of_study?: string | null
           financial_need?: boolean
           full_name?: string
           gender?: string | null
           id?: string
+          is_ambassador?: boolean
           member_code?: string
           nationality?: string | null
+          notif_email?: boolean
+          notif_whatsapp_alerts?: boolean
+          notif_whatsapp_content?: boolean
+          notif_whatsapp_reminders?: boolean
+          onboarding_completed?: boolean
           phone?: string | null
+          phone_e164?: string | null
+          phone_verified_at?: string | null
+          referral_code?: string | null
+          referred_by?: string | null
           residence?: string | null
+          timezone?: string
           updated_at?: string
           whatsapp_optin?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_referred_by_fkey"
+            columns: ["referred_by"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      recommenders: {
+        Row: {
+          application_id: string | null
+          auto_remind: boolean
+          created_at: string
+          document_id: string | null
+          email: string | null
+          full_name: string
+          id: string
+          institution: string | null
+          notes: string | null
+          phone: string | null
+          profile_id: string
+          received_at: string | null
+          relation: string | null
+          reminded_at: string | null
+          requested_at: string | null
+          status: Database["public"]["Enums"]["recommender_status"]
+          strengths: string | null
+          title: string | null
+        }
+        Insert: {
+          application_id?: string | null
+          auto_remind?: boolean
+          created_at?: string
+          document_id?: string | null
+          email?: string | null
+          full_name: string
+          id?: string
+          institution?: string | null
+          notes?: string | null
+          phone?: string | null
+          profile_id: string
+          received_at?: string | null
+          relation?: string | null
+          reminded_at?: string | null
+          requested_at?: string | null
+          status?: Database["public"]["Enums"]["recommender_status"]
+          strengths?: string | null
+          title?: string | null
+        }
+        Update: {
+          application_id?: string | null
+          auto_remind?: boolean
+          created_at?: string
+          document_id?: string | null
+          email?: string | null
+          full_name?: string
+          id?: string
+          institution?: string | null
+          notes?: string | null
+          phone?: string | null
+          profile_id?: string
+          received_at?: string | null
+          relation?: string | null
+          reminded_at?: string | null
+          requested_at?: string | null
+          status?: Database["public"]["Enums"]["recommender_status"]
+          strengths?: string | null
+          title?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "recommenders_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "applications"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommenders_document_id_fkey"
+            columns: ["document_id"]
+            isOneToOne: false
+            referencedRelation: "documents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "recommenders_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      referrals: {
+        Row: {
+          created_at: string
+          id: string
+          paid_at: string | null
+          referred_id: string
+          referrer_id: string
+          reward_subscription_id: string | null
+          rewarded_at: string | null
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          referred_id: string
+          referrer_id: string
+          reward_subscription_id?: string | null
+          rewarded_at?: string | null
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          paid_at?: string | null
+          referred_id?: string
+          referrer_id?: string
+          reward_subscription_id?: string | null
+          rewarded_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referrals_referred_id_fkey"
+            columns: ["referred_id"]
+            isOneToOne: true
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_referrer_id_fkey"
+            columns: ["referrer_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "referrals_reward_subscription_id_fkey"
+            columns: ["reward_subscription_id"]
+            isOneToOne: false
+            referencedRelation: "subscriptions"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       subscriptions: {
         Row: {
@@ -377,12 +1626,14 @@ export type Database = {
           ends_at: string
           grace_ends_at: string | null
           id: string
+          payment_id: string | null
           plan: Database["public"]["Enums"]["subscription_plan"]
           profile_id: string
           reminder_grace_sent: boolean
           reminder_j0_sent: boolean
           reminder_j2_sent: boolean
           reminder_j7_sent: boolean
+          source: string
           starts_at: string
           status: Database["public"]["Enums"]["subscription_status"]
         }
@@ -392,12 +1643,14 @@ export type Database = {
           ends_at: string
           grace_ends_at?: string | null
           id?: string
+          payment_id?: string | null
           plan: Database["public"]["Enums"]["subscription_plan"]
           profile_id: string
           reminder_grace_sent?: boolean
           reminder_j0_sent?: boolean
           reminder_j2_sent?: boolean
           reminder_j7_sent?: boolean
+          source?: string
           starts_at?: string
           status?: Database["public"]["Enums"]["subscription_status"]
         }
@@ -407,16 +1660,25 @@ export type Database = {
           ends_at?: string
           grace_ends_at?: string | null
           id?: string
+          payment_id?: string | null
           plan?: Database["public"]["Enums"]["subscription_plan"]
           profile_id?: string
           reminder_grace_sent?: boolean
           reminder_j0_sent?: boolean
           reminder_j2_sent?: boolean
           reminder_j7_sent?: boolean
+          source?: string
           starts_at?: string
           status?: Database["public"]["Enums"]["subscription_status"]
         }
         Relationships: [
+          {
+            foreignKeyName: "subscriptions_payment_id_fkey"
+            columns: ["payment_id"]
+            isOneToOne: false
+            referencedRelation: "payments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "subscriptions_profile_id_fkey"
             columns: ["profile_id"]
@@ -447,11 +1709,76 @@ export type Database = {
         }
         Relationships: []
       }
+      whatsapp_inbound: {
+        Row: {
+          body: string | null
+          kind: string
+          phone_e164: string
+          received_at: string
+          wa_message_id: string
+        }
+        Insert: {
+          body?: string | null
+          kind: string
+          phone_e164: string
+          received_at?: string
+          wa_message_id: string
+        }
+        Update: {
+          body?: string | null
+          kind?: string
+          phone_e164?: string
+          received_at?: string
+          wa_message_id?: string
+        }
+        Relationships: []
+      }
+      whatsapp_sessions: {
+        Row: {
+          last_inbound_at: string | null
+          pending: Json | null
+          phone_e164: string
+          profile_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          last_inbound_at?: string | null
+          pending?: Json | null
+          phone_e164: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          last_inbound_at?: string | null
+          pending?: Json | null
+          phone_e164?: string
+          profile_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "whatsapp_sessions_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      admin_activity_months: {
+        Args: { _since: string }
+        Returns: {
+          month: string
+          profile_id: string
+        }[]
+      }
+      admin_dashboard_stats: { Args: { _since: string }; Returns: Json }
+      generate_referral_code: { Args: never; Returns: string }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -459,10 +1786,58 @@ export type Database = {
         }
         Returns: boolean
       }
+      redeem_access_code: {
+        Args: { _code: string; _profile_id: string }
+        Returns: {
+          duration_days: number
+          redemption_id: string
+        }[]
+      }
+      search_knowledge: {
+        Args: { _limit?: number; _query: string }
+        Returns: {
+          content: string
+          rank: number
+          ref: string
+          source: string
+          title: string
+        }[]
+      }
       verify_cron_token: { Args: { _token: string }; Returns: boolean }
     }
     Enums: {
+      ai_feature:
+        | "essay_review"
+        | "cv_review"
+        | "interview_sim"
+        | "coach_chat"
+        | "doc_classify"
       app_role: "admin" | "moderator" | "user"
+      application_status:
+        | "targeting"
+        | "preparing"
+        | "ready"
+        | "submitted"
+        | "interview"
+        | "accepted"
+        | "rejected"
+        | "abandoned"
+      document_type:
+        | "passport"
+        | "id_card"
+        | "birth_certificate"
+        | "photo_id"
+        | "diploma_bac"
+        | "diploma_licence"
+        | "diploma_master"
+        | "transcript"
+        | "cv"
+        | "motivation_letter"
+        | "recommendation_letter"
+        | "english_test"
+        | "proof_of_income"
+        | "proof_of_residence"
+        | "other"
       engagement_status:
         | "pending_payment"
         | "active"
@@ -470,6 +1845,7 @@ export type Database = {
         | "submitted"
         | "completed"
         | "cancelled"
+      item_status: "todo" | "in_progress" | "done" | "na"
       payable_type: "subscription" | "engagement"
       payment_provider:
         | "wave"
@@ -477,7 +1853,22 @@ export type Database = {
         | "mtn_momo"
         | "moov_money"
         | "manual"
+        | "maketou"
+        | "promo"
       payment_status: "pending" | "success" | "failed" | "refunded"
+      recommender_status:
+        | "to_contact"
+        | "requested"
+        | "reminded"
+        | "received"
+        | "declined"
+      requirement_kind:
+        | "document"
+        | "essay"
+        | "recommendation"
+        | "form"
+        | "test"
+        | "other"
       subscription_plan: "monthly" | "quarterly"
       subscription_status: "active" | "grace" | "expired" | "cancelled"
     }
@@ -607,7 +1998,41 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_feature: [
+        "essay_review",
+        "cv_review",
+        "interview_sim",
+        "coach_chat",
+        "doc_classify",
+      ],
       app_role: ["admin", "moderator", "user"],
+      application_status: [
+        "targeting",
+        "preparing",
+        "ready",
+        "submitted",
+        "interview",
+        "accepted",
+        "rejected",
+        "abandoned",
+      ],
+      document_type: [
+        "passport",
+        "id_card",
+        "birth_certificate",
+        "photo_id",
+        "diploma_bac",
+        "diploma_licence",
+        "diploma_master",
+        "transcript",
+        "cv",
+        "motivation_letter",
+        "recommendation_letter",
+        "english_test",
+        "proof_of_income",
+        "proof_of_residence",
+        "other",
+      ],
       engagement_status: [
         "pending_payment",
         "active",
@@ -616,6 +2041,7 @@ export const Constants = {
         "completed",
         "cancelled",
       ],
+      item_status: ["todo", "in_progress", "done", "na"],
       payable_type: ["subscription", "engagement"],
       payment_provider: [
         "wave",
@@ -623,8 +2049,25 @@ export const Constants = {
         "mtn_momo",
         "moov_money",
         "manual",
+        "maketou",
+        "promo",
       ],
       payment_status: ["pending", "success", "failed", "refunded"],
+      recommender_status: [
+        "to_contact",
+        "requested",
+        "reminded",
+        "received",
+        "declined",
+      ],
+      requirement_kind: [
+        "document",
+        "essay",
+        "recommendation",
+        "form",
+        "test",
+        "other",
+      ],
       subscription_plan: ["monthly", "quarterly"],
       subscription_status: ["active", "grace", "expired", "cancelled"],
     },

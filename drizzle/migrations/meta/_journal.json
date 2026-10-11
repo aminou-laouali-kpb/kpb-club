@@ -99,6 +99,13 @@
       "when": 1791993720000,
       "tag": "0013_admin_analytics_privacy",
       "breakpoints": true
+    },
+    {
+      "idx": 14,
+      "version": "7",
+      "when": 1791739948507,
+      "tag": "0014_maketou_payments",
+      "breakpoints": true
     }
   ]
 }
