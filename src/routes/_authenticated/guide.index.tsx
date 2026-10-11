@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight } from "lucide-react";
-import { useMemberOverview, hasAccess } from "@/hooks/useMemberOverview";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { MemberGate } from "@/components/MemberGate";
-import { GUIDE_CHAPTERS } from "@/lib/content";
+import { listGuide } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/_authenticated/guide/")({
   head: () => ({
@@ -20,10 +21,11 @@ export const Route = createFileRoute("/_authenticated/guide/")({
 });
 
 function GuideIndex() {
-  const { data, isPending } = useMemberOverview();
+  const fetchGuide = useServerFn(listGuide);
+  const { data, isPending } = useQuery({ queryKey: ["guide"], queryFn: () => fetchGuide() });
 
   if (isPending) return <p className="py-10 text-sm text-muted-foreground">Chargement…</p>;
-  if (!hasAccess(data?.subscriptionState)) return <MemberGate />;
+  if (!data?.access) return <MemberGate />;
 
   return (
     <div>
@@ -31,8 +33,28 @@ function GuideIndex() {
       <p className="mt-2 text-sm text-muted-foreground">
         Chapitre par chapitre, de la sélection des programmes à l'entretien.
       </p>
+      <div className="mt-3 flex flex-wrap gap-2">
+        <Link
+          to="/templates"
+          className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+        >
+          Voir les modèles (CV, lettres, essai)
+        </Link>
+        <Link
+          to="/bibliotheque"
+          className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+        >
+          Bibliothèque
+        </Link>
+        <Link
+          to="/anglais"
+          className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+        >
+          Parcours anglais
+        </Link>
+      </div>
       <div className="mt-6 space-y-3">
-        {GUIDE_CHAPTERS.map((chapter, index) => (
+        {data.chapters.map((chapter, index) => (
           <Link
             key={chapter.slug}
             to="/guide/$chapter"

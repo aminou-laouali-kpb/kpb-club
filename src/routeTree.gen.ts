@@ -12,19 +12,38 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as CguRouteImport } from './routes/cgu'
+import { Route as ConfidentialiteRouteImport } from './routes/confidentialite'
+import { Route as LaureatsRouteImport } from './routes/laureats'
 import { Route as VerificateurRouteImport } from './routes/verificateur'
+import { Route as AuthenticatedAccompagnementRouteImport } from './routes/_authenticated/accompagnement'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedAnglaisRouteImport } from './routes/_authenticated/anglais'
+import { Route as AuthenticatedBibliothequeRouteImport } from './routes/_authenticated/bibliotheque'
+import { Route as AuthenticatedBienvenueRouteImport } from './routes/_authenticated/bienvenue'
+import { Route as AuthenticatedCandidaturesRouteImport } from './routes/_authenticated/candidatures'
+import { Route as AuthenticatedCoachRouteImport } from './routes/_authenticated/coach'
 import { Route as AuthenticatedCompteRouteImport } from './routes/_authenticated/compte'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as AuthenticatedDocumentsRouteImport } from './routes/_authenticated/documents'
 import { Route as AuthenticatedGuideRouteImport } from './routes/_authenticated/guide'
 import { Route as AuthenticatedOffreRouteImport } from './routes/_authenticated/offre'
+import { Route as AuthenticatedParrainageRouteImport } from './routes/_authenticated/parrainage'
 import { Route as AuthenticatedTemplatesRouteImport } from './routes/_authenticated/templates'
+import { Route as AuthenticatedCandidaturesIndexRouteImport } from './routes/_authenticated/candidatures.index'
+import { Route as AuthenticatedCandidaturesIdRouteImport } from './routes/_authenticated/candidatures.$id'
 import { Route as AuthenticatedGuideIndexRouteImport } from './routes/_authenticated/guide.index'
 import { Route as AuthenticatedGuideChapterRouteImport } from './routes/_authenticated/guide.$chapter'
+import { Route as AuthenticatedPaiementRetourRouteImport } from './routes/_authenticated/paiement.retour'
 import { Route as AuthenticatedTemplatesIndexRouteImport } from './routes/_authenticated/templates.index'
 import { Route as AuthenticatedTemplatesSlugRouteImport } from './routes/_authenticated/templates.$slug'
+import { Route as ApiAdminBoursesDotjsonRouteImport } from './routes/api/admin/bourses[.]json'
+import { Route as ApiAiStreamRouteImport } from './routes/api/ai/stream'
 import { Route as ApiPublicHooksBourseAlertsRouteImport } from './routes/api/public/hooks/bourse-alerts'
+import { Route as ApiPublicHooksDispatchRouteImport } from './routes/api/public/hooks/dispatch'
+import { Route as ApiPublicHooksMaketouRouteImport } from './routes/api/public/hooks/maketou'
 import { Route as ApiPublicHooksRemindersRouteImport } from './routes/api/public/hooks/reminders'
+import { Route as ApiPublicHooksWhatsappRouteImport } from './routes/api/public/hooks/whatsapp'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,14 +59,62 @@ const AuthRoute = AuthRouteImport.update({
   path: '/auth',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CguRoute = CguRouteImport.update({
+  id: '/cgu',
+  path: '/cgu',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ConfidentialiteRoute = ConfidentialiteRouteImport.update({
+  id: '/confidentialite',
+  path: '/confidentialite',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LaureatsRoute = LaureatsRouteImport.update({
+  id: '/laureats',
+  path: '/laureats',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const VerificateurRoute = VerificateurRouteImport.update({
   id: '/verificateur',
   path: '/verificateur',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAccompagnementRoute =
+  AuthenticatedAccompagnementRouteImport.update({
+    id: '/accompagnement',
+    path: '/accompagnement',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedAnglaisRoute = AuthenticatedAnglaisRouteImport.update({
+  id: '/anglais',
+  path: '/anglais',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedBibliothequeRoute =
+  AuthenticatedBibliothequeRouteImport.update({
+    id: '/bibliotheque',
+    path: '/bibliotheque',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedBienvenueRoute = AuthenticatedBienvenueRouteImport.update({
+  id: '/bienvenue',
+  path: '/bienvenue',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedCandidaturesRoute =
+  AuthenticatedCandidaturesRouteImport.update({
+    id: '/candidatures',
+    path: '/candidatures',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
+const AuthenticatedCoachRoute = AuthenticatedCoachRouteImport.update({
+  id: '/coach',
+  path: '/coach',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const AuthenticatedCompteRoute = AuthenticatedCompteRouteImport.update({
@@ -60,6 +127,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedDocumentsRoute = AuthenticatedDocumentsRouteImport.update({
+  id: '/documents',
+  path: '/documents',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedGuideRoute = AuthenticatedGuideRouteImport.update({
   id: '/guide',
   path: '/guide',
@@ -70,11 +142,28 @@ const AuthenticatedOffreRoute = AuthenticatedOffreRouteImport.update({
   path: '/offre',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedParrainageRoute = AuthenticatedParrainageRouteImport.update({
+  id: '/parrainage',
+  path: '/parrainage',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const AuthenticatedTemplatesRoute = AuthenticatedTemplatesRouteImport.update({
   id: '/templates',
   path: '/templates',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthenticatedCandidaturesIndexRoute =
+  AuthenticatedCandidaturesIndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => AuthenticatedCandidaturesRoute,
+  } as any)
+const AuthenticatedCandidaturesIdRoute =
+  AuthenticatedCandidaturesIdRouteImport.update({
+    id: '/$id',
+    path: '/$id',
+    getParentRoute: () => AuthenticatedCandidaturesRoute,
+  } as any)
 const AuthenticatedGuideIndexRoute = AuthenticatedGuideIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -85,6 +174,12 @@ const AuthenticatedGuideChapterRoute =
     id: '/$chapter',
     path: '/$chapter',
     getParentRoute: () => AuthenticatedGuideRoute,
+  } as any)
+const AuthenticatedPaiementRetourRoute =
+  AuthenticatedPaiementRetourRouteImport.update({
+    id: '/paiement/retour',
+    path: '/paiement/retour',
+    getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 const AuthenticatedTemplatesIndexRoute =
   AuthenticatedTemplatesIndexRouteImport.update({
@@ -98,129 +193,274 @@ const AuthenticatedTemplatesSlugRoute =
     path: '/$slug',
     getParentRoute: () => AuthenticatedTemplatesRoute,
   } as any)
+const ApiAdminBoursesDotjsonRoute = ApiAdminBoursesDotjsonRouteImport.update({
+  id: '/api/admin/bourses.json',
+  path: '/api/admin/bourses.json',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAiStreamRoute = ApiAiStreamRouteImport.update({
+  id: '/api/ai/stream',
+  path: '/api/ai/stream',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksBourseAlertsRoute =
   ApiPublicHooksBourseAlertsRouteImport.update({
     id: '/api/public/hooks/bourse-alerts',
     path: '/api/public/hooks/bourse-alerts',
     getParentRoute: () => rootRouteImport,
   } as any)
+const ApiPublicHooksDispatchRoute = ApiPublicHooksDispatchRouteImport.update({
+  id: '/api/public/hooks/dispatch',
+  path: '/api/public/hooks/dispatch',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksMaketouRoute = ApiPublicHooksMaketouRouteImport.update({
+  id: '/api/public/hooks/maketou',
+  path: '/api/public/hooks/maketou',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicHooksRemindersRoute = ApiPublicHooksRemindersRouteImport.update({
   id: '/api/public/hooks/reminders',
   path: '/api/public/hooks/reminders',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiPublicHooksWhatsappRoute = ApiPublicHooksWhatsappRouteImport.update({
+  id: '/api/public/hooks/whatsapp',
+  path: '/api/public/hooks/whatsapp',
   getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
+  '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
+  '/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/anglais': typeof AuthenticatedAnglaisRoute
+  '/bibliotheque': typeof AuthenticatedBibliothequeRoute
+  '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
+  '/coach': typeof AuthenticatedCoachRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/documents': typeof AuthenticatedDocumentsRoute
   '/guide': typeof AuthenticatedGuideRouteWithChildren
   '/offre': typeof AuthenticatedOffreRoute
+  '/parrainage': typeof AuthenticatedParrainageRoute
   '/templates': typeof AuthenticatedTemplatesRouteWithChildren
+  '/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/admin/bourses.json': typeof ApiAdminBoursesDotjsonRoute
+  '/api/ai/stream': typeof ApiAiStreamRoute
+  '/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/guide/': typeof AuthenticatedGuideIndexRoute
   '/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
+  '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
+  '/api/public/hooks/whatsapp': typeof ApiPublicHooksWhatsappRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
+  '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
+  '/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/anglais': typeof AuthenticatedAnglaisRoute
+  '/bibliotheque': typeof AuthenticatedBibliothequeRoute
+  '/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/coach': typeof AuthenticatedCoachRoute
   '/compte': typeof AuthenticatedCompteRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/documents': typeof AuthenticatedDocumentsRoute
   '/offre': typeof AuthenticatedOffreRoute
+  '/parrainage': typeof AuthenticatedParrainageRoute
+  '/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/admin/bourses.json': typeof ApiAdminBoursesDotjsonRoute
+  '/api/ai/stream': typeof ApiAiStreamRoute
+  '/candidatures': typeof AuthenticatedCandidaturesIndexRoute
   '/guide': typeof AuthenticatedGuideIndexRoute
   '/templates': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
+  '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
+  '/api/public/hooks/whatsapp': typeof ApiPublicHooksWhatsappRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
+  '/cgu': typeof CguRoute
+  '/confidentialite': typeof ConfidentialiteRoute
+  '/laureats': typeof LaureatsRoute
   '/verificateur': typeof VerificateurRoute
+  '/_authenticated/accompagnement': typeof AuthenticatedAccompagnementRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/anglais': typeof AuthenticatedAnglaisRoute
+  '/_authenticated/bibliotheque': typeof AuthenticatedBibliothequeRoute
+  '/_authenticated/bienvenue': typeof AuthenticatedBienvenueRoute
+  '/_authenticated/candidatures': typeof AuthenticatedCandidaturesRouteWithChildren
+  '/_authenticated/coach': typeof AuthenticatedCoachRoute
   '/_authenticated/compte': typeof AuthenticatedCompteRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/_authenticated/documents': typeof AuthenticatedDocumentsRoute
   '/_authenticated/guide': typeof AuthenticatedGuideRouteWithChildren
   '/_authenticated/offre': typeof AuthenticatedOffreRoute
+  '/_authenticated/parrainage': typeof AuthenticatedParrainageRoute
   '/_authenticated/templates': typeof AuthenticatedTemplatesRouteWithChildren
+  '/_authenticated/candidatures/$id': typeof AuthenticatedCandidaturesIdRoute
   '/_authenticated/guide/$chapter': typeof AuthenticatedGuideChapterRoute
+  '/_authenticated/paiement/retour': typeof AuthenticatedPaiementRetourRoute
   '/_authenticated/templates/$slug': typeof AuthenticatedTemplatesSlugRoute
+  '/api/admin/bourses.json': typeof ApiAdminBoursesDotjsonRoute
+  '/api/ai/stream': typeof ApiAiStreamRoute
+  '/_authenticated/candidatures/': typeof AuthenticatedCandidaturesIndexRoute
   '/_authenticated/guide/': typeof AuthenticatedGuideIndexRoute
   '/_authenticated/templates/': typeof AuthenticatedTemplatesIndexRoute
   '/api/public/hooks/bourse-alerts': typeof ApiPublicHooksBourseAlertsRoute
+  '/api/public/hooks/dispatch': typeof ApiPublicHooksDispatchRoute
+  '/api/public/hooks/maketou': typeof ApiPublicHooksMaketouRoute
   '/api/public/hooks/reminders': typeof ApiPublicHooksRemindersRoute
+  '/api/public/hooks/whatsapp': typeof ApiPublicHooksWhatsappRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/auth'
+    | '/cgu'
+    | '/confidentialite'
+    | '/laureats'
     | '/verificateur'
+    | '/accompagnement'
     | '/admin'
+    | '/anglais'
+    | '/bibliotheque'
+    | '/bienvenue'
+    | '/candidatures'
+    | '/coach'
     | '/compte'
     | '/dashboard'
+    | '/documents'
     | '/guide'
     | '/offre'
+    | '/parrainage'
     | '/templates'
+    | '/candidatures/$id'
     | '/guide/$chapter'
+    | '/paiement/retour'
     | '/templates/$slug'
+    | '/api/admin/bourses.json'
+    | '/api/ai/stream'
+    | '/candidatures/'
     | '/guide/'
     | '/templates/'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/dispatch'
+    | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
+    | '/api/public/hooks/whatsapp'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/auth'
+    | '/cgu'
+    | '/confidentialite'
+    | '/laureats'
     | '/verificateur'
+    | '/accompagnement'
     | '/admin'
+    | '/anglais'
+    | '/bibliotheque'
+    | '/bienvenue'
+    | '/coach'
     | '/compte'
     | '/dashboard'
+    | '/documents'
     | '/offre'
+    | '/parrainage'
+    | '/candidatures/$id'
     | '/guide/$chapter'
+    | '/paiement/retour'
     | '/templates/$slug'
+    | '/api/admin/bourses.json'
+    | '/api/ai/stream'
+    | '/candidatures'
     | '/guide'
     | '/templates'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/dispatch'
+    | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
+    | '/api/public/hooks/whatsapp'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/auth'
+    | '/cgu'
+    | '/confidentialite'
+    | '/laureats'
     | '/verificateur'
+    | '/_authenticated/accompagnement'
     | '/_authenticated/admin'
+    | '/_authenticated/anglais'
+    | '/_authenticated/bibliotheque'
+    | '/_authenticated/bienvenue'
+    | '/_authenticated/candidatures'
+    | '/_authenticated/coach'
     | '/_authenticated/compte'
     | '/_authenticated/dashboard'
+    | '/_authenticated/documents'
     | '/_authenticated/guide'
     | '/_authenticated/offre'
+    | '/_authenticated/parrainage'
     | '/_authenticated/templates'
+    | '/_authenticated/candidatures/$id'
     | '/_authenticated/guide/$chapter'
+    | '/_authenticated/paiement/retour'
     | '/_authenticated/templates/$slug'
+    | '/api/admin/bourses.json'
+    | '/api/ai/stream'
+    | '/_authenticated/candidatures/'
     | '/_authenticated/guide/'
     | '/_authenticated/templates/'
     | '/api/public/hooks/bourse-alerts'
+    | '/api/public/hooks/dispatch'
+    | '/api/public/hooks/maketou'
     | '/api/public/hooks/reminders'
+    | '/api/public/hooks/whatsapp'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
+  CguRoute: typeof CguRoute
+  ConfidentialiteRoute: typeof ConfidentialiteRoute
+  LaureatsRoute: typeof LaureatsRoute
   VerificateurRoute: typeof VerificateurRoute
+  ApiAdminBoursesDotjsonRoute: typeof ApiAdminBoursesDotjsonRoute
+  ApiAiStreamRoute: typeof ApiAiStreamRoute
   ApiPublicHooksBourseAlertsRoute: typeof ApiPublicHooksBourseAlertsRoute
+  ApiPublicHooksDispatchRoute: typeof ApiPublicHooksDispatchRoute
+  ApiPublicHooksMaketouRoute: typeof ApiPublicHooksMaketouRoute
   ApiPublicHooksRemindersRoute: typeof ApiPublicHooksRemindersRoute
+  ApiPublicHooksWhatsappRoute: typeof ApiPublicHooksWhatsappRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -246,6 +486,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/cgu': {
+      id: '/cgu'
+      path: '/cgu'
+      fullPath: '/cgu'
+      preLoaderRoute: typeof CguRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/confidentialite': {
+      id: '/confidentialite'
+      path: '/confidentialite'
+      fullPath: '/confidentialite'
+      preLoaderRoute: typeof ConfidentialiteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/laureats': {
+      id: '/laureats'
+      path: '/laureats'
+      fullPath: '/laureats'
+      preLoaderRoute: typeof LaureatsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/verificateur': {
       id: '/verificateur'
       path: '/verificateur'
@@ -253,11 +514,53 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof VerificateurRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/accompagnement': {
+      id: '/_authenticated/accompagnement'
+      path: '/accompagnement'
+      fullPath: '/accompagnement'
+      preLoaderRoute: typeof AuthenticatedAccompagnementRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin': {
       id: '/_authenticated/admin'
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/anglais': {
+      id: '/_authenticated/anglais'
+      path: '/anglais'
+      fullPath: '/anglais'
+      preLoaderRoute: typeof AuthenticatedAnglaisRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bibliotheque': {
+      id: '/_authenticated/bibliotheque'
+      path: '/bibliotheque'
+      fullPath: '/bibliotheque'
+      preLoaderRoute: typeof AuthenticatedBibliothequeRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/bienvenue': {
+      id: '/_authenticated/bienvenue'
+      path: '/bienvenue'
+      fullPath: '/bienvenue'
+      preLoaderRoute: typeof AuthenticatedBienvenueRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/candidatures': {
+      id: '/_authenticated/candidatures'
+      path: '/candidatures'
+      fullPath: '/candidatures'
+      preLoaderRoute: typeof AuthenticatedCandidaturesRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/coach': {
+      id: '/_authenticated/coach'
+      path: '/coach'
+      fullPath: '/coach'
+      preLoaderRoute: typeof AuthenticatedCoachRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
     '/_authenticated/compte': {
@@ -274,6 +577,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/documents': {
+      id: '/_authenticated/documents'
+      path: '/documents'
+      fullPath: '/documents'
+      preLoaderRoute: typeof AuthenticatedDocumentsRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/guide': {
       id: '/_authenticated/guide'
       path: '/guide'
@@ -288,12 +598,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedOffreRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/parrainage': {
+      id: '/_authenticated/parrainage'
+      path: '/parrainage'
+      fullPath: '/parrainage'
+      preLoaderRoute: typeof AuthenticatedParrainageRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/templates': {
       id: '/_authenticated/templates'
       path: '/templates'
       fullPath: '/templates'
       preLoaderRoute: typeof AuthenticatedTemplatesRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/_authenticated/candidatures/': {
+      id: '/_authenticated/candidatures/'
+      path: '/'
+      fullPath: '/candidatures/'
+      preLoaderRoute: typeof AuthenticatedCandidaturesIndexRouteImport
+      parentRoute: typeof AuthenticatedCandidaturesRoute
+    }
+    '/_authenticated/candidatures/$id': {
+      id: '/_authenticated/candidatures/$id'
+      path: '/$id'
+      fullPath: '/candidatures/$id'
+      preLoaderRoute: typeof AuthenticatedCandidaturesIdRouteImport
+      parentRoute: typeof AuthenticatedCandidaturesRoute
     }
     '/_authenticated/guide/': {
       id: '/_authenticated/guide/'
@@ -309,6 +640,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedGuideChapterRouteImport
       parentRoute: typeof AuthenticatedGuideRoute
     }
+    '/_authenticated/paiement/retour': {
+      id: '/_authenticated/paiement/retour'
+      path: '/paiement/retour'
+      fullPath: '/paiement/retour'
+      preLoaderRoute: typeof AuthenticatedPaiementRetourRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/templates/': {
       id: '/_authenticated/templates/'
       path: '/'
@@ -323,11 +661,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedTemplatesSlugRouteImport
       parentRoute: typeof AuthenticatedTemplatesRoute
     }
+    '/api/admin/bourses.json': {
+      id: '/api/admin/bourses.json'
+      path: '/api/admin/bourses.json'
+      fullPath: '/api/admin/bourses.json'
+      preLoaderRoute: typeof ApiAdminBoursesDotjsonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/ai/stream': {
+      id: '/api/ai/stream'
+      path: '/api/ai/stream'
+      fullPath: '/api/ai/stream'
+      preLoaderRoute: typeof ApiAiStreamRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/hooks/bourse-alerts': {
       id: '/api/public/hooks/bourse-alerts'
       path: '/api/public/hooks/bourse-alerts'
       fullPath: '/api/public/hooks/bourse-alerts'
       preLoaderRoute: typeof ApiPublicHooksBourseAlertsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/dispatch': {
+      id: '/api/public/hooks/dispatch'
+      path: '/api/public/hooks/dispatch'
+      fullPath: '/api/public/hooks/dispatch'
+      preLoaderRoute: typeof ApiPublicHooksDispatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/public/hooks/maketou': {
+      id: '/api/public/hooks/maketou'
+      path: '/api/public/hooks/maketou'
+      fullPath: '/api/public/hooks/maketou'
+      preLoaderRoute: typeof ApiPublicHooksMaketouRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/hooks/reminders': {
@@ -337,8 +703,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicHooksRemindersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/hooks/whatsapp': {
+      id: '/api/public/hooks/whatsapp'
+      path: '/api/public/hooks/whatsapp'
+      fullPath: '/api/public/hooks/whatsapp'
+      preLoaderRoute: typeof ApiPublicHooksWhatsappRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
+
+interface AuthenticatedCandidaturesRouteChildren {
+  AuthenticatedCandidaturesIdRoute: typeof AuthenticatedCandidaturesIdRoute
+  AuthenticatedCandidaturesIndexRoute: typeof AuthenticatedCandidaturesIndexRoute
+}
+
+const AuthenticatedCandidaturesRouteChildren: AuthenticatedCandidaturesRouteChildren =
+  {
+    AuthenticatedCandidaturesIdRoute: AuthenticatedCandidaturesIdRoute,
+    AuthenticatedCandidaturesIndexRoute: AuthenticatedCandidaturesIndexRoute,
+  }
+
+const AuthenticatedCandidaturesRouteWithChildren =
+  AuthenticatedCandidaturesRoute._addFileChildren(
+    AuthenticatedCandidaturesRouteChildren,
+  )
 
 interface AuthenticatedGuideRouteChildren {
   AuthenticatedGuideChapterRoute: typeof AuthenticatedGuideChapterRoute
@@ -370,21 +759,39 @@ const AuthenticatedTemplatesRouteWithChildren =
   )
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAccompagnementRoute: typeof AuthenticatedAccompagnementRoute
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedAnglaisRoute: typeof AuthenticatedAnglaisRoute
+  AuthenticatedBibliothequeRoute: typeof AuthenticatedBibliothequeRoute
+  AuthenticatedBienvenueRoute: typeof AuthenticatedBienvenueRoute
+  AuthenticatedCandidaturesRoute: typeof AuthenticatedCandidaturesRouteWithChildren
+  AuthenticatedCoachRoute: typeof AuthenticatedCoachRoute
   AuthenticatedCompteRoute: typeof AuthenticatedCompteRoute
   AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
+  AuthenticatedDocumentsRoute: typeof AuthenticatedDocumentsRoute
   AuthenticatedGuideRoute: typeof AuthenticatedGuideRouteWithChildren
   AuthenticatedOffreRoute: typeof AuthenticatedOffreRoute
+  AuthenticatedParrainageRoute: typeof AuthenticatedParrainageRoute
   AuthenticatedTemplatesRoute: typeof AuthenticatedTemplatesRouteWithChildren
+  AuthenticatedPaiementRetourRoute: typeof AuthenticatedPaiementRetourRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAccompagnementRoute: AuthenticatedAccompagnementRoute,
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedAnglaisRoute: AuthenticatedAnglaisRoute,
+  AuthenticatedBibliothequeRoute: AuthenticatedBibliothequeRoute,
+  AuthenticatedBienvenueRoute: AuthenticatedBienvenueRoute,
+  AuthenticatedCandidaturesRoute: AuthenticatedCandidaturesRouteWithChildren,
+  AuthenticatedCoachRoute: AuthenticatedCoachRoute,
   AuthenticatedCompteRoute: AuthenticatedCompteRoute,
   AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
+  AuthenticatedDocumentsRoute: AuthenticatedDocumentsRoute,
   AuthenticatedGuideRoute: AuthenticatedGuideRouteWithChildren,
   AuthenticatedOffreRoute: AuthenticatedOffreRoute,
+  AuthenticatedParrainageRoute: AuthenticatedParrainageRoute,
   AuthenticatedTemplatesRoute: AuthenticatedTemplatesRouteWithChildren,
+  AuthenticatedPaiementRetourRoute: AuthenticatedPaiementRetourRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -394,9 +801,17 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
+  CguRoute: CguRoute,
+  ConfidentialiteRoute: ConfidentialiteRoute,
+  LaureatsRoute: LaureatsRoute,
   VerificateurRoute: VerificateurRoute,
+  ApiAdminBoursesDotjsonRoute: ApiAdminBoursesDotjsonRoute,
+  ApiAiStreamRoute: ApiAiStreamRoute,
   ApiPublicHooksBourseAlertsRoute: ApiPublicHooksBourseAlertsRoute,
+  ApiPublicHooksDispatchRoute: ApiPublicHooksDispatchRoute,
+  ApiPublicHooksMaketouRoute: ApiPublicHooksMaketouRoute,
   ApiPublicHooksRemindersRoute: ApiPublicHooksRemindersRoute,
+  ApiPublicHooksWhatsappRoute: ApiPublicHooksWhatsappRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

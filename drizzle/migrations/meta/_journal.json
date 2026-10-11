@@ -29,6 +29,76 @@
       "when": 1789767161774,
       "tag": "0003_cron_token_verification",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1791561600000,
+      "tag": "0004_maketou_payments",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1791561660000,
+      "tag": "0005_access_codes",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1791648000000,
+      "tag": "0006_application_tracker",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1791734400000,
+      "tag": "0007_documents_recommenders",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1791820800000,
+      "tag": "0008_engagements_referrals_relance",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1791907200000,
+      "tag": "0009_ai_coach",
+      "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1791907260000,
+      "tag": "0010_knowledge_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1791993600000,
+      "tag": "0011_whatsapp_content_pwa",
+      "breakpoints": true
+    },
+    {
+      "idx": 12,
+      "version": "7",
+      "when": 1791993660000,
+      "tag": "0012_content_seed",
+      "breakpoints": true
+    },
+    {
+      "idx": 13,
+      "version": "7",
+      "when": 1791993720000,
+      "tag": "0013_admin_analytics_privacy",
+      "breakpoints": true
     }
   ]
 }

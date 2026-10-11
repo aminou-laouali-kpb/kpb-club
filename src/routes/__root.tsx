@@ -10,6 +10,8 @@ import {
 import { useEffect, type ReactNode } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { useReferralCapture } from "@/hooks/useReferralCapture";
+import { OfflineBanner } from "@/components/OfflineBanner";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -86,11 +88,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "Vérifiez votre éligibilité aux bourses d'études et rejoignez le Club Boursier KPB Education.",
       },
       { name: "author", content: "KPB Education" },
+      { name: "theme-color", content: "#125e4d" },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary_large_image" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
+      { rel: "manifest", href: "/manifest.webmanifest" },
+      { rel: "apple-touch-icon", href: "/icon-192.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
@@ -138,10 +143,18 @@ function AuthSync() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  useReferralCapture();
+  useEffect(() => {
+    // Service worker en production seulement (en développement il masquerait les changements)
+    if (import.meta.env.PROD && "serviceWorker" in navigator) {
+      navigator.serviceWorker.register("/sw.js").catch(() => undefined);
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>
       <AuthSync />
+      <OfflineBanner />
       {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
       <Outlet />
       <Toaster />

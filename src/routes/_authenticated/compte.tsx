@@ -1,10 +1,15 @@
 import { useEffect, useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { useMemberOverview } from "@/hooks/useMemberOverview";
 import { saveProfile } from "@/lib/member.functions";
+import { WhatsAppLink } from "@/components/auth/WhatsAppLink";
+import { DeleteAccount } from "@/components/DeleteAccount";
+import { getReceipt } from "@/lib/payments.functions";
+import { TIMEZONE_OPTIONS } from "@/lib/relance/window";
+import { Download } from "lucide-react";
 import { formatFcfa } from "@/lib/pricing";
 import { formatDateFr } from "@/lib/matching";
 import { COUNTRIES, EDUCATION_OPTIONS, ENGLISH_OPTIONS, GENDER_OPTIONS } from "@/lib/countries";
@@ -24,6 +29,12 @@ export const Route = createFileRoute("/_authenticated/compte")({
 const inputCls =
   "mt-1 w-full rounded-md border border-input bg-card px-3 py-2.5 text-base outline-none focus:ring-2 focus:ring-ring";
 
+const PAYMENT_STATUS: Record<string, string> = {
+  pending: "En attente",
+  failed: "Non abouti",
+  refunded: "Remboursé",
+};
+
 type Form = {
   full_name: string;
   phone: string;
@@ -37,6 +48,11 @@ type Form = {
   financial_need: boolean;
   whatsapp_optin: boolean;
   email_optin: boolean;
+  notif_email: boolean;
+  notif_whatsapp_alerts: boolean;
+  notif_whatsapp_reminders: boolean;
+  notif_whatsapp_content: boolean;
+  timezone: string;
 };
 
 function Compte() {
@@ -61,8 +77,28 @@ function Compte() {
       financial_need: p.financial_need ?? false,
       whatsapp_optin: p.whatsapp_optin ?? false,
       email_optin: p.email_optin ?? true,
+      notif_email: p.notif_email ?? true,
+      notif_whatsapp_alerts: p.notif_whatsapp_alerts ?? true,
+      notif_whatsapp_reminders: p.notif_whatsapp_reminders ?? true,
+      notif_whatsapp_content: p.notif_whatsapp_content ?? true,
+      timezone: p.timezone ?? "Africa/Niamey",
     });
   }, [data, form]);
+
+  const receipt = useServerFn(getReceipt);
+  const receiptMutation = useMutation({
+    mutationFn: (paymentId: string) => receipt({ data: { paymentId } }),
+    onSuccess: ({ fileName, base64 }) => {
+      const bytes = Uint8Array.from(atob(base64), (c) => c.charCodeAt(0));
+      const url = URL.createObjectURL(new Blob([bytes], { type: "application/pdf" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = fileName;
+      a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 10_000);
+    },
+    onError: () => toast.error("Reçu indisponible"),
+  });
 
   const mutation = useMutation({
     mutationFn: (values: Form) =>
@@ -80,6 +116,11 @@ function Compte() {
           financial_need: values.financial_need,
           whatsapp_optin: values.whatsapp_optin,
           email_optin: values.email_optin,
+          notif_email: values.notif_email,
+          notif_whatsapp_alerts: values.notif_whatsapp_alerts,
+          notif_whatsapp_reminders: values.notif_whatsapp_reminders,
+          notif_whatsapp_content: values.notif_whatsapp_content,
+          timezone: values.timezone,
         },
       }),
     onSuccess: () => {
@@ -103,6 +144,26 @@ function Compte() {
           Membre {data.profile.member_code ?? "—"} · crédit{" "}
           {formatFcfa(data.profile.credit_balance ?? 0)}
         </p>
+        <div className="mt-3 flex flex-wrap gap-2">
+          <Link
+            to="/documents"
+            className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+          >
+            Mes documents
+          </Link>
+          <Link
+            to="/parrainage"
+            className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+          >
+            Parrainage
+          </Link>
+          <Link
+            to="/accompagnement"
+            className="inline-flex rounded-md border border-border px-3 py-2 text-sm"
+          >
+            Accompagnement
+          </Link>
+        </div>
       </div>
 
       <form
@@ -264,24 +325,78 @@ function Compte() {
           />
           <span className="text-sm">J'ai besoin d'un financement</span>
         </label>
-        <label className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            className="size-4"
-            checked={form.email_optin}
-            onChange={(e) => set("email_optin", e.target.checked)}
-          />
-          <span className="text-sm">Recevoir les alertes par email</span>
-        </label>
-        <label className="flex items-center gap-3">
-          <input
-            type="checkbox"
-            className="size-4"
-            checked={form.whatsapp_optin}
-            onChange={(e) => set("whatsapp_optin", e.target.checked)}
-          />
-          <span className="text-sm">Recevoir les alertes par WhatsApp</span>
-        </label>
+        <div>
+          <label className="text-sm font-medium" htmlFor="timezone">
+            Fuseau horaire (nos messages arrivent entre 8 h et 20 h)
+          </label>
+          <select
+            id="timezone"
+            className={inputCls}
+            value={form.timezone}
+            onChange={(e) => set("timezone", e.target.value)}
+          >
+            {(TIMEZONE_OPTIONS.includes(form.timezone)
+              ? TIMEZONE_OPTIONS
+              : [form.timezone, ...TIMEZONE_OPTIONS]
+            ).map((tz) => (
+              <option key={tz} value={tz}>
+                {tz.replace(/^.*\//, "").replace(/_/g, " ")} ({tz.split("/")[0]})
+              </option>
+            ))}
+          </select>
+        </div>
+        <fieldset className="space-y-3 rounded-lg border border-border p-4">
+          <legend className="px-1 text-sm font-medium">Mes notifications</legend>
+          <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Sur WhatsApp
+          </p>
+          {(
+            [
+              ["Rappels (échéances, abonnement, paiements)", "notif_whatsapp_reminders"],
+              ["Alertes de nouvelles bourses", "notif_whatsapp_alerts"],
+              ["Nouveaux contenus (bulletin, vidéos)", "notif_whatsapp_content"],
+            ] as const
+          ).map(([label, key]) => (
+            <label key={key} className="flex items-center gap-3 text-sm">
+              <input
+                type="checkbox"
+                className="size-4"
+                checked={form.whatsapp_optin && form[key]}
+                disabled={!data.profile.phone_verified_at}
+                onChange={(e) => {
+                  set(key, e.target.checked);
+                  if (e.target.checked) set("whatsapp_optin", true);
+                }}
+              />
+              {label}
+            </label>
+          ))}
+          <p className="pt-2 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+            Par email
+          </p>
+          <label className="flex items-center gap-3 text-sm">
+            <input
+              type="checkbox"
+              className="size-4"
+              checked={form.email_optin && form.notif_email}
+              disabled={!data.profile.email}
+              onChange={(e) => {
+                set("notif_email", e.target.checked);
+                set("email_optin", e.target.checked);
+              }}
+            />
+            {data.profile.email
+              ? `Recevoir aussi mes messages à ${data.profile.email}`
+              : "Aucune adresse email sur ce compte"}
+          </label>
+          <p className="text-xs text-muted-foreground">
+            {!data.profile.phone_verified_at
+              ? "Relie ton WhatsApp ci-dessous pour recevoir tes rappels dessus. "
+              : ""}
+            Les rappels importants (échéance, fin d'abonnement) continuent par email si tu coupes
+            WhatsApp : tu ne perds jamais le fil sans le savoir.
+          </p>
+        </fieldset>
 
         <button
           type="submit"
@@ -291,6 +406,13 @@ function Compte() {
           {mutation.isPending ? "Enregistrement…" : "Enregistrer"}
         </button>
       </form>
+
+      <section className="rounded-xl border border-border bg-card p-5">
+        <h2 className="mb-3 font-display text-xl font-semibold">Mon WhatsApp</h2>
+        <WhatsAppLink
+          verifiedPhone={data.profile.phone_verified_at ? data.profile.phone_e164 : null}
+        />
+      </section>
 
       <section className="rounded-xl border border-border bg-card p-5">
         <h2 className="font-display text-xl font-semibold">Paiements</h2>
@@ -306,14 +428,26 @@ function Compte() {
                     {formatDateFr(p.created_at)}
                   </span>
                 </span>
-                <span className="text-xs text-muted-foreground">
-                  {p.status === "pending" ? "En attente" : p.status}
-                </span>
+                {p.status === "success" ? (
+                  <button
+                    onClick={() => receiptMutation.mutate(p.id)}
+                    disabled={receiptMutation.isPending}
+                    className="inline-flex items-center gap-1 text-xs font-medium text-primary"
+                  >
+                    <Download className="size-3.5" /> Reçu
+                  </button>
+                ) : (
+                  <span className="text-xs text-muted-foreground">
+                    {PAYMENT_STATUS[p.status] ?? p.status}
+                  </span>
+                )}
               </li>
             ))}
           </ul>
         )}
       </section>
+
+      <DeleteAccount />
     </div>
   );
 }

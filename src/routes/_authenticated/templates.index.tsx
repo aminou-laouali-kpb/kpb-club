@@ -1,8 +1,9 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ChevronRight, FileText } from "lucide-react";
-import { useMemberOverview, hasAccess } from "@/hooks/useMemberOverview";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
 import { MemberGate } from "@/components/MemberGate";
-import { TEMPLATES } from "@/lib/content";
+import { listTemplatesFn } from "@/lib/content.functions";
 
 export const Route = createFileRoute("/_authenticated/templates/")({
   head: () => ({
@@ -10,7 +11,8 @@ export const Route = createFileRoute("/_authenticated/templates/")({
       { title: "Les modèles — KPB Education" },
       {
         name: "description",
-        content: "CV académique, lettre de motivation, essai personnel et lettre de recommandation.",
+        content:
+          "CV académique, lettre de motivation, essai personnel et lettre de recommandation.",
       },
       { property: "og:title", content: "Les modèles — KPB Education" },
       { property: "og:description", content: "Les modèles de dossier réservés aux membres." },
@@ -20,10 +22,14 @@ export const Route = createFileRoute("/_authenticated/templates/")({
 });
 
 function TemplatesIndex() {
-  const { data, isPending } = useMemberOverview();
+  const fetchTemplates = useServerFn(listTemplatesFn);
+  const { data, isPending } = useQuery({
+    queryKey: ["templates"],
+    queryFn: () => fetchTemplates(),
+  });
 
   if (isPending) return <p className="py-10 text-sm text-muted-foreground">Chargement…</p>;
-  if (!hasAccess(data?.subscriptionState)) return <MemberGate />;
+  if (!data?.access) return <MemberGate />;
 
   return (
     <div>
@@ -32,7 +38,7 @@ function TemplatesIndex() {
         À lire et recopier dans votre propre document. Consultation en ligne uniquement.
       </p>
       <div className="mt-6 space-y-3">
-        {TEMPLATES.map((tpl) => (
+        {data.templates.map((tpl) => (
           <Link
             key={tpl.slug}
             to="/templates/$slug"

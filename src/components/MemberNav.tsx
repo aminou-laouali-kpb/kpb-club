@@ -1,13 +1,22 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { BookOpen, FileText, LayoutDashboard, LogOut, Shield, User } from "lucide-react";
+import {
+  BookOpen,
+  ClipboardList,
+  Sparkles,
+  LayoutDashboard,
+  LogOut,
+  Shield,
+  User,
+} from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useMemberOverview } from "@/hooks/useMemberOverview";
 
 const items = [
   { to: "/dashboard", label: "Accueil", icon: LayoutDashboard },
+  { to: "/candidatures", label: "Candidatures", icon: ClipboardList },
+  { to: "/coach", label: "Coach", icon: Sparkles },
   { to: "/guide", label: "Guide", icon: BookOpen },
-  { to: "/templates", label: "Modèles", icon: FileText },
   { to: "/compte", label: "Compte", icon: User },
 ] as const;
 
@@ -19,6 +28,9 @@ export function MemberNav() {
   async function signOut() {
     await queryClient.cancelQueries();
     queryClient.clear();
+    // Les données gardées pour le hors ligne ne doivent pas survivre à la déconnexion
+    const { clearPersisted } = await import("@/lib/offline/persist");
+    await clearPersisted();
     await supabase.auth.signOut();
     navigate({ to: "/auth", replace: true });
   }
@@ -56,7 +68,7 @@ export function MemberNav() {
       </div>
 
       <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-card/95 backdrop-blur md:hidden">
-        <div className="grid grid-cols-4">
+        <div className="grid grid-cols-5">
           {items.map((item) => (
             <Link
               key={item.to}
