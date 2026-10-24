@@ -26,7 +26,6 @@ export function useSessionGuard() {
   useEffect(() => {
     const token = getToken();
     if (!token) return;
-    let timer: ReturnType<typeof setInterval> | undefined;
 
     async function beat() {
       if (stopped.current) return;
@@ -49,9 +48,9 @@ export function useSessionGuard() {
     }
 
     void beat();
-    timer = setInterval(() => void beat(), 120_000);
+    const timer = setInterval(() => void beat(), 120_000);
     return () => {
-      if (timer) clearInterval(timer);
+      clearInterval(timer);
     };
   }, [navigate, queryClient]);
 }
