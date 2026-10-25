@@ -25,7 +25,8 @@ export function secondInstallmentReminder(
 ): SecondInstallmentKind | null {
   if (!dueDate) return null;
   const d = dayDiff(dueDate, now);
-  const pick = (kind: SecondInstallmentKind) => (flags[SECOND_INSTALLMENT_FLAGS[kind]] ? null : kind);
+  const pick = (kind: SecondInstallmentKind) =>
+    flags[SECOND_INSTALLMENT_FLAGS[kind]] ? null : kind;
   if (d === 5) return pick("t2_j5");
   if (d === 1) return pick("t2_j1");
   if (d === 0) return pick("t2_j0");
